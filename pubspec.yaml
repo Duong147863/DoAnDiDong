@@ -30,11 +30,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  shared_preferences: ^2.0.8
+  autocomplete_textfield: ^2.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -59,8 +62,39 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+  assets:
+      - assets/img/tmdt1.jpg
+      - assets/img/chao.png
+      - assets/img/dua.png
+      - assets/img/ly.png
+      - assets/img/manboc.png
+      - assets/img/noi.png
+      - assets/img/noicomdien.jpg
+      - assets/img/ruachen.png
+      - assets/img/chen.jpg
+      - assets/img/Ruachen3.png
+      - assets/img/Ruachen4.png
+      - assets/img/RuaChen1.png
+      - assets/img/Ruachen2.png
+      - assets/img/Noi1.png
+      - assets/img/Noi2.png
+      - assets/img/Noi3.png
+      - assets/img/Manboc2.png
+      - assets/img/Manboc3.png
+      - assets/img/Manboc4.png
+      - assets/img/Manboc5.png
+      - assets/img/Manboc1.png
+      - assets/img/Chen1.png
+      - assets/img/Chen2.png
+      - assets/img/Dia.png
+      - assets/img/Chao1.png
+      - assets/img/Chao2.png
+      - assets/img/Chao3.png
+      - assets/img/Chao4.png
+      - assets/img/Chao5.png
+      - assets/img/combo1.png
+      - assets/img/combo2.png
+      - assets/img/combo3.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
