@@ -1,37 +1,64 @@
+
+import 'package:doandidongappthuongmai/models/orderdetail.dart';
+import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 class PaymentScreen extends StatefulWidget {
+ 
   final String image;
   final String productName;
   final String price;
-  final int selectedQuantity;
- 
-  const PaymentScreen({Key? key,required this.image,required this.productName,required this.price,required this.selectedQuantity,}) : super(key: key);
+  final int Quantity;
+  const PaymentScreen({Key? key,required this.image,required this.productName,required this.price,required this.Quantity}) : super(key: key);
   
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
 }
-int stringToInt(String stringValue) {
-  String cleanedString = stringValue.replaceAll('.', '');
-  return int.parse(cleanedString);
-}
-String intToString(int number) {
-  NumberFormat formatter = NumberFormat('#,###', 'vi_VN');
-  return formatter.format(number);
-}
-String gettomorrow(int numberdays) {
-  DateTime now = DateTime.now();
-  DateTime tomorrow = now.add(Duration(days: numberdays)); 
+  int stringToInt(String Value) {   // chuyển kiểu chuổi về kiểu int
+    String cleanedString = Value.replaceAll('.', '');  //xóa các dấu . , trong chuỗi
+    return int.parse(cleanedString);
+  }
 
-  String formattedTomorrow = DateFormat('dd-MM').format(tomorrow);
-  return formattedTomorrow;
+  String intToString(int number) {   // chuyển kiểu int về lại chuổi theo định dạng tiền việt nam
+    NumberFormat format = NumberFormat('#,###', 'vi_VN');
+    return format.format(number);
+  }
+
+  String getNextday(int numberdays) {  //lấy ngày tíêp theo
+    DateTime now = DateTime.now();   //lấy ngày ht
+    DateTime nextday = now.add(Duration(days: numberdays));  //  ht + số ngày nhập --> ngày típ theo
+    String formatNextday = DateFormat('dd-MM').format(nextday);  // định dạng ngày và tháng 
+    return formatNextday; 
+  }
+
+  String totalPayment(String price, int Quantity, String phigiaohang) {    // tính tiền tổng hóa đơn
+    int priceAsInt = stringToInt(price);
+    int total = (priceAsInt * Quantity) + stringToInt(phigiaohang);
+    return intToString(total);
+  }
+
+
+String ProductMoney( String price, int Quantity)  // tính tiền sản phẩm 
+{
+   int priceAsInt = stringToInt(price);
+   int money = (priceAsInt * Quantity);
+   return intToString(money);
 }
- const int phigiaohang=15000;
+
+// tạo thông tin mặc định
+late String typePayment;
+const String phigiaohang="15.000";
+const String name ="HuynhThanhDuy";
+const String phone ="0192888888";
+const String address= "45/6 Trần đình xu, Cô giang , Q1 ,Tp. Hồ Chí Minh";
+
 class _PaymentScreenState extends State<PaymentScreen> {
    int selectedPaymentOption = 1;
-   
   @override
   Widget build(BuildContext context) {
+    String totalpayment = totalPayment(widget.price, widget.Quantity, phigiaohang); // gán giá trị 
+    String productmoney= ProductMoney(widget.price, widget.Quantity);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pink[50],
@@ -62,12 +89,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child:const Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                Row(children: [Text("HuynhThanhDuy",style: TextStyle(fontSize: 17)),],),
+                Row(children: [Text(name,style: TextStyle(fontSize: 17)),],),
                 SizedBox(height: 13,),
-                Row(children: [Text("0192888888",style: TextStyle(fontSize: 17),),],),
+                Row(children: [Text(phone,style: TextStyle(fontSize: 17),),],),
                 SizedBox(height: 13,),
                 Expanded(
-                  child: Text("45/6 Trần đình xu, Cô giang , Q1 ,Tp. Hồ Chí Minh",
+                  child: Text(address,
                       style: TextStyle(fontSize: 17),
                       softWrap: true,
                       maxLines: 3,
@@ -115,7 +142,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             Row(
                               children: [
                                 Text('Số lượng: ',style: TextStyle(fontSize: 16),),
-                                Text(widget.selectedQuantity.toString(),style: TextStyle(fontSize: 16),),
+                                Text(widget.Quantity.toString(),style: TextStyle(fontSize: 16),),
                                 ],
                             ),
                             Column(
@@ -152,22 +179,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                          Text("Chọn hình thức thanh toán",style: TextStyle(fontSize: 20),),
                         
                          Text("Nhanh",style: TextStyle(fontSize: 18)),
-                         Text("Nhận hàng vào ${gettomorrow(2)} - ${gettomorrow(5)}", style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic),)
-                      ],
-                    )
-                    ),
-                   Container(
-                   width:MediaQuery.sizeOf(context).width /5-15, 
-                   child: Column(
-                     mainAxisAlignment: MainAxisAlignment.center,
-                     children: [
-                      Text("đ${intToString(phigiaohang)}",style: TextStyle(fontSize: 17, color: Colors.black),)
+                         Text("Nhận hàng vào ${getNextday(2)} - ${getNextday(5)}", style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic),)
+                        ],
+                      )
+                     ),
+                      Container(
+                      width:MediaQuery.sizeOf(context).width /5-15, 
+                      child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text("đ${phigiaohang}",style: TextStyle(fontSize: 17, color: Colors.black),)
+                         ],
+                       ),
+                      ),
                     ],
                   ),
-                  ),
-                  ],
-                 ),
-                )
+                ),
               ],
             ),
           SizedBox(height: 1),
@@ -183,9 +210,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   children: [
                     Text("Chọn hình thức thanh toán",style: TextStyle(fontSize: 20),),
                     SizedBox(height: 5,),
-                    RadioButton(1, Icons.money, 'Tiền mặt khi nhận hàng'),
-                    RadioButton(2, Icons.wallet, 'Ví Momo'),
-                    RadioButton(3, Icons.home_work_outlined, 'Chuyển khoản'),
+                    RadioButton(1, Icons.money, "Tiền mặt khi nhận hàng"),
+                    RadioButton(2, Icons.wallet, "Ví Momo"),
+                    RadioButton(3, Icons.home_work_outlined, "Chuyển khoản"),
                   ],
                   ),
                 )
@@ -204,19 +231,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child:Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                     const  Text(
-                        "THÔNG TIN HÓA ĐƠN",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
+                     const  Text("THÔNG TIN HÓA ĐƠN",style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                       SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text("Tiền hàng", style: TextStyle(fontSize: 20)),
-                          Text(
-                            intToString(stringToInt(widget.price) * widget.selectedQuantity)+'đ',
-                            style: TextStyle(fontSize: 20),
-                          ),
+                          Text(productmoney+'đ',style: TextStyle(fontSize: 20),),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -224,15 +245,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                             Text("Phí giao hàng",style: TextStyle(fontSize: 20),),
-                            Text(intToString(phigiaohang)+'đ',style: TextStyle(fontSize: 20),),
+                            Text(phigiaohang+'đ',style: TextStyle(fontSize: 20),),
                           ],
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 10),      
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                             Text("Tổng đơn hàng",style: TextStyle(fontSize: 20),),
-                            Text( intToString((stringToInt(widget.price )* widget.selectedQuantity) + phigiaohang)+'đ',style: TextStyle(fontSize: 20),),
+                            Text(totalpayment+'đ',style: TextStyle(fontSize: 20),),
                           ],
                       ),
                     ],
@@ -245,7 +266,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      OrderDetails orderDetailsInfo = OrderDetails(
+                          image: widget.image,
+                          productName: widget.productName,
+                          price: widget.price,
+                          Quantity: widget.Quantity,
+                          name: name,
+                          phone: phone,
+                          address: address,
+                          typePayment: typePayment,
+                          productmoney: productmoney,
+                          deliverycharges: phigiaohang,
+                          totalPayment: totalpayment,
+                        );
+                       Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,) ),);
+                    },                           //chuyển đến chi tiết hóa đơn
+                     
                     style: ElevatedButton.styleFrom(
                       primary: Colors.transparent,
                       elevation: 0, 
@@ -265,17 +302,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         borderRadius: BorderRadius.circular(10),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.4), // Màu của đổ bóng
-                            spreadRadius: 2, // Bán kính đổ bóng
-                            blurRadius: 10, // Độ mờ của đổ bóng
-                            offset: Offset(0, 7), // Vị trí đổ bóng
+                            color: Colors.grey.withOpacity(0.4),   // Màu của đổ bóng
+                            spreadRadius: 2,   // Bán kính đổ bóng
+                            blurRadius: 10,    // Độ mờ của đổ bóng
+                            offset: Offset(0, 7),   // Vị trí đổ bóng
                           ),
                         ],
                       ),
                       padding: EdgeInsets.all(15),
                       child: const Center(
-                        child: Text(
-                          'ĐẶT HÀNG NGAY',
+                        child: Text("ĐẶT HÀNG NGAY",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -293,11 +329,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
         ),      
     );
   }
-  Widget RadioButton(int value, IconData icon, String text) {
+  Widget RadioButton(int value, IconData icon, String text) {      // Tạo đối tượng Radio Button và xử lý sự kiện khi người dùng chọn
   return GestureDetector(
     onTap: () {
       setState(() {
-        selectedPaymentOption = value;
+        selectedPaymentOption = value;   //lấy giá trị khi có radio đó dc chọn
+        typePayment=text;
       });
     },
     child: Container(

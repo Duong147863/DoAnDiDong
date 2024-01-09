@@ -19,11 +19,16 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        _showProductDetails(context);
+      onTap: () {          //chuyển đến chi tiết sản phẩm
+       Navigator.push(context,MaterialPageRoute(builder: (context) => ProductDetailsScreen(   
+            image: image,
+            productName: Name,
+            price: price,
+          ), 
+        ),
+      );
       },
-      child:
-     Container(
+      child:Container(
       width: 110,
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
@@ -43,7 +48,6 @@ class ProductItem extends StatelessWidget {
               image: DecorationImage(
                image: AssetImage(image),
                 fit: BoxFit.fill,
-                
               ),
             ),
           ),
@@ -56,11 +60,10 @@ class ProductItem extends StatelessWidget {
           SizedBox(height: 5,),
           Row(
               children: [
-                if (promotion > 0)
+                if (promotion > 0)  //có giảm giá
                   Column(
                     children: [
-                      Text('${promotion}đ',style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
-                      
+                      Text('${promotion}đ',style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),             
                       Text(
                         '${price}đ',
                         style: const TextStyle(
@@ -71,30 +74,18 @@ class ProductItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                if (( promotion == 0) && price != null)
+                if (( promotion == 0) && price != null)  //không có giảm giá
                   Text(
                     '${price}đ',
                     style: const TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                   ),
               ],
             ),
-         
         ],
       ),
      ),
     );
   }
-  void _showProductDetails(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ProductDetailsScreen(
-        image: image,
-        productName: Name,
-        price: price,
-      ),
-    ),
-  );
-}
+ 
 }
 
