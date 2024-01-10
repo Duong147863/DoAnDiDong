@@ -1,7 +1,9 @@
+import 'package:doandidongappthuongmai/view/LoginScreen.dart';
 import 'package:doandidongappthuongmai/view/NavigationScreen.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:flutter/material.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -14,11 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-      primaryColor: Colors.black
-      ),
-    home: NavigationScreen(),
+      theme: ThemeData(primaryColor: Colors.black),
+      home: LoginScreen(),
     );
   }
 }
-
