@@ -10,6 +10,6 @@ class ProfileManageProduct extends StatefulWidget {
 class _ProfileManageProductState extends State<ProfileManageProduct> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const Scaffold();
   }
 }
