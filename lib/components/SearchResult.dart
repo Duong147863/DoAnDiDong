@@ -71,7 +71,6 @@ return Scaffold(
                 Text("Tìm thấy ${searchResults.length} kết quả phù hợp",style: TextStyle(color: Colors.black, fontSize: 18),)
               ],), 
               ),
-           
               Container(
                 // margin: EdgeInsets.only(top: 20),
                 height: MediaQuery.of(context).size.height-140,

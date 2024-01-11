@@ -1,4 +1,3 @@
-
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:flutter/material.dart';
@@ -177,7 +176,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                          Text("Hình thức vận chuyển",style: TextStyle(fontSize: 20),),
-                        
                          Text("Nhanh",style: TextStyle(fontSize: 18)),
                          Text("Nhận hàng vào ${getNextday(2)} - ${getNextday(5)}", style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic),)
                         ],
