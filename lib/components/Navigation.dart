@@ -1,7 +1,7 @@
 import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:doandidongappthuongmai/view/NotificationScreen.dart';
+import 'package:doandidongappthuongmai/view/ProfileScreen.dart';
 import 'package:flutter/material.dart';
-
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key});
 
@@ -10,16 +10,17 @@ class NavigationScreen extends StatefulWidget {
 }
 
 class _NavigationScreenState extends State<NavigationScreen> {
-  int _selectedIndex = 0;
+  int _selectedScreen = 0;      // mặc định là trang chủ (MainScreen)
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
+      body: IndexedStack(        //IndexedStack được sử dụng để hiển thị một trong ba trang tương ứng với chỉ mục được chọn
         children: [
           MainScreen(),
           NotificationScreen(),
+          ProfileScreen()
         ],
-        index: _selectedIndex,
+        index: _selectedScreen,
       ),
      bottomNavigationBar:BottomNavigationBar(
         items: const [
@@ -37,12 +38,12 @@ class _NavigationScreenState extends State<NavigationScreen> {
           ),
         ],
         backgroundColor: Colors.pink[50],
-        currentIndex: _selectedIndex,
+        currentIndex:_selectedScreen,
         selectedItemColor: Colors.red,
         onTap: (value) {
-          if (value != _selectedIndex) {
+          if (value != _selectedScreen) {
             setState(() {
-              _selectedIndex = value;
+             _selectedScreen = value;
             });
           }
         },

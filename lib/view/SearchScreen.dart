@@ -1,6 +1,6 @@
+import 'package:doandidongappthuongmai/components/SearchResult.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
 
@@ -10,8 +10,8 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreen1State extends State<SearchScreen> {
   TextEditingController _searchController = TextEditingController();
-  List<String> searchHistory = [];
- List<Map<String, dynamic>> specialOffers = [
+  List<String> searchHistory = [];      //tạo danh sách lịch sử tìm kiếm
+  List<Map<String, dynamic>> specialoffers = [     // tạo các sản phẩm ưu đãi đặc biệt
     {'image': 'assets/img/combo1.png', 'text': 'Giảm sốc nhiều combo gia dụng lên đến 50%'},
     {'image': 'assets/img/combo2.png', 'text': 'Vệ sinh nhà cửa giảm đến 40% '},
     {'image': 'assets/img/combo3.jpg', 'text': 'Ưu đãi hoàn tiền mua sắm 20% '},
@@ -20,7 +20,7 @@ class _SearchScreen1State extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    loadSearchHistory();
+    loadSearchHistory();  
   }
 
   @override
@@ -47,26 +47,34 @@ class _SearchScreen1State extends State<SearchScreen> {
             decoration: InputDecoration(
               border: InputBorder.none,
               hintText: 'Nhập tên sản phẩm cần tìm',
-              suffixIcon: _searchController.text.isNotEmpty
+              suffixIcon: _searchController.text.isNotEmpty   //kiểm tra nếu ko rỗng thì hiện icon x
                   ? IconButton(
                       icon: Icon(Icons.clear, color: Colors.black,),
                       onPressed: () {
                         setState(() {
-                          _searchController.clear();
+                          _searchController.clear();  //xóa dữ liệu ô tìm kiếm
                         });
                       },
                     )
-                  : null,
+                  : null,  //ngược lại không hiện icon x
             ),
           ),
         ),
         actions: [
-          IconButton(
+         IconButton(
             padding: EdgeInsets.only(right: 20),
             icon: Icon(Icons.search, size: 35),
             onPressed: () {
               updateSearchHistory(_searchController.text);
-              _searchController.clear();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchResult(Searchtext: _searchController.text),
+                ),
+              ).then((_) {
+                // Khối này sẽ được thực hiện khi màn hình SearchResult được đóng lại.
+                _searchController.clear();
+              });
             },
           ),
         ],
@@ -82,14 +90,21 @@ class _SearchScreen1State extends State<SearchScreen> {
             Wrap(
               spacing: 10.0,
               children: List.generate(
-                searchHistory.length > 5 ? 5 : searchHistory.length,
+                searchHistory.length > 5 ? 5 : searchHistory.length,     //tối đa 5 ô 
                 (index) => Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      _searchController.text = searchHistory[index];
-                    },
-                    style: ElevatedButton.styleFrom(
+                      _searchController.text = searchHistory[index];   // nếu ô nào được chọn hiện text lên khung tìm kiếm
+                       Navigator.push(context,
+                        MaterialPageRoute(
+                          builder: (context) => SearchResult(Searchtext: _searchController.text),
+                          ),
+                        ).then((_) {
+                          _searchController.clear();   //xóa text khi màn hình SearchResult được đóng lại.
+                        });
+                      },
+                    style: ElevatedButton.styleFrom(     //tạo màu và viền button
                       primary: Colors.grey[200],
                       side: BorderSide(color: Colors.black),
                       shape: RoundedRectangleBorder(
@@ -114,7 +129,7 @@ class _SearchScreen1State extends State<SearchScreen> {
                 Container(
                   height: 500,
                   child: ListView.builder(
-                    itemCount: specialOffers.length,
+                    itemCount: specialoffers.length,
                     itemBuilder: (context, index) {
                       return Container(
                         decoration: BoxDecoration(
@@ -132,20 +147,19 @@ class _SearchScreen1State extends State<SearchScreen> {
                                 borderRadius: BorderRadius.circular(10.0),
                                 color: Colors.grey[200],
                               ),
-                              child: Image.asset(specialOffers[index]['image'], fit: BoxFit.fill,),
+                              child: Image.asset(specialoffers[index]['image'], fit: BoxFit.fill,),
                             ),
                             SizedBox(width: 8),
                             Container(
                               width: MediaQuery.of(context).size.width / 2 - 30,
                               height: 150,
                               child: Text(
-                                  specialOffers[index]['text'],
+                                  specialoffers[index]['text'],
                                   textAlign: TextAlign.center,
                                   softWrap: true,
                                   style: TextStyle(color: Colors.black, fontSize: 25, ),       
                                 ),
                             )
-                           
                           ],
                         ),
                       );
@@ -155,16 +169,13 @@ class _SearchScreen1State extends State<SearchScreen> {
               ],
             ),
           ),
-              ],
-              
-            ),
-         
-
+          ],   
+        ),
       ),
     );
   }
 
-  void updateSearchHistory(String searchText) {
+  void updateSearchHistory(String searchText) {      //hàm sửa lịch sử tìm kiếm 
     setState(() {
       if (searchText.isNotEmpty && !searchHistory.contains(searchText)) {
         searchHistory.insert(0, searchText);
@@ -175,13 +186,12 @@ class _SearchScreen1State extends State<SearchScreen> {
       }
     });
   }
-
-  void saveSearchHistory() async {
+  void saveSearchHistory() async {   //lưu lịch sử tk
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList('searchHistory', searchHistory);
   }
 
-  void loadSearchHistory() async {
+  void loadSearchHistory() async {   //load lên app
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       searchHistory = prefs.getStringList('searchHistory') ?? [];

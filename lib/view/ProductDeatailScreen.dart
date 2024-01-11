@@ -19,8 +19,8 @@ class ProductDetailsScreen extends StatefulWidget {
 }
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
-  int totalCartQuantity = 0;
-  int quantity = 1;
+  int totalCartQuantity = 0;  //số lượng trong giỏ hàng
+  int quantity = 1;  //số lượng sản phẩm
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +111,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    _showBottomSheet(context, widget.image, widget.price,widget.productName);
+                    _showBottomSheet(context, widget.image, widget.price,widget.productName);   // hiện bottomSheet 
                   },
                   icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
                   label: const Text("Mua ngay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
@@ -187,7 +187,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                         Navigator.push(context,MaterialPageRoute(builder: (context) => PaymentScreen( image: image,price: price, productName: productName, selectedQuantity: quantity,),),
+                         Navigator.push(context,MaterialPageRoute(builder: (context) => PaymentScreen( image: image,price: price, productName: productName, Quantity: quantity,),),
                           ).then((value) {
                             // Đóng BottomSheet khi quay lại từ trang thanh toán
                             Navigator.pop(context);
