@@ -1,13 +1,13 @@
 import 'package:doandidongappthuongmai/view/ProductDeatailScreen.dart';
 import 'package:flutter/material.dart';
 
-class ItemProduct extends StatelessWidget {
+class ProductResultItem extends StatelessWidget {
   final String image;
   final String Name;
   final String price;
   final int promotion;
 
-  const ItemProduct({
+  const ProductResultItem({
     Key? key,
     required this.image,
     required this.Name,
@@ -24,7 +24,7 @@ class ItemProduct extends StatelessWidget {
       child:
      Container(
       width: (MediaQuery.of(context).size.width / 2) - 20,
-      height: MediaQuery.of(context).size.height / 3 - 20,
+      height: MediaQuery.of(context).size.height / 3 - 10,
       margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,

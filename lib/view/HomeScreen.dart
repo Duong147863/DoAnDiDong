@@ -1,4 +1,4 @@
-import 'package:doandidongappthuongmai/components/BuildListItem.dart';
+import 'package:doandidongappthuongmai/components/ListResultItem.dart';
 import 'package:doandidongappthuongmai/components/ProductItem.dart';
 import 'package:doandidongappthuongmai/components/ProductSection.dart';
 import 'package:doandidongappthuongmai/view/CategoryItemScreen.dart';
@@ -77,8 +77,7 @@ class _MainScreenState extends State<MainScreen> {
                 color: Colors.grey,
               ),
             ),
-            Text(
-              'Tìm sản phẩm ....',
+            Text('Tìm sản phẩm ....',
               style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
             ),
           ],
@@ -217,7 +216,7 @@ class _MainScreenState extends State<MainScreen> {
         Column(
          children: [
           SizedBox(        //tạo khung bên ngoài chứa nội dung ,hình ảnh
-          height: MediaQuery.of(context).size.height * 0.5,
+          height: MediaQuery.of(context).size.height * 0.43,
           child: Stack(          
             children: [
               Positioned(           // đặt vị trí khung
@@ -290,6 +289,7 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               Positioned(        // đặt vị trí khung
                 bottom: 10,
+                top:0,
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -336,7 +336,7 @@ class _MainScreenState extends State<MainScreen> {
                         {
                           return Row(
                             children: [
-                                  ItemProduct(
+                                 ProductResultItem(
                                   image: productData[selectedButtonIndex][index*2]['image'],
                                   Name:productData[selectedButtonIndex][index*2]['name'],
                                   price: productData[selectedButtonIndex][index*2]['price'],
@@ -348,13 +348,13 @@ class _MainScreenState extends State<MainScreen> {
                         else{
                           return Row(
                             children: [
-                                  ItemProduct(
+                                    ProductResultItem(
                                   image: productData[selectedButtonIndex][index*2]['image'],
                                   Name:productData[selectedButtonIndex][index*2]['name'],
                                   price: productData[selectedButtonIndex][index*2]['price'],
                                   promotion:productData[selectedButtonIndex][index*2]['promotion'],
                                 ),
-                                 ItemProduct(
+                                  ProductResultItem(
                                   image: productData[selectedButtonIndex][index*2+1]['image'],
                                   Name:productData[selectedButtonIndex][index*2+1]['name'],
                                   price: productData[selectedButtonIndex][index*2+1]['price'],
@@ -379,7 +379,6 @@ class _MainScreenState extends State<MainScreen> {
    );
   }
 }
-
 class ProductContainer extends StatelessWidget {
   final String image;
   final String text;

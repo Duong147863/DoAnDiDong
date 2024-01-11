@@ -46,7 +46,7 @@ String ProductMoney( String price, int Quantity)  // tính tiền sản phẩm
 }
 
 // tạo thông tin mặc định
-late String typePayment;
+String typePayment ="Tiền mặt khi nhận hàng";
 const String phigiaohang="15.000";
 const String name ="HuynhThanhDuy";
 const String phone ="0192888888";
@@ -176,7 +176,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text("Chọn hình thức thanh toán",style: TextStyle(fontSize: 20),),
+                         Text("Hình thức vận chuyển",style: TextStyle(fontSize: 20),),
                         
                          Text("Nhanh",style: TextStyle(fontSize: 18)),
                          Text("Nhận hàng vào ${getNextday(2)} - ${getNextday(5)}", style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic),)

@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:doandidongappthuongmai/components/Navigation.dart';
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
+
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -308,7 +310,14 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return ShowAlertDialog();
+                          },
+                        );
+                        },
                         style: ElevatedButton.styleFrom(
                           primary: Colors.green[300],
                           side: const BorderSide(color: Colors.black),
@@ -320,11 +329,80 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                   ],
                  ),
+                 SizedBox(height: 20,),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => NavigationScreen()),
+                            (route) => false,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: const Color.fromARGB(255, 199, 129, 159),
+                          side: const BorderSide(color: Colors.black),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        child:const Text("Quay về Trang chủ",style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                        ),
+                      ),
+                    ),
+                  ],
+                 ),
               ],
           ),  
           ],
         ),
       ),
     );
+  }
+}
+class ShowAlertDialog extends  StatelessWidget {
+  const ShowAlertDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title:Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              child:Row(
+                children: [
+                  Icon(Icons.notification_important_outlined,color: Colors.black,),
+                  Text("Thông báo"),
+                ],
+              )
+            ),
+          ],
+        ),
+      content: Text("Bạn có muốn hủy đơn hàng này không?"),
+      actions: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+          TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Không'),
+        ),
+        TextButton(
+          onPressed: () {
+             Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => NavigationScreen()),
+              (route) => false,
+            );
+          },
+          child: Text('Đồng ý'),
+        ),
+        ],)
+       
+      ],
+    );
+  
   }
 }

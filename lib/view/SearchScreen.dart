@@ -1,3 +1,4 @@
+import 'package:doandidongappthuongmai/components/SearchResult.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 class SearchScreen extends StatefulWidget {
@@ -60,12 +61,20 @@ class _SearchScreen1State extends State<SearchScreen> {
           ),
         ),
         actions: [
-          IconButton(
+         IconButton(
             padding: EdgeInsets.only(right: 20),
             icon: Icon(Icons.search, size: 35),
             onPressed: () {
-              updateSearchHistory(_searchController.text);    // lưu lịch sử tìm kiếm vào máy cục bộ
-              _searchController.clear();
+              updateSearchHistory(_searchController.text);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchResult(Searchtext: _searchController.text),
+                ),
+              ).then((_) {
+                // Khối này sẽ được thực hiện khi màn hình SearchResult được đóng lại.
+                _searchController.clear();
+              });
             },
           ),
         ],
@@ -86,8 +95,15 @@ class _SearchScreen1State extends State<SearchScreen> {
                   padding: const EdgeInsets.all(4.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      _searchController.text = searchHistory[index];  // nếu ô nào được chọn hiện text lên khung tìm kiếm
-                    },
+                      _searchController.text = searchHistory[index];   // nếu ô nào được chọn hiện text lên khung tìm kiếm
+                       Navigator.push(context,
+                        MaterialPageRoute(
+                          builder: (context) => SearchResult(Searchtext: _searchController.text),
+                          ),
+                        ).then((_) {
+                          _searchController.clear();   //xóa text khi màn hình SearchResult được đóng lại.
+                        });
+                      },
                     style: ElevatedButton.styleFrom(     //tạo màu và viền button
                       primary: Colors.grey[200],
                       side: BorderSide(color: Colors.black),
