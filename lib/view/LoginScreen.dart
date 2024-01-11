@@ -55,6 +55,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: ElevatedButton(
                   style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18.0), 
+        ),
+                ),
                     backgroundColor:
                         MaterialStateProperty.all(Colors.pinkAccent),
                   ),
@@ -110,6 +115,7 @@ class RegisterDialog {
             title: Text(
               'Đăng ký',
                textAlign: TextAlign.center,
+          
               style: TextStyle(
                   color: Colors.pinkAccent, fontWeight: FontWeight.bold,fontSize: 30.0),
             ),

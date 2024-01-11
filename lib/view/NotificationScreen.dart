@@ -17,6 +17,13 @@ class _NotificationScreenState extends State<NotificationScreen> {
         leading: Icon(Icons.notifications),
         iconTheme: const IconThemeData(color: Colors.black), 
       ),
+      body: Column(
+        children: [
+          Row(children: [
+            
+          ],)
+        ],
+      ),
     );
   }
 }
