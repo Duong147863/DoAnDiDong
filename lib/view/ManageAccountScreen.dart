@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/component/productManagementComponent.dart';
 
 class ProductManagementScreen extends StatefulWidget {
   const ProductManagementScreen({super.key});
@@ -105,7 +104,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black),
               ),
-              child: const ProductManagementComponent(),
+              // child: const ProductManagementComponent(),
             ),
           ),
         ],
