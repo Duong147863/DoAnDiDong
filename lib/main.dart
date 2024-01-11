@@ -1,6 +1,5 @@
 import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:doandidongappthuongmai/view/LoginScreen.dart';
-import 'package:doandidongappthuongmai/view/NavigationScreen.dart';
 import 'package:doandidongappthuongmai/view/NotificationScreen.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
