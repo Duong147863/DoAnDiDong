@@ -109,28 +109,43 @@ class RegisterDialog {
           child: AlertDialog(
             title: Text(
               'Đăng ký',
+               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.pinkAccent, fontWeight: FontWeight.bold),
+                  color: Colors.pinkAccent, fontWeight: FontWeight.bold,fontSize: 30.0),
             ),
             content: SingleChildScrollView(
               child: Column(
                 children: <Widget>[
                   TextField(
-                    decoration: InputDecoration(labelText: 'Họ và Tên'),
+                    decoration: InputDecoration(labelText: 'Họ và Tên',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: TextField(
+                      decoration: InputDecoration(labelText: 'Số điện thoại',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                    child: TextField(
+                      decoration: InputDecoration(labelText: 'Tài khoản',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                    ),
                   ),
                   TextField(
-                    decoration: InputDecoration(labelText: 'Số điện thoại'),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(labelText: 'Tài khoản'),
-                  ),
-                  TextField(
-                    decoration: InputDecoration(labelText: 'Mật khẩu'),
+                    decoration: InputDecoration(labelText: 'Mật khẩu',
+                    border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10.0)))),
                     obscureText: true,
                   ),
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(labelText: 'Mật khẩu nhập lại'),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                    child: TextField(
+                      obscureText: true,
+                      decoration: InputDecoration(labelText: 'Mật khẩu nhập lại',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(10.0)))),
+                    ),
                   ),
                 ],
               ),
