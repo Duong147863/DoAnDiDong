@@ -16,6 +16,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         title: const Text("Thông báo",style: TextStyle(color: Colors.black, fontSize: 25),),
         leading: Icon(Icons.notifications),
         iconTheme: const IconThemeData(color: Colors.black), 
+        
       ),
     );
   }

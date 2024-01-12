@@ -21,11 +21,11 @@ class ProductResultItem extends StatelessWidget {
       onTap: () {
         _showProductDetails(context);
       },
-      child:
-     Container(
-      width: (MediaQuery.of(context).size.width / 2) - 20,
-      height: MediaQuery.of(context).size.height / 3 - 10,
-      margin: EdgeInsets.all(10),
+      child: Container(
+      width: MediaQuery.sizeOf(context).width /2-10,
+      height: MediaQuery.sizeOf(context).height /2.93,
+      padding: EdgeInsets.all(1),
+      margin: EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
