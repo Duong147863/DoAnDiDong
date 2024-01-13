@@ -1,5 +1,6 @@
 import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:doandidongappthuongmai/view/LoginScreen.dart';
+import 'package:doandidongappthuongmai/view/ManageAccountScreen.dart';
 import 'package:doandidongappthuongmai/view/NotificationScreen.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.black),
-      home: LoginScreen(),
+      home: NotificationScreen(),
     );
   }
 }
