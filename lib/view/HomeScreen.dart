@@ -6,6 +6,8 @@ import 'package:doandidongappthuongmai/view/ProductCartScreen.dart';
 import 'package:doandidongappthuongmai/view/SearchScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:doandidongappthuongmai/models/load_data.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,19 +17,68 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+ final DatabaseReference _databaseProductsaleReference =FirebaseDatabase.instance.ref().child('productsales');
+ final DatabaseReference _databaseProductsuggestReference =FirebaseDatabase.instance.ref().child('productsuggests');
+ List<ProductSale> allProductsale = [];
+ List<ProductSuggest> allProductsuggest = [];
+
+ void _loadProductsales() async {
+  DatabaseEvent event = await _databaseProductsaleReference.once();
+  DataSnapshot dataSnapshot = event.snapshot;
+  Map<dynamic, dynamic>? value = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+    List<ProductSale> loadedProductsale = [];
+        if (value != null && value is Map) {
+          value.forEach((key, value) {
+            ProductSale? _prductsale =  ProductSale.fromJson(key,value);
+            if (_prductsale!= null) {
+              loadedProductsale.add(_prductsale);
+            }
+          });
+        } else {
+          print("Data is null or not in the expected format");
+        }
+
+      setState(() {allProductsale = loadedProductsale; });
+  }
+  void _loadProductsuggests() async {
+  DatabaseEvent event = await _databaseProductsuggestReference.once();
+  DataSnapshot dataSnapshot = event.snapshot;
+  Map<dynamic, dynamic>? value = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+  List<ProductSuggest> loadedProductsuggest = [];
+      if (value != null && value is Map) {
+        value.forEach((key, value) {
+          ProductSuggest? _prductsuggest =  ProductSuggest.fromJson(key,value);
+          if ( _prductsuggest != null) {
+            loadedProductsuggest.add( _prductsuggest);
+          }
+        });
+      } else {
+        print("Data is null or not in the expected format");
+      }
+
+    setState(() {allProductsuggest = loadedProductsuggest;});
+  }
+  @override
+  void initState() {
+    super.initState();
+    _loadProductsales();
+    _loadProductsuggests();
+  }
   int selectedButtonIndex = 0;  
   int QuantityInCart=0;         // số lượng sản phẩm trong giỏ hàng
-  List<List<Map<String, dynamic>>> productData = [    // tạo danh sách mặc định
-    [
-      {'image': 'assets/img/Manboc1.png', 'name': 'Giấy chống dính', 'price': '26.500','promotion':20000},
-      {'image': 'assets/img/Manboc2.png', 'name': '120 Túi thực phẩm', 'price': '28.000','promotion':17000},
-      {'image': 'assets/img/Manboc3.png', 'name': 'Màng bọc thực phẩm inochi', 'price': '132.000','promotion':120000},
-      {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
-      {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
-      {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
-      {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
-    ],
-  ];
+  // List<List<Map<String, dynamic>>> productData = [    // tạo danh sách mặc định
+  //   [
+  //     {'image': 'assets/img/Manboc1.png', 'name': 'Giấy chống dính', 'price': '26.500','promotion':20000},
+  //     {'image': 'assets/img/Manboc2.png', 'name': '120 Túi thực phẩm', 'price': '28.000','promotion':17000},
+  //     {'image': 'assets/img/Manboc3.png', 'name': 'Màng bọc thực phẩm inochi', 'price': '132.000','promotion':120000},
+  //     {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
+  //     {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
+  //     {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
+  //     {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
+  //   ],
+  // ];
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -180,9 +231,9 @@ class _MainScreenState extends State<MainScreen> {
                     height: MediaQuery.of(context).size.height * 0.6,
                 ),
               ),
-              const SectionList(          //Danh sách các button trong Title Sản phẩm bán chạy
-                buttonTexts: ['Màng bọc thực phẩm', 'Xoong, nồi', 'Chảo', 'Chén,bát', 'Nước rửa chén'],
-              ),
+              // const SectionList(          //Danh sách các button trong Title Sản phẩm bán chạy
+              //   buttonTexts: ['Màng bọc thực phẩm', 'Xoong, nồi', 'Chảo', 'Chén,bát', 'Nước rửa chén'],
+              // ),
               Positioned(        // đặt vị trí tiêu đề
                 top:17,
                 height: 40,
@@ -260,14 +311,11 @@ class _MainScreenState extends State<MainScreen> {
                     height: 210,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,     // cuộn ngang
-                      itemCount: productData[selectedButtonIndex].length,
+                      itemCount: allProductsale.length,
                       itemBuilder: (context, index) {
-                        var productDetails = productData[selectedButtonIndex][index];
-                        return ProductItem(
-                          image: productDetails['image'],
-                          Name: productDetails['name'],
-                          price: productDetails['price'],
-                          promotion: productDetails['promotion'],
+                        var productsale =allProductsale[index] ;
+                        return ProductItem(ProductsaleReference: FirebaseDatabase.instance.ref().child('productsales').child(productsale.id.toString()),
+                        
                         );
                       },
                     ),
@@ -330,17 +378,13 @@ class _MainScreenState extends State<MainScreen> {
                     margin: EdgeInsets.only(top: 40),
                     height:MediaQuery.of(context).size.height*0.67,
                     child: ListView.builder(
-                      itemCount: (productData[selectedButtonIndex].length/2).ceil(),   // làm tròn 
+                      itemCount: (allProductsuggest.length/2).ceil(),   // làm tròn 
                       itemBuilder: (context, index) {
-                        if( productData[selectedButtonIndex].length %2 !=0 && index == (productData[selectedButtonIndex].length/2).ceil()-1)
+                        if( allProductsuggest.length %2 !=0 && index == (allProductsuggest.length/2).ceil()-1)
                         {
                           return Row(
                             children: [
-                                 ProductResultItem(
-                                  image: productData[selectedButtonIndex][index*2]['image'],
-                                  Name:productData[selectedButtonIndex][index*2]['name'],
-                                  price: productData[selectedButtonIndex][index*2]['price'],
-                                  promotion:productData[selectedButtonIndex][index*2]['promotion'],
+                                 ProductResultItem(ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
                                 ),
                             ],
                           );
@@ -348,17 +392,9 @@ class _MainScreenState extends State<MainScreen> {
                         else{
                           return Row(
                             children: [
-                                    ProductResultItem(
-                                  image: productData[selectedButtonIndex][index*2]['image'],
-                                  Name:productData[selectedButtonIndex][index*2]['name'],
-                                  price: productData[selectedButtonIndex][index*2]['price'],
-                                  promotion:productData[selectedButtonIndex][index*2]['promotion'],
+                                   ProductResultItem(ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
                                 ),
-                                  ProductResultItem(
-                                  image: productData[selectedButtonIndex][index*2+1]['image'],
-                                  Name:productData[selectedButtonIndex][index*2+1]['name'],
-                                  price: productData[selectedButtonIndex][index*2+1]['price'],
-                                  promotion:productData[selectedButtonIndex][index*2+1]['promotion'],
+                                   ProductResultItem(ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2+1].id.toString()) ,
                                 ),
                             ],
                           );

@@ -24,10 +24,10 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
         border: Border.all(width: 0.5, color: Colors.black),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: Offset(0, 2),
+            color: Colors.grey.withOpacity(0.5),      // Độ trong suốt 50%
+            spreadRadius: 1,         // Xác định mức độ mà bóng sẽ lan rộng
+            blurRadius: 4,          // Bán kính mờ xác định độ mờ của bóng
+            offset: Offset(0, 2),      // Khoảng cách mà bóng sẽ được dịch chuyển
           ),
         ],
       ),
@@ -41,14 +41,12 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${widget.name}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text('${widget.name}',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text(
-                '${widget.email}',
-                style: TextStyle(fontSize: 16),
+              Text('${widget.email}',
+                style:const TextStyle(fontSize: 16),
               ),
             ],
           ),
@@ -66,28 +64,27 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
   }
 
   void _showAlertDialog(bool newValue) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return _AlertDialog(isSwitchedOn: newValue);
-      },
-    ).then((confirmed) {
-      if (confirmed != null && confirmed) {
-        setState(() {
-          isSwitched = newValue;
-        });
-      }
-    });
-  }
+  showDialog(       // Hiển thị hộp thoại
+    context: context,
+    builder: (BuildContext context) {
+      return _AlertDialog(isSwitched: newValue);  
+    },
+  ).then((confirmed) {
+
+    // Kiểm tra kết quả của hộp thoại sau khi nó được đóng
+    if (confirmed != null && confirmed) {
+      // Nếu người dùng nhấn "Đồng ý", thì cập nhật trạng thái của switch
+      setState(() {
+        isSwitched = newValue;
+      });
+    }
+  });
+}
 }
 
 class _AlertDialog extends StatelessWidget {
-  const _AlertDialog({
-    Key? key,
-    required this.isSwitchedOn,
-  }) : super(key: key);
-
-  final bool isSwitchedOn;
+  const _AlertDialog({ Key? key, required this.isSwitched,}) : super(key: key);
+  final bool isSwitched;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +103,7 @@ class _AlertDialog extends StatelessWidget {
         ],
       ),
       content: Text(
-          isSwitchedOn ? "Bạn có muốn mở khóa tài khoản này không?" : "Bạn có muốn khóa tài khoản này không?"),
+          isSwitched? "Bạn có muốn mở khóa tài khoản này không?" : "Bạn có muốn khóa tài khoản này không?"),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

@@ -125,6 +125,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       child: Image.asset(widget.image, 
                         width: 100,
                         height: 110,
+                        
                         fit: BoxFit.fill,
                       ),
                     ),
