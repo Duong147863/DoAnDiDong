@@ -41,6 +41,11 @@ dependencies:
   dropdown_button2: ^2.3.9
   unorm_dart: ^0.3.0
   tiengviet: ^1.0.0
+  firebase_auth: ^4.15.0
+  google_sign_in: ^6.1.6
+  firebase_database: ^10.3.6
+  email_validator: ^2.1.17
+  image_picker: ^1.0.4
 
 dev_dependencies:
   flutter_test:

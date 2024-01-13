@@ -1,25 +1,33 @@
 import 'package:doandidongappthuongmai/view/ProductDeatailScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:doandidongappthuongmai/models/load_data.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class ProductResultItem extends StatelessWidget {
-  final String image;
-  final String Name;
-  final String price;
-  final int promotion;
+class ProductResultItem extends StatefulWidget {
 
-  const ProductResultItem({
-    Key? key,
-    required this.image,
-    required this.Name,
-    required this.price,
-    required this. promotion
-  }) : super(key: key);
-
+  final DatabaseReference ProductsuggestReference;
+  const ProductResultItem({Key? key,required this.ProductsuggestReference}) : super(key: key);
+  @override
+  State< ProductResultItem> createState() => _ProductItemState();
+} 
+class _ProductItemState extends State<ProductResultItem> {
+    DatabaseReference productsuggests = FirebaseDatabase.instance.ref().child('productsuggests');
+  ProductSuggest products= ProductSuggest(id: "0",category: "",name: "", description: "", idproduct: "",image: "", producer: "", price: 0,promotion: 0, quantity: 0);
   @override
   Widget build(BuildContext context) {
+     if (products.id==0) {
+      return CircularProgressIndicator();
+    }
     return GestureDetector(
       onTap: () {
-        _showProductDetails(context);
+        Navigator.push(context,MaterialPageRoute(
+          builder: (context) => ProductDetailsScreen(
+            image: products.image,
+            productName: products.name,
+            price: products.price.toString(),
+          ),
+          ),
+        );
       },
       child: Container(
       width: MediaQuery.sizeOf(context).width /2-10,
@@ -41,7 +49,7 @@ class ProductResultItem extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               image: DecorationImage(
-               image: AssetImage(image),
+               image: AssetImage(products.image),
                 fit: BoxFit.fill,
                 
               ),
@@ -49,7 +57,7 @@ class ProductResultItem extends StatelessWidget {
           ),
           
           Text(
-            Name,
+            products.name,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(fontSize: 14),
@@ -57,13 +65,13 @@ class ProductResultItem extends StatelessWidget {
           SizedBox(height: 5,),
           Row(
               children: [
-                if (promotion > 0)
+                if (products.promotion > 0)
                   Column(
                     children: [
-                      Text('${promotion}đ',style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
+                      Text('${products.promotion}đ',style: const TextStyle(fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold)),
                       
                       Text(
-                        '${price}đ',
+                        '${products.price}đ',
                         style: const TextStyle(
                           fontSize: 16,
                           decoration: TextDecoration.lineThrough,
@@ -72,29 +80,41 @@ class ProductResultItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                if (( promotion == 0) && price != null)
+                if ((products.promotion == 0) &&products.price != null)
                   Text(
-                    '${price}đ',
+                    '${products.price}đ',
                     style: const TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                   ),
               ],
             ),
-         
         ],
       ),
      ),
     );
   }
-  void _showProductDetails(BuildContext context) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => ProductDetailsScreen(
-        image: image,
-        productName: Name,
-        price: price,
-      ),
-    ),
-  );
-}
+  @override
+  void initState() {
+    super.initState();
+    loadDataFromFirebase();
+  }
+  void loadDataFromFirebase() async {
+  // print("Load data from Firebase - roomID: ${widget.ProductsaleReference.key}");
+  try {
+    DatabaseEvent event = await widget.ProductsuggestReference.once();
+    DataSnapshot dataSnapshot = event.snapshot;
+    if (dataSnapshot.value != null) {
+      if (dataSnapshot.value is Map) {
+        Map<dynamic, dynamic> data = dataSnapshot.value as Map<dynamic, dynamic>;
+        // print("Data from Firebase: $data");
+        String productsId = data["idproduct"]?.toString() ?? "";
+
+        setState(() {
+         products = ProductSuggest.fromJson(productsId, data);
+        });
+      } else {}
+    }
+    } catch (e) {
+      print("Error loading data: $e");
+    }
+ }
 }

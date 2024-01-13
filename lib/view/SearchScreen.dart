@@ -66,15 +66,15 @@ class _SearchScreen1State extends State<SearchScreen> {
             icon: Icon(Icons.search, size: 35),
             onPressed: () {
               updateSearchHistory(_searchController.text);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchResult(Searchtext: _searchController.text),
-                ),
-              ).then((_) {
-                // Khối này sẽ được thực hiện khi màn hình SearchResult được đóng lại.
-                _searchController.clear();
-              });
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => SearchResult(Searchtext: _searchController.text),
+              //   ),
+              // ).then((_) {
+              //   // Khối này sẽ được thực hiện khi màn hình SearchResult được đóng lại.
+              //   _searchController.clear();
+              // });
             },
           ),
         ],
@@ -96,13 +96,13 @@ class _SearchScreen1State extends State<SearchScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       _searchController.text = searchHistory[index];   // nếu ô nào được chọn hiện text lên khung tìm kiếm
-                       Navigator.push(context,
-                        MaterialPageRoute(
-                          builder: (context) => SearchResult(Searchtext: _searchController.text),
-                          ),
-                        ).then((_) {
-                          _searchController.clear();   //xóa text khi màn hình SearchResult được đóng lại.
-                        });
+                      //  Navigator.push(context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => SearchResult(Searchtext: _searchController.text),
+                      //     ),
+                      //   ).then((_) {
+                      //     _searchController.clear();   //xóa text khi màn hình SearchResult được đóng lại.
+                      //   });
                       },
                     style: ElevatedButton.styleFrom(     //tạo màu và viền button
                       primary: Colors.grey[200],
