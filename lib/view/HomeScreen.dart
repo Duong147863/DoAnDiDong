@@ -30,9 +30,9 @@ class _MainScreenState extends State<MainScreen> {
     List<ProductSale> loadedProductsale = [];
         if (value != null && value is Map) {
           value.forEach((key, value) {
-            ProductSale? _prductsale =  ProductSale.fromJson(key,value);
-            if (_prductsale!= null) {
-              loadedProductsale.add(_prductsale);
+            ProductSale? _productsale =  ProductSale.fromJson(key,value);
+            if (_productsale!= null) {
+              loadedProductsale.add(_productsale);
             }
           });
         } else {
@@ -178,7 +178,7 @@ class _MainScreenState extends State<MainScreen> {
   body: SingleChildScrollView(   /* tạo cuộn dọc màn hình */
     child: Column(
       children: [
-        Image.asset("assets/img/tmdt1.jpg",
+          Image( image: AssetImage('assets/img/tmdt1.jpg'),
           width: MediaQuery.of(context).size.width,
           height: 180,
           fit: BoxFit.cover,
@@ -198,14 +198,14 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               Wrap(           // tạo danh mục sản phẩm co khoảng cách = nhau
                 children: [
-                  ProductContainer(image: "assets/img/chao.png",text: "Chảo",),
-                  ProductContainer(image: "assets/img/noi.png", text: "Nồi"),
-                  ProductContainer(image: "assets/img/chen.jpg", text: "Chén, bát"),
-                  ProductContainer(image: "assets/img/dua.png", text: "Đũa"),
-                  ProductContainer(image: "assets/img/ly.png", text: "Ly"),
-                  ProductContainer(image: "assets/img/manboc.png", text: "Màng bọc"),
-                  ProductContainer(image: "assets/img/noicomdien.jpg", text: "Nồi cơm điện"),
-                  ProductContainer(image: "assets/img/ruachen.png", text: "Đồ rửa chén"),
+                  ProductContainer(image: "assets/img/chao.png",text: "Chảo",CategoryId: "4"),
+                  ProductContainer(image: "assets/img/noi.png", text: "Nồi",CategoryId: "3"),
+                  ProductContainer(image: "assets/img/chen.jpg", text: "Chén, bát",CategoryId: "7"),
+                  ProductContainer(image: "assets/img/dua.png", text: "Đũa",CategoryId: "5"),
+                  ProductContainer(image: "assets/img/ly.png", text: "Ly",CategoryId: "2"),
+                  ProductContainer(image: "assets/img/manboc.png", text: "Màng bọc",CategoryId: "1"),
+                  ProductContainer(image: "assets/img/noicomdien.jpg", text: "Nồi cơm điện",CategoryId: "6"),
+                  ProductContainer(image: "assets/img/ruachen.png", text: "Đồ rửa chén",CategoryId: "8"),
                 ],
               ),
             ],
@@ -418,14 +418,15 @@ class _MainScreenState extends State<MainScreen> {
 class ProductContainer extends StatelessWidget {
   final String image;
   final String text;
-  const ProductContainer({Key? key, required this.image, required this.text}) : super(key: key);
+  final String CategoryId;
+  const ProductContainer({Key? key, required this.image, required this.text, required this.CategoryId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
-        MaterialPageRoute(builder: (context) => CategoryItem(name: text,), ),); // chuyển đến 1 danh mục được chọn
+        MaterialPageRoute(builder: (context) => CategoryItem(CategoryId: CategoryId, name: text,), ),); // chuyển đến 1 danh mục được chọn
         },  //
       child: Container(
         width: MediaQuery.of(context).size.width / 4.5,
@@ -441,7 +442,7 @@ class ProductContainer extends StatelessWidget {
             ),
             SizedBox(height: 5),
             Text(
-              text,
+              "${text}",
               softWrap: true,
               style: TextStyle(fontSize: 12),
             ),

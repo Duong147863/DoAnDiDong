@@ -42,7 +42,25 @@ class Category {
 
     return _categories;
   }
-  
+   static Future<List<Product>> getProductsByCategory(String categoryId) async {
+    DatabaseReference productsReference = FirebaseDatabase.instance.ref().child('products');
+    DatabaseEvent event = await productsReference.once();
+    DataSnapshot dataSnapshot = event.snapshot;
+    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+    List<Product> productsByCategory = [];
+    if (values != null) {
+      values.forEach((key, value) {
+        Product products =Product.fromJson(key, value);
+        if(products.category == categoryId)
+        {
+          productsByCategory.add(products);
+        }
+      
+      });
+    }
+    return productsByCategory;
+  }
 }
 
 class Product {
@@ -74,7 +92,7 @@ class Product {
       id: id,
       idproduct: json['idproduct'] ?? "",
       name: json['name'] ?? "",
-      category: json['category'] ?? "",
+      category: json['categoryId'] ?? "",
       description: json['description'] ??"",
       image: json['image']??"",
       price: json['price']?? 0,
@@ -96,20 +114,7 @@ class Product {
 
     List<Product> products = [];
     if (values != null) {
-      values.forEach((key, value) {
-        products.add(Product.fromJson(key, value));
-      });
-    }
-    return products;
-  }
-    static Future<List<Product>> getProductsByCategory(String category) async {
-    DatabaseReference productsReference = getProductReference();
-    DatabaseEvent event = await productsReference.orderByChild('category').equalTo(category).once();
-    DataSnapshot dataSnapshot = event.snapshot;
-    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<Product> products = [];
-    if (values != null) {
       values.forEach((key, value) {
         products.add(Product.fromJson(key, value));
       });
@@ -117,6 +122,10 @@ class Product {
     return products;
   }
     
+  @override
+  String toString() {
+    return 'Product{id: $id, name: $name, price: $price, promotion: $promotion}';
+  }
 }
 class ProductSale{
   String id;
@@ -147,7 +156,7 @@ class ProductSale{
       id: id,
       idproduct: json['idproduct'] ?? "",
       name: json['name'] ?? "",
-      category: json['category'] ?? "",
+      category: json['categoryId'] ?? "",
       description: json['description'] ??"",
       image: json['image']??"",
       price: json['price']?? 0,
@@ -205,7 +214,7 @@ class ProductSuggest{
       id: id,
       idproduct: json['idproduct'] ?? "",
       name: json['name'] ?? "",
-      category: json['category'] ?? "",
+      category: json['categoryId'] ?? "",
       description: json['description'] ??"",
       image: json['image']??"",
       price: json['price']?? 0,

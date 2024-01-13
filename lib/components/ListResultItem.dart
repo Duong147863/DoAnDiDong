@@ -12,7 +12,7 @@ class ProductResultItem extends StatefulWidget {
 } 
 class _ProductItemState extends State<ProductResultItem> {
     DatabaseReference productsuggests = FirebaseDatabase.instance.ref().child('productsuggests');
-  ProductSuggest products= ProductSuggest(id: "0",category: "",name: "", description: "", idproduct: "",image: "", producer: "", price: 0,promotion: 0, quantity: 0);
+  ProductSuggest products= ProductSuggest(id: "0",category: "",name: "", description: "", idproduct: "",image: "assets/img/noImage.jpg", producer: "", price: 0,promotion: 0, quantity: 0);
   @override
   Widget build(BuildContext context) {
      if (products.id==0) {
@@ -49,7 +49,7 @@ class _ProductItemState extends State<ProductResultItem> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(5),
               image: DecorationImage(
-               image: AssetImage(products.image),
+               image: AssetImage('${products.image}'),
                 fit: BoxFit.fill,
                 
               ),
