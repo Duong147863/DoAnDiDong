@@ -5,7 +5,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class CategoryItem extends StatefulWidget {
-  CategoryItem({super.key, required this.name, required this.CategoryId});
+  const CategoryItem({super.key, required this.name, required this.CategoryId});
   final String CategoryId;
   final String name;
 
@@ -14,30 +14,25 @@ class CategoryItem extends StatefulWidget {
   
 }
 
- 
 class _CategoryItemState extends State<CategoryItem> {
   String? selectedValue;
- List<Product> _product= [];
- final List<String> Items = [
-  'Giá giảm dần',
-  'Giá tăng dần',
-];
+  List<Product> _product= [];
+  final List<String> Items = [
+    'Giá giảm dần',
+    'Giá tăng dần',
+  ];
   @override
   void initState() {
     super.initState();
     _loadProducts();
   }
   void _loadProducts() async {
-    // print("Id ${widget.CategoryId}");
-
     List<Product> productsByCategory = await Category.getProductsByCategory(widget.CategoryId);
     setState(() {
-      // print("products :$productsByCategory");
       _product = productsByCategory;
     });
   }
  void sortProductsByPrice(String select) {
-  // print("Sorting products by price: selectedSortOption=$select");
   if (select == 'Giá tăng dần') {
    _product.sort((a, b) {
       num priceA = (a.promotion != 0 ? a.promotion : a.price);
@@ -51,7 +46,6 @@ class _CategoryItemState extends State<CategoryItem> {
       return priceB.compareTo(priceA);
     });
   }
-
   setState(() {});
 }
   
@@ -90,58 +84,51 @@ class _CategoryItemState extends State<CategoryItem> {
                         Text("Bộ lọc",style: TextStyle(fontSize: 20),)
                       ],
                     ),
-                  Container(
-                    height: 70,
-                    width: 150,
-                    child: Row(
-                      children:[ Expanded(child: DropdownButtonFormField2<String>(
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                        
-                      ),
-                      hint: const Text('Sắp xếp theo',
-                        style: TextStyle(fontSize: 14),
-                      ),
-                      items: Items.map((item) => DropdownMenuItem<String>(
-                              value: item,
-                              child: Text(item,style: const TextStyle(fontSize: 14,), ),)).toList(),
-                              validator: (value) {
-                              if (value == null) {
-                                return 'Sắp xếp theo';
-                              }
-                              return null;
+                Container(
+                  height: 70,
+                  width: 150,
+                  child: Row(
+                    children:[
+                       Expanded(child: DropdownButtonFormField2<String>(
+                        isExpanded: true,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                        ),
+                        hint: const Text('Sắp xếp theo',style: TextStyle(fontSize: 14),),
+                        items: Items.map((item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(item,style: const TextStyle(fontSize: 14,), ),)).toList(),
+                          validator: (value) {
+                            if (value == null) { return 'Sắp xếp theo';}
+                               return null;
                             },
                             onChanged: (value) {
                                 setState(() {
                                  selectedValue = value;
-                                  sortProductsByPrice(selectedValue.toString());
+                                 sortProductsByPrice(selectedValue.toString());
                                 });
-                              },
+                            },
                             onSaved: (value) {
                               selectedValue = value.toString();
                             },
-                          buttonStyleData: const ButtonStyleData(
-                            padding: EdgeInsets.only(right: 8),
-                          ),
-                          iconStyleData: const IconStyleData(
-                            icon: Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.black45,
+                            buttonStyleData: const ButtonStyleData(
+                              padding: EdgeInsets.only(right: 8),
                             ),
-                            iconSize: 24,
-                          ),
-                          dropdownStyleData: DropdownStyleData(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
+                            iconStyleData: const IconStyleData(
+                              icon: Icon(Icons.arrow_drop_down,color: Colors.black45,),
+                              iconSize: 24,
                             ),
-                          ),
-                          menuItemStyleData: const MenuItemStyleData(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            dropdownStyleData: DropdownStyleData(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            menuItemStyleData: const MenuItemStyleData(
+                              padding: EdgeInsets.symmetric(horizontal: 16),
+                            ),
                           ),
                         ),
-                                      ),
                       ]
                     ),
                   ),
@@ -158,25 +145,25 @@ class _CategoryItemState extends State<CategoryItem> {
                   itemBuilder: (context, index) {
                     if(_product.length %2 !=0 && index == (_product.length/2).ceil()-1)
                     {
-                    return Row(
-                      children:[
-                            ProductResultItem(key: ValueKey<String>(_product[index*2].id),
-                                              ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
-                          ),
-                      ]
-                    );
+                      return Row(
+                        children:[
+                          ProductResultItem(key: ValueKey<String>(_product[index*2].id),
+                            ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
+                            ),
+                        ]
+                      );
                     }
                     else{
                     return Row(
                       children: [
-                              ProductResultItem(key: ValueKey<String>(_product[index*2].id),
-                                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
+                        ProductResultItem(key: ValueKey<String>(_product[index*2].id),
+                          ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
                           ),
-                              ProductResultItem(key: ValueKey<String>(_product[index*2+1].id),
-                                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2+1].id.toString()) ,
+                        ProductResultItem(key: ValueKey<String>(_product[index*2+1].id),
+                          ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2+1].id.toString()) ,
                           ),
                       ],
-                    );
+                     );
                     }
                   },
                 ),
@@ -188,10 +175,4 @@ class _CategoryItemState extends State<CategoryItem> {
       )
     );
   }
-  @override
-  void dispose() {
-    super.dispose();
-    _product.clear();
-  }
-
 }

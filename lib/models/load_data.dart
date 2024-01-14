@@ -102,25 +102,25 @@ class Product {
     );
   }
 
-  static  getProductReference() {
-    return FirebaseDatabase.instance.ref().child('products');
-  }
+  // static  getProductReference() {
+  //   return FirebaseDatabase.instance.ref().child('products');
+  // }
 
-  Future<List<Product>> fetchProducts() async {
-    DatabaseReference productsReference = getProductReference();
-    DatabaseEvent event = await  productsReference.once();
-    DataSnapshot dataSnapshot = event.snapshot;
-    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+  // Future<List<Product>> fetchProducts() async {
+  //   DatabaseReference productsReference = getProductReference();
+  //   DatabaseEvent event = await  productsReference.once();
+  //   DataSnapshot dataSnapshot = event.snapshot;
+  //   Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<Product> products = [];
-    if (values != null) {
+  //   List<Product> products = [];
+  //   if (values != null) {
 
-      values.forEach((key, value) {
-        products.add(Product.fromJson(key, value));
-      });
-    }
-    return products;
-  }
+  //     values.forEach((key, value) {
+  //       products.add(Product.fromJson(key, value));
+  //     });
+  //   }
+  //   return products;
+  // }
     
   @override
   String toString() {
@@ -280,25 +280,25 @@ class User {
     );
   }
 
-  static DatabaseReference getUserReference() {
-    return FirebaseDatabase.instance.ref().child('users');
-  }
+  // static DatabaseReference getUserReference() {
+  //   return FirebaseDatabase.instance.ref().child('users');
+  // }
 
-  static Future<List<User>> fetchUsers() async {
-    DatabaseReference userReference = getUserReference();
-    DatabaseEvent event = await userReference.once();
-    DataSnapshot dataSnapshot = event.snapshot;
-    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+  // static Future<List<User>> fetchUsers() async {
+  //   DatabaseReference userReference = getUserReference();
+  //   DatabaseEvent event = await userReference.once();
+  //   DataSnapshot dataSnapshot = event.snapshot;
+  //   Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<User> users = [];
-    if (values != null) {
-      values.forEach((key, value) {
-        users.add(User.fromJson(key, value));
+  //   List<User> users = [];
+  //   if (values != null) {
+  //     values.forEach((key, value) {
+  //       users.add(User.fromJson(key, value));
   
-      });
-    }
-    return users;
-  }
+  //     });
+  //   }
+  //   return users;
+  // }
 }
 
  

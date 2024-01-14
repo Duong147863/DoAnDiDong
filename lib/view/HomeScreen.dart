@@ -17,48 +17,21 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
- final DatabaseReference _databaseProductsaleReference =FirebaseDatabase.instance.ref().child('productsales');
- final DatabaseReference _databaseProductsuggestReference =FirebaseDatabase.instance.ref().child('productsuggests');
+ 
  List<ProductSale> allProductsale = [];
  List<ProductSuggest> allProductsuggest = [];
 
  void _loadProductsales() async {
-  DatabaseEvent event = await _databaseProductsaleReference.once();
-  DataSnapshot dataSnapshot = event.snapshot;
-  Map<dynamic, dynamic>? value = dataSnapshot.value as Map<dynamic, dynamic>?;
-
-    List<ProductSale> loadedProductsale = [];
-        if (value != null && value is Map) {
-          value.forEach((key, value) {
-            ProductSale? _productsale =  ProductSale.fromJson(key,value);
-            if (_productsale!= null) {
-              loadedProductsale.add(_productsale);
-            }
-          });
-        } else {
-          print("Data is null or not in the expected format");
-        }
-
-      setState(() {allProductsale = loadedProductsale; });
+  List<ProductSale> productsale = await ProductSale.fetchProductSales();
+    setState(() {
+     allProductsale = productsale;
+    });
   }
   void _loadProductsuggests() async {
-  DatabaseEvent event = await _databaseProductsuggestReference.once();
-  DataSnapshot dataSnapshot = event.snapshot;
-  Map<dynamic, dynamic>? value = dataSnapshot.value as Map<dynamic, dynamic>?;
-
-  List<ProductSuggest> loadedProductsuggest = [];
-      if (value != null && value is Map) {
-        value.forEach((key, value) {
-          ProductSuggest? _prductsuggest =  ProductSuggest.fromJson(key,value);
-          if ( _prductsuggest != null) {
-            loadedProductsuggest.add( _prductsuggest);
-          }
-        });
-      } else {
-        print("Data is null or not in the expected format");
-      }
-
-    setState(() {allProductsuggest = loadedProductsuggest;});
+    List<ProductSuggest> productsuggest = await ProductSuggest.fetchProductSuggests();
+    setState(() {
+     allProductsuggest = productsuggest;
+    });
   }
   @override
   void initState() {
@@ -68,17 +41,6 @@ class _MainScreenState extends State<MainScreen> {
   }
   int selectedButtonIndex = 0;  
   int QuantityInCart=0;         // số lượng sản phẩm trong giỏ hàng
-  // List<List<Map<String, dynamic>>> productData = [    // tạo danh sách mặc định
-  //   [
-  //     {'image': 'assets/img/Manboc1.png', 'name': 'Giấy chống dính', 'price': '26.500','promotion':20000},
-  //     {'image': 'assets/img/Manboc2.png', 'name': '120 Túi thực phẩm', 'price': '28.000','promotion':17000},
-  //     {'image': 'assets/img/Manboc3.png', 'name': 'Màng bọc thực phẩm inochi', 'price': '132.000','promotion':120000},
-  //     {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
-  //     {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
-  //     {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
-  //     {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
-  //   ],
-  // ];
   @override
   Widget build(BuildContext context) {
    return Scaffold(
