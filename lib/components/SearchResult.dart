@@ -27,10 +27,10 @@ class _SearchResultState extends State<SearchResult> {
   List<Product> products = await Product.fetchProducts();
   setState(() {
     allProducts = products;
-    searchResults = _filterProducts(widget.searchText);
+    searchResults = filterProducts(widget.searchText);
   });
 }
-  List<Product> _filterProducts(String searchText) {
+  List<Product> filterProducts(String searchText) {
     List<Product> filteredProducts = [];
     String searchTermNormalized = TiengViet.parse(searchText);
 
@@ -53,11 +53,10 @@ class _SearchResultState extends State<SearchResult> {
         iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.pink[50],
       ),
-      body: searchResults.isEmpty
-          ? Center(
+      body: searchResults.isEmpty? 
+          Center(
               child: Text('Không tìm thấy kết quả', style: TextStyle(color: Colors.black, fontSize: 18),),
-            )
-          : SingleChildScrollView(
+            ): SingleChildScrollView(
               child: Column(
                 children: [
                   Padding(

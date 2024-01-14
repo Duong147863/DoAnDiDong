@@ -4,6 +4,7 @@ import 'package:doandidongappthuongmai/components/Navigation.dart';
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
 
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -21,18 +22,6 @@ class OrderDetailScreen extends StatefulWidget {
     return formattedToday;
   }
 
-  String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 8 ký tự
-    const String characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final Random random = Random();
-    final int length = 8;
-
-    String Id= '';
-    for (int i = 0; i < length; i++) {
-      final int randomIndex = random.nextInt(characters.length);  //trả về một ký tự  ngẫu nhiên
-      Id += characters[randomIndex];
-    }
-    return Id;
-  }
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   @override
   Widget build(BuildContext context) {
@@ -242,7 +231,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           Row(
                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Text('đ'+ widget.orderdetailinfo.price ,style: TextStyle(fontSize: 16,color: Colors.grey),),
+                              Text('đ'+ intToString(widget.orderdetailinfo.price),style: TextStyle(fontSize: 16,color: Colors.grey),),
                               ],
                           ),
                           ],
@@ -291,7 +280,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                                 Text("Mã đơn hàng",style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
-                                Text(RandomIdOrder(),style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                Text(widget.orderdetailinfo.OrderId,style: TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
                               ],
                           ),
                           SizedBox(height: 10),
@@ -314,7 +303,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return ShowAlertDialog();
+                            return ShowAlertDialog(orderId: widget.orderdetailinfo.OrderId,);
                           },
                         );
                         },
@@ -361,10 +350,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 }
 class ShowAlertDialog extends  StatelessWidget {
-  const ShowAlertDialog({Key? key}) : super(key: key);
-
+  const ShowAlertDialog({Key? key,required this.orderId }) : super(key: key);
+  final String orderId;
   @override
   Widget build(BuildContext context) {
+    DatabaseReference paymentRef = FirebaseDatabase.instance.ref().child('orders');
+
+  // Hàm xóa đơn hàng
+  void deletePayment() {
+    // Xóa đơn hàng dựa trên paymentKey
+    paymentRef.child(orderId).remove().then((_) {
+      // Xóa thành công, thực hiện các hành động khác nếu cần
+      print('Đơn hàng đã được xóa thành công.');
+     
+    }).catchError((error) {
+      
+      print('Lỗi khi xóa đơn hàng: $error');
+    });
+  }
     return AlertDialog(
       title:Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -391,6 +394,7 @@ class ShowAlertDialog extends  StatelessWidget {
         ),
         TextButton(
           onPressed: () {
+             deletePayment(); 
              Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => NavigationScreen()),

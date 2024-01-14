@@ -21,10 +21,14 @@ class _ProductItemState extends State<ProductResultItem> {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,MaterialPageRoute(
-          builder: (context) => ProductDetailsScreen(
+          builder: (context) => ProductDetailsScreen( 
             image: products.image,
             productName: products.name,
-            price: products.price.toString(),
+            price: products.price,
+            producer: products.producer,
+            promotion: products.promotion,
+            description: products.description,
+            quantity: products.quantity,
           ),
           ),
         );
