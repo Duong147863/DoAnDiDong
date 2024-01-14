@@ -5,14 +5,14 @@ import 'package:firebase_database/firebase_database.dart';
 
 class ProductResultItem extends StatefulWidget {
 
-  final DatabaseReference ProductsuggestReference;
-  const ProductResultItem({Key? key,required this.ProductsuggestReference}) : super(key: key);
+  final DatabaseReference ProductReference;
+  const ProductResultItem({Key? key,required this.ProductReference}) : super(key: key);
   @override
-  State< ProductResultItem> createState() => _ProductItemState();
+  State<ProductResultItem> createState() => _ProductItemState();
 } 
 class _ProductItemState extends State<ProductResultItem> {
-    DatabaseReference productsuggests = FirebaseDatabase.instance.ref().child('productsuggests');
-  ProductSuggest products= ProductSuggest(id: "0",category: "",name: "", description: "", idproduct: "",image: "assets/img/noImage.jpg", producer: "", price: 0,promotion: 0, quantity: 0);
+  DatabaseReference product = FirebaseDatabase.instance.ref().child('products');
+  Product products= Product(id: "0",category: "",name: "", description: "", idproduct: "",image: "assets/img/noImage.jpg", producer: "", price: 0,promotion: 0, quantity: 0);
   @override
   Widget build(BuildContext context) {
      if (products.id==0) {
@@ -100,7 +100,7 @@ class _ProductItemState extends State<ProductResultItem> {
   void loadDataFromFirebase() async {
   // print("Load data from Firebase - roomID: ${widget.ProductsaleReference.key}");
   try {
-    DatabaseEvent event = await widget.ProductsuggestReference.once();
+    DatabaseEvent event = await widget.ProductReference.once();
     DataSnapshot dataSnapshot = event.snapshot;
     if (dataSnapshot.value != null) {
       if (dataSnapshot.value is Map) {
@@ -109,7 +109,7 @@ class _ProductItemState extends State<ProductResultItem> {
         String productsId = data["idproduct"]?.toString() ?? "";
 
         setState(() {
-         products = ProductSuggest.fromJson(productsId, data);
+         products = Product.fromJson(productsId, data);
         });
       } else {}
     }

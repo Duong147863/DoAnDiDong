@@ -3,18 +3,18 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 
-class ProductItem extends StatefulWidget {
-  ProductItem({Key? key, required this.ProductsaleReference}) : super(key: key);
+class ProductSellItem extends StatefulWidget {
+  const ProductSellItem({Key? key, required this.ProductsellReference}) : super(key: key);
 
-  final DatabaseReference ProductsaleReference;
+  final DatabaseReference ProductsellReference;
 
   @override
-  State<ProductItem> createState() => _ProductItemState();
+  State<ProductSellItem> createState() => _ProductItemState();
 }
 
-class _ProductItemState extends State<ProductItem> {
-  DatabaseReference productsale = FirebaseDatabase.instance.ref().child('productsales');
-  ProductSale products = ProductSale(id: "0", category: "", name: "", description: "", idproduct: "", image: "assets/img/noImage.jpg", producer: "", price: 0, promotion: 0, quantity: 0);
+class _ProductItemState extends State<ProductSellItem> {
+  DatabaseReference productsell = FirebaseDatabase.instance.ref().child('productsell');
+  ProductSell products = ProductSell(id: "0", category: "", name: "", description: "", idproduct: "", image: "assets/img/noImage.jpg", producer: "", price: 0, promotion: 0, quantity: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -96,12 +96,12 @@ class _ProductItemState extends State<ProductItem> {
   @override
   void initState() {
     super.initState();
-    loadDataFromFirebase1();
+    loadDataFromFirebase();
   }
 
-  void loadDataFromFirebase1() async {
+  void loadDataFromFirebase() async {
     try {
-      DatabaseEvent event = await widget.ProductsaleReference.once();
+      DatabaseEvent event = await widget.ProductsellReference.once();
       DataSnapshot dataSnapshot = event.snapshot;
       if (dataSnapshot.value != null) {
         if (dataSnapshot.value is Map) {
@@ -109,7 +109,7 @@ class _ProductItemState extends State<ProductItem> {
           String productsId = data["idproduct"]?.toString() ?? "";
 
           setState(() {
-            products = ProductSale.fromJson(productsId, data);
+            products = ProductSell.fromJson(productsId, data);
           });
         } else {}
       }

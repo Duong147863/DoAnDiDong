@@ -1,4 +1,4 @@
-import 'package:doandidongappthuongmai/components/ListResultItem.dart';
+import 'package:doandidongappthuongmai/components/ProductSuggestItem.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -147,7 +147,7 @@ class _CategoryItemState extends State<CategoryItem> {
                     {
                       return Row(
                         children:[
-                          ProductResultItem(key: ValueKey<String>(_product[index*2].id),
+                          ProductSuggestItem(key: ValueKey<String>(_product[index*2].id),
                             ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
                             ),
                         ]
@@ -156,10 +156,10 @@ class _CategoryItemState extends State<CategoryItem> {
                     else{
                     return Row(
                       children: [
-                        ProductResultItem(key: ValueKey<String>(_product[index*2].id),
+                       ProductSuggestItem(key: ValueKey<String>(_product[index*2].id),
                           ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
                           ),
-                        ProductResultItem(key: ValueKey<String>(_product[index*2+1].id),
+                        ProductSuggestItem(key: ValueKey<String>(_product[index*2+1].id),
                           ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2+1].id.toString()) ,
                           ),
                       ],
