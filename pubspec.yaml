@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  image_picker: ^0.8.4+1
   shared_preferences: ^2.0.8
   autocomplete_textfield: ^2.0.1
 
