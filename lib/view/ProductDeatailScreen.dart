@@ -5,13 +5,21 @@ import 'package:flutter/material.dart';
 class ProductDetailsScreen extends StatefulWidget {
   final String image;
   final String productName;
-  final String price;
-
+  final int price;
+  final int promotion;
+  final String description;
+  final int quantity;
+  final String producer;
+  
   const ProductDetailsScreen({
     Key? key,
     required this.image,
     required this.productName,
     required this.price,
+    required this.promotion,
+    required this.producer,
+    required this.quantity,
+    required this.description
   }) : super(key: key);
 
   @override
@@ -20,7 +28,7 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int totalCartQuantity = 0;  //số lượng trong giỏ hàng
-  int quantity = 1;  //số lượng sản phẩm
+  int countquantity = 1;  //số lượng sản phẩm
 
   @override
   Widget build(BuildContext context) {
@@ -83,9 +91,27 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             softWrap: true,
           ),
           SizedBox(height: 8),
-          Text(widget.price + 'đ',
-            style: TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
-            softWrap: true,
+          Row(
+            children: [
+                if (widget.promotion > 0)
+                  Row(
+                    children: [
+                      Text('${widget.promotion}đ',style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold)),
+                      SizedBox(width: 10,),
+                      Text( '${widget.price}đ',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            decoration: TextDecoration.lineThrough,
+                            color: Colors.grey,
+                          ),
+                      ),
+                    ],
+                  ),
+                if ((widget.promotion == 0) && widget.price > 0)
+                Text( '${widget.price}đ',
+                  style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+            ],
           ),
           Spacer(),
           Row(
@@ -111,7 +137,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    _showBottomSheet(context, widget.image, widget.price,widget.productName);   // hiện bottomSheet 
+                    _showBottomSheet(context, widget.image, widget.price,widget.productName, widget.promotion);   // hiện bottomSheet 
                   },
                   icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
                   label: const Text("Mua ngay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
@@ -129,7 +155,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     );
   }
 
-  _showBottomSheet(BuildContext context, String image, String price, String productName) {
+  _showBottomSheet(BuildContext context, String image, int price, String productName, int promotion,) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -145,9 +171,42 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     children: [
                       Image.asset(image, height: 150, width: 150),
                       SizedBox(width: 10,),
-                      Text(price + 'đ',style: TextStyle(color: Colors.red, fontSize: 20)),
-                    ],
-                  ),
+                      
+                      // Column(
+                      //   children: [            //nếu làm số lượng tồn
+                          Row(
+                           children: [
+                              if (promotion > 0)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('${promotion}đ',style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold)),
+                                    Text('${price}đ',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          decoration: TextDecoration.lineThrough,
+                                          color: Colors.grey,
+                                        ),
+                                    ),
+                                  ],
+                                ),
+                              if ((promotion == 0) && price > 0)
+                              Text( '${price}đ',
+                                style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
+                              ),
+                          ],
+                        ),
+                        // SizedBox(height: 30,),
+                        // Row(
+                        //   children: [
+                        //     Text("Số lượng tồn:  ${quantity}"),
+                        //   ],
+                        // ),
+                        ],
+                      ),
+                  //   ],
+                  // ),
+                 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -160,19 +219,19 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               icon: Icon(Icons.remove),
                               onPressed: () {
                                 setState(() {
-                                  quantity--;
-                                  if (quantity < 1) {
-                                    quantity = 1;
+                                  countquantity--;
+                                  if (countquantity < 1) {
+                                    countquantity = 1;
                                   }
                                 });
                               },
                             ),
-                            Text('$quantity',style: TextStyle(fontSize: 17),),
+                            Text('$countquantity',style: TextStyle(fontSize: 17),),
                             IconButton(
                               icon: Icon(Icons.add),
                               onPressed: () {
                                 setState(() {
-                                  quantity++;
+                                  countquantity++;
                                 });
                               },
                             ),
@@ -187,7 +246,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                         Navigator.push(context,MaterialPageRoute(builder: (context) => PaymentScreen( image: image,price: price, productName: productName, Quantity: quantity,),),
+                         Navigator.push(context,MaterialPageRoute(builder: (context) => PaymentScreen( image: image,price: price, productName: productName, CountQuantity: countquantity,),),
                           ).then((value) {
                             // Đóng BottomSheet khi quay lại từ trang thanh toán
                             Navigator.pop(context);

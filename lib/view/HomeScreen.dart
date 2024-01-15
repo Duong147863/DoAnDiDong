@@ -1,11 +1,13 @@
-import 'package:doandidongappthuongmai/components/ListResultItem.dart';
-import 'package:doandidongappthuongmai/components/ProductItem.dart';
+import 'package:doandidongappthuongmai/components/ProductSuggestItem.dart';
+import 'package:doandidongappthuongmai/components/ProductSaleItem.dart';
 import 'package:doandidongappthuongmai/components/ProductSection.dart';
 import 'package:doandidongappthuongmai/view/CategoryItemScreen.dart';
 import 'package:doandidongappthuongmai/view/ProductCartScreen.dart';
 import 'package:doandidongappthuongmai/view/SearchScreen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:doandidongappthuongmai/models/load_data.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,19 +17,30 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
+ 
+ List<ProductSale> allProductsale = [];
+ List<ProductSuggest> allProductsuggest = [];
+
+ void _loadProductsales() async {
+  List<ProductSale> productsale = await ProductSale.fetchProductSales();
+    setState(() {
+     allProductsale = productsale;
+    });
+  }
+  void _loadProductsuggests() async {
+    List<ProductSuggest> productsuggest = await ProductSuggest.fetchProductSuggests();
+    setState(() {
+     allProductsuggest = productsuggest;
+    });
+  }
+  @override
+  void initState() {
+    super.initState();
+    _loadProductsales();
+    _loadProductsuggests();
+  }
   int selectedButtonIndex = 0;  
   int QuantityInCart=0;         // số lượng sản phẩm trong giỏ hàng
-  List<List<Map<String, dynamic>>> productData = [    // tạo danh sách mặc định
-    [
-      {'image': 'assets/img/Manboc1.png', 'name': 'Giấy chống dính', 'price': '26.500','promotion':20000},
-      {'image': 'assets/img/Manboc2.png', 'name': '120 Túi thực phẩm', 'price': '28.000','promotion':17000},
-      {'image': 'assets/img/Manboc3.png', 'name': 'Màng bọc thực phẩm inochi', 'price': '132.000','promotion':120000},
-      {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
-      {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
-      {'image': 'assets/img/Manboc4.png', 'name': 'Màng bọc nhôm', 'price': '45.000','promotion':25000},
-      {'image': 'assets/img/Manboc5.png', 'name': '20 túi zipper khóa kéo', 'price': '47.000','promotion':43000},
-    ],
-  ];
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -36,23 +49,16 @@ class _MainScreenState extends State<MainScreen> {
       backgroundColor: Colors.pink[50],
       title: InkWell(
         onTap: () {
-        Navigator.push(
-        context,
+        Navigator.push( context,
         PageRouteBuilder(
           pageBuilder: (context, animation, secondaryAnimation) => SearchScreen(),     // chuyển đến trang tìm kiếm
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);    // Điểm bắt đầu của hiệu ứng chuyển động (phải)
             const end = Offset.zero;           // Điểm kết thúc của hiệu ứng chuyển động (đến)
             const curve = Curves.easeInOut;    // Điều chỉnh đường cong của chuyển động
-
-            // Tạo tween (chuyển động từ 'begin' đến 'end' với đường cong đã chọn)
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-            // Ánh xạ chuyển động tween vào animation
-            var offsetAnimation = animation.drive(tween);
-
-            // Áp dụng hiệu ứng Slide Transition sử dụng position và child
-            return SlideTransition(
+            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve)); //Tạo tween (chuyển động từ 'begin' đến 'end' với đường cong đã chọn)
+            var offsetAnimation = animation.drive(tween);  // Ánh xạ chuyển động tween vào animation
+            return SlideTransition(    // Áp dụng hiệu ứng Slide Transition sử dụng position và child
               position: offsetAnimation,
               child: child,
             );
@@ -72,14 +78,9 @@ class _MainScreenState extends State<MainScreen> {
           children: [
             Padding(
               padding: EdgeInsets.all(8.0),
-              child: Icon(
-                Icons.search,
-                color: Colors.grey,
-              ),
+              child: Icon(Icons.search,color: Colors.grey,),
             ),
-            Text('Tìm sản phẩm ....',
-              style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),
-            ),
+            Text('Tìm sản phẩm ....', style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),),
           ],
         ),
       ),
@@ -127,7 +128,7 @@ class _MainScreenState extends State<MainScreen> {
   body: SingleChildScrollView(   /* tạo cuộn dọc màn hình */
     child: Column(
       children: [
-        Image.asset("assets/img/tmdt1.jpg",
+          Image( image: AssetImage('assets/img/tmdt1.jpg'),
           width: MediaQuery.of(context).size.width,
           height: 180,
           fit: BoxFit.cover,
@@ -147,14 +148,14 @@ class _MainScreenState extends State<MainScreen> {
             children: [
               Wrap(           // tạo danh mục sản phẩm co khoảng cách = nhau
                 children: [
-                  ProductContainer(image: "assets/img/chao.png",text: "Chảo",),
-                  ProductContainer(image: "assets/img/noi.png", text: "Nồi"),
-                  ProductContainer(image: "assets/img/chen.jpg", text: "Chén, bát"),
-                  ProductContainer(image: "assets/img/dua.png", text: "Đũa"),
-                  ProductContainer(image: "assets/img/ly.png", text: "Ly"),
-                  ProductContainer(image: "assets/img/manboc.png", text: "Màng bọc"),
-                  ProductContainer(image: "assets/img/noicomdien.jpg", text: "Nồi cơm điện"),
-                  ProductContainer(image: "assets/img/ruachen.png", text: "Đồ rửa chén"),
+                  ProductCategory(image: "assets/img/chao.png",text: "Chảo",CategoryId: "4"),
+                  ProductCategory(image: "assets/img/noi.png", text: "Nồi",CategoryId: "3"),
+                  ProductCategory(image: "assets/img/chen.jpg", text: "Chén, bát",CategoryId: "7"),
+                  ProductCategory(image: "assets/img/dua.png", text: "Đũa",CategoryId: "5"),
+                  ProductCategory(image: "assets/img/ly.png", text: "Ly",CategoryId: "2"),
+                  ProductCategory(image: "assets/img/manboc.png", text: "Màng bọc",CategoryId: "1"),
+                  ProductCategory(image: "assets/img/noicomdien.jpg", text: "Nồi cơm điện",CategoryId: "6"),
+                  ProductCategory(image: "assets/img/ruachen.png", text: "Đồ rửa chén",CategoryId: "8"),
                 ],
               ),
             ],
@@ -180,9 +181,15 @@ class _MainScreenState extends State<MainScreen> {
                     height: MediaQuery.of(context).size.height * 0.6,
                 ),
               ),
-              const SectionList(          //Danh sách các button trong Title Sản phẩm bán chạy
-                buttonTexts: ['Màng bọc thực phẩm', 'Xoong, nồi', 'Chảo', 'Chén,bát', 'Nước rửa chén'],
-              ),
+              SectionList(
+                  categories: [
+                    CategoryData(id: '1', name: 'Màng bọc thực phẩm'),
+                    CategoryData(id: '3', name: 'Xoong, nồi'),
+                    CategoryData(id: '4', name: 'Chảo'),
+                    CategoryData(id: '7', name: 'Chén,bát'),
+                    CategoryData(id: '8', name: 'Đồ rửa chén'),
+                  ],
+                ),
               Positioned(        // đặt vị trí tiêu đề
                 top:17,
                 height: 40,
@@ -260,14 +267,11 @@ class _MainScreenState extends State<MainScreen> {
                     height: 210,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,     // cuộn ngang
-                      itemCount: productData[selectedButtonIndex].length,
+                      itemCount: allProductsale.length,
                       itemBuilder: (context, index) {
-                        var productDetails = productData[selectedButtonIndex][index];
-                        return ProductItem(
-                          image: productDetails['image'],
-                          Name: productDetails['name'],
-                          price: productDetails['price'],
-                          promotion: productDetails['promotion'],
+                        var productsale =allProductsale[index] ;
+                        return ProductSaleItem(ProductsaleReference: FirebaseDatabase.instance.ref().child('productsales').child(productsale.id.toString()),
+                        
                         );
                       },
                     ),
@@ -330,35 +334,26 @@ class _MainScreenState extends State<MainScreen> {
                     margin: EdgeInsets.only(top: 40),
                     height:MediaQuery.of(context).size.height*0.67,
                     child: ListView.builder(
-                      itemCount: (productData[selectedButtonIndex].length/2).ceil(),   // làm tròn 
+                      itemCount: (allProductsuggest.length/2).ceil(),   // làm tròn 
                       itemBuilder: (context, index) {
-                        if( productData[selectedButtonIndex].length %2 !=0 && index == (productData[selectedButtonIndex].length/2).ceil()-1)
+                        if( allProductsuggest.length %2 !=0 && index == (allProductsuggest.length/2).ceil()-1)
                         {
                           return Row(
                             children: [
-                                 ProductResultItem(
-                                  image: productData[selectedButtonIndex][index*2]['image'],
-                                  Name:productData[selectedButtonIndex][index*2]['name'],
-                                  price: productData[selectedButtonIndex][index*2]['price'],
-                                  promotion:productData[selectedButtonIndex][index*2]['promotion'],
-                                ),
+                            ProductSuggestItem(
+                              ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
+                             ),
                             ],
                           );
                         }
                         else{
                           return Row(
                             children: [
-                                    ProductResultItem(
-                                  image: productData[selectedButtonIndex][index*2]['image'],
-                                  Name:productData[selectedButtonIndex][index*2]['name'],
-                                  price: productData[selectedButtonIndex][index*2]['price'],
-                                  promotion:productData[selectedButtonIndex][index*2]['promotion'],
+                              ProductSuggestItem(
+                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
                                 ),
-                                  ProductResultItem(
-                                  image: productData[selectedButtonIndex][index*2+1]['image'],
-                                  Name:productData[selectedButtonIndex][index*2+1]['name'],
-                                  price: productData[selectedButtonIndex][index*2+1]['price'],
-                                  promotion:productData[selectedButtonIndex][index*2+1]['promotion'],
+                              ProductSuggestItem(
+                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2+1].id.toString()) ,
                                 ),
                             ],
                           );
@@ -379,17 +374,18 @@ class _MainScreenState extends State<MainScreen> {
    );
   }
 }
-class ProductContainer extends StatelessWidget {
+class ProductCategory extends StatelessWidget {
   final String image;
   final String text;
-  const ProductContainer({Key? key, required this.image, required this.text}) : super(key: key);
+  final String CategoryId;
+  const ProductCategory({Key? key, required this.image, required this.text, required this.CategoryId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
-        MaterialPageRoute(builder: (context) => CategoryItem(name: text,), ),); // chuyển đến 1 danh mục được chọn
+        MaterialPageRoute(builder: (context) => CategoryItem(CategoryId: CategoryId, name: text,), ),); // chuyển đến 1 danh mục được chọn
         },  //
       child: Container(
         width: MediaQuery.of(context).size.width / 4.5,
@@ -404,11 +400,11 @@ class ProductContainer extends StatelessWidget {
               fit: BoxFit.cover,
             ),
             SizedBox(height: 5),
-            Text(
-              text,
+            Text("${text}",
               softWrap: true,
               style: TextStyle(fontSize: 12),
             ),
+
           ],
         ),
       ),
