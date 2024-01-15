@@ -66,15 +66,15 @@ class _SearchScreen1State extends State<SearchScreen> {
             icon: Icon(Icons.search, size: 35),
             onPressed: () {
               updateSearchHistory(_searchController.text);
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => SearchResult(Searchtext: _searchController.text),
-              //   ),
-              // ).then((_) {
-              //   // Khối này sẽ được thực hiện khi màn hình SearchResult được đóng lại.
-              //   _searchController.clear();
-              // });
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchResult(searchText: _searchController.text),
+                ),
+              ).then((_) {
+                // Khối này sẽ được thực hiện khi màn hình SearchResult được đóng lại.
+                _searchController.clear();
+              });
             },
           ),
         ],
@@ -84,8 +84,21 @@ class _SearchScreen1State extends State<SearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const  SizedBox(height: 30),
-            const Text("Lịch sử tìm kiếm", style: TextStyle(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
+            const  SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children:[ 
+                Text("Lịch sử tìm kiếm", style: TextStyle(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
+                TextButton(
+                  onPressed: () {
+                    clearSearchHistory();
+                  },
+                  child: Text("Xóa tất cả",
+                    style: TextStyle(color: Colors.blue, fontSize: 16),
+                  ),
+                ),
+              ],
+            ),
             SizedBox(height: 10),
             Wrap(
               spacing: 10.0,
@@ -96,13 +109,13 @@ class _SearchScreen1State extends State<SearchScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       _searchController.text = searchHistory[index];   // nếu ô nào được chọn hiện text lên khung tìm kiếm
-                      //  Navigator.push(context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => SearchResult(Searchtext: _searchController.text),
-                      //     ),
-                      //   ).then((_) {
-                      //     _searchController.clear();   //xóa text khi màn hình SearchResult được đóng lại.
-                      //   });
+                       Navigator.push(context,
+                        MaterialPageRoute(
+                          builder: (context) => SearchResult(searchText: _searchController.text),
+                          ),
+                        ).then((_) {
+                          _searchController.clear();   //xóa text khi màn hình SearchResult được đóng lại.
+                        });
                       },
                     style: ElevatedButton.styleFrom(     //tạo màu và viền button
                       primary: Colors.grey[200],
@@ -127,7 +140,7 @@ class _SearchScreen1State extends State<SearchScreen> {
                 const Text("Ưu đãi đặc biệt", style: TextStyle(color: Colors.black,fontSize: 22,fontWeight: FontWeight.bold),),
                 SizedBox(height: 10),
                 Container(
-                  height: 500,
+                  height: 510,
                   child: ListView.builder(
                     itemCount: specialoffers.length,
                     itemBuilder: (context, index) {
@@ -189,6 +202,13 @@ class _SearchScreen1State extends State<SearchScreen> {
   void saveSearchHistory() async {   //lưu lịch sử tk
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setStringList('searchHistory', searchHistory);
+  }
+  void clearSearchHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('searchHistory');
+    setState(() {
+      searchHistory = [];
+    });
   }
 
   void loadSearchHistory() async {   //load lên app

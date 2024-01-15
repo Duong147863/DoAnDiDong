@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class OrderDetails {
+  final String OrderId;
   final String image;
   final String productName;
-  final String price;
+  final int price;
   final int Quantity;
   final String name;
   final String phone;
@@ -14,6 +15,7 @@ class OrderDetails {
   final String totalPayment;
 
   OrderDetails({
+    required this.OrderId,
     required this.image,
     required this.productName,
     required this.price,

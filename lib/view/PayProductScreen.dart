@@ -1,14 +1,17 @@
+import 'dart:math';
+
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 class PaymentScreen extends StatefulWidget {
  
   final String image;
   final String productName;
-  final String price;
-  final int Quantity;
-  const PaymentScreen({Key? key,required this.image,required this.productName,required this.price,required this.Quantity}) : super(key: key);
+  final int price;
+  final int CountQuantity;
+  const PaymentScreen({Key? key,required this.image,required this.productName,required this.price,required this.CountQuantity}) : super(key: key);
   
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -30,17 +33,16 @@ class PaymentScreen extends StatefulWidget {
     return formatNextday; 
   }
 
-  String totalPayment(String price, int Quantity, String phigiaohang) {    // tính tiền tổng hóa đơn
-    int priceAsInt = stringToInt(price);
-    int total = (priceAsInt * Quantity) + stringToInt(phigiaohang);
+  String totalPayment(int price, int Quantity, String phigiaohang) {    // tính tiền tổng hóa đơn
+   
+    int total = (price * Quantity) + stringToInt(phigiaohang);
     return intToString(total);
   }
 
 
-String ProductMoney( String price, int Quantity)  // tính tiền sản phẩm 
+String ProductMoney(int price, int Quantity)  // tính tiền sản phẩm 
 {
-   int priceAsInt = stringToInt(price);
-   int money = (priceAsInt * Quantity);
+   int money = (price * Quantity);
    return intToString(money);
 }
 
@@ -55,8 +57,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
    int selectedPaymentOption = 1;
   @override
   Widget build(BuildContext context) {
-    String totalpayment = totalPayment(widget.price, widget.Quantity, phigiaohang); // gán giá trị 
-    String productmoney= ProductMoney(widget.price, widget.Quantity);
+    String totalpayment = totalPayment(widget.price, widget.CountQuantity, phigiaohang); // gán giá trị 
+    String productmoney= ProductMoney(widget.price, widget.CountQuantity);
 
     return Scaffold(
       appBar: AppBar(
@@ -142,12 +144,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             Row(
                               children: [
                                 Text('Số lượng: ',style: TextStyle(fontSize: 16),),
-                                Text(widget.Quantity.toString(),style: TextStyle(fontSize: 16),),
+                                Text(widget.CountQuantity.toString(),style: TextStyle(fontSize: 16),),
                                 ],
                             ),
                             Column(
                               children: [
-                                Text('đ'+ widget.price ,style: TextStyle(fontSize: 16),),
+                                Text('đ'+ intToString(widget.price) ,style: TextStyle(fontSize: 16),),
                                 ],
                             ),
                               ],
@@ -268,9 +270,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     onPressed: () {
                       OrderDetails orderDetailsInfo = OrderDetails(
                           image: widget.image,
+                          OrderId: RandomIdOrder().toString(),
                           productName: widget.productName,
                           price: widget.price,
-                          Quantity: widget.Quantity,
+                          Quantity: widget.CountQuantity,
                           name: name,
                           phone: phone,
                           address: address,
@@ -279,6 +282,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           deliverycharges: phigiaohang,
                           totalPayment: totalpayment,
                         );
+                        saveOrderToFirebase(orderDetailsInfo);
                        Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,) ),);
                     },                           //chuyển đến chi tiết hóa đơn
                      
@@ -380,4 +384,36 @@ class _PaymentScreenState extends State<PaymentScreen> {
  
 }
 
- 
+String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 8 ký tự
+  const String characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  final Random random = Random();
+  final int length = 8;
+
+  String Id= '';
+  for (int i = 0; i < length; i++) {
+    final int randomIndex = random.nextInt(characters.length);  //trả về một ký tự  ngẫu nhiên
+    Id += characters[randomIndex];
+  }
+  return Id;
+}
+void saveOrderToFirebase(OrderDetails orderDetails) {
+  DatabaseReference ordersRef = FirebaseDatabase.instance.ref().child('orders');
+
+  // Tạo một node mới với key là 'OrderId'
+  var newOrderRef = ordersRef.child(orderDetails.OrderId);
+
+  // Gán thông tin đơn hàng vào node mới
+  newOrderRef.set({
+    'OrderId': orderDetails.OrderId,
+    'productName': orderDetails.productName,
+    'price': orderDetails.price,
+    'quantity': orderDetails.Quantity,
+    'name': orderDetails.name,
+    'phone': orderDetails.phone,
+    'address': orderDetails.address,
+    'typePayment': orderDetails.typePayment,
+    'totalPayment': orderDetails.totalPayment,
+  });
+
+  print('Đơn hàng đã được lưu vào Firebase với key là ${orderDetails.OrderId}.');
+}
