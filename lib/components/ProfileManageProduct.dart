@@ -11,12 +11,6 @@ class _ProfileManageProductState extends State<ProfileManageProduct> {
   @override
   Widget build(BuildContext context) {
     int count = 10;
-    void performAction() {
-      setState(() {
-        count -= 1;
-      });
-    }
-
     return ListView.builder(
       itemCount: count,
       itemBuilder: (BuildContext context, int index) {
@@ -32,7 +26,8 @@ class _ProfileManageProductState extends State<ProfileManageProduct> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(10), // Khoảng cách xung quanh ảnh
+                    padding:
+                        const EdgeInsets.all(10), // Khoảng cách xung quanh ảnh
                     child: Container(
                       height: 120,
                       width: 115,
@@ -121,7 +116,6 @@ class _ProfileManageProductState extends State<ProfileManageProduct> {
                             },
                           ).then((value) {
                             if (value != null && value) {
-                              performAction();
                               // Xóa sản phẩm
                             } else {
                               //Hủy

@@ -1,5 +1,6 @@
-import 'package:doandidongappthuongmai/components/ProfileManageProduct.dart';
 import 'package:flutter/material.dart';
+
+import '../components/ProfileManageProduct.dart';
 
 class ManageProduct extends StatefulWidget {
   const ManageProduct({super.key});
