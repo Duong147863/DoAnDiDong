@@ -1,5 +1,4 @@
 import 'package:doandidongappthuongmai/components/ProductResultItem.dart';
-import 'package:doandidongappthuongmai/components/ProductSuggestItem.dart';
 import 'package:flutter/material.dart';
 import 'package:tiengviet/tiengviet.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -40,7 +39,7 @@ class _SearchResultState extends State<SearchResult> {
         filteredProducts.add(product);
       }
     }
-    print("Filtered products: $filteredProducts");
+    // print("Filtered products: $filteredProducts");
     return filteredProducts;
   }
 

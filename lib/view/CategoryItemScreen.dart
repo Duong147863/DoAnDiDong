@@ -52,7 +52,7 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[350],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: Colors.pink[50],
         iconTheme: IconThemeData(color: Colors.black),

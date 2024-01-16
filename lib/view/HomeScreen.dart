@@ -1,3 +1,4 @@
+import 'package:doandidongappthuongmai/components/GetCart.dart';
 import 'package:doandidongappthuongmai/components/ProductSuggestItem.dart';
 import 'package:doandidongappthuongmai/components/ProductSaleItem.dart';
 import 'package:doandidongappthuongmai/components/ProductSection.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -20,27 +22,35 @@ class _MainScreenState extends State<MainScreen> {
  
  List<ProductSale> allProductsale = [];
  List<ProductSuggest> allProductsuggest = [];
+ int selectedButtonIndex = 0;  
 
- void _loadProductsales() async {
+ void _loadProductsales() async {    //lấy danh sách sản phẩm khuyến mãi
   List<ProductSale> productsale = await ProductSale.fetchProductSales();
     setState(() {
      allProductsale = productsale;
     });
   }
-  void _loadProductsuggests() async {
+  void _loadProductsuggests() async {    // lấy danh sách sản phẩm gợi ý
     List<ProductSuggest> productsuggest = await ProductSuggest.fetchProductSuggests();
     setState(() {
      allProductsuggest = productsuggest;
     });
   }
+
   @override
   void initState() {
     super.initState();
     _loadProductsales();
     _loadProductsuggests();
+     Provider.of<CartProvider>(context, listen: false).loadCartQuantity();  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
+   
   }
-  int selectedButtonIndex = 0;  
-  int QuantityInCart=0;         // số lượng sản phẩm trong giỏ hàng
+  Future<void> _refreshData() async {
+    setState(() {
+     Provider.of<CartProvider>(context, listen: false).loadCartQuantity();  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
+    });
+    return Future.value();
+  }
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -103,30 +113,48 @@ class _MainScreenState extends State<MainScreen> {
                     MaterialPageRoute(
                       builder: (context) =>  ShoppingCartScreen()    //chuyển đến giỏ hàng
                     ),
-                  );
+                  ).then((value) {
+                        if (value != null && value) {
+                          setState(() {
+                             Provider.of<CartProvider>(context, listen: false).loadCartQuantity(); 
+                         });
+                        }
+                      });
                 },
               ),
             ],
           ),
-          if (QuantityInCart > 0)   //kiểm tra nếu không có sản phẩm sẽ ẩn số
-            Positioned(
-              right: 10,
-              top: 5,
-              child: Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: Colors.yellow,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text('${QuantityInCart.toString()}',style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.black,),),
-              ),
-            ),
+          Consumer<CartProvider>(       // lắng nghe sự thay đổi trong đối tượng CartProvider 
+            builder: (context, cartProvider, child) {
+              if (cartProvider.totalCartQuantity > 0) {
+                return Positioned(
+                  right: 10,
+                  top: 5,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.yellow,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text( '${cartProvider.totalCartQuantity.toString()}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                  ),
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
         ],
       ),
     ),
   ),
-  body: SingleChildScrollView(   /* tạo cuộn dọc màn hình */
-    child: Column(
+  body: RefreshIndicator(
+    onRefresh: _refreshData,
+    child: SingleChildScrollView(   /* tạo cuộn dọc màn hình */
+     child: Column(
       children: [
           Image( image: AssetImage('assets/img/tmdt1.jpg'),
           width: MediaQuery.of(context).size.width,
@@ -276,8 +304,8 @@ class _MainScreenState extends State<MainScreen> {
                       },
                     ),
                   ),
-                  SizedBox(height: 10),
-                  Text("Xem thêm sản phẩm khuyến mãi", style: TextStyle(decoration: TextDecoration.underline, color: Colors.red)),
+                  // SizedBox(height: 10),
+                  // Text("Xem thêm sản phẩm khuyến mãi", style: TextStyle(decoration: TextDecoration.underline, color: Colors.red)),
                 ],
               )
              ],
@@ -288,7 +316,7 @@ class _MainScreenState extends State<MainScreen> {
         Column(
          children: [
           SizedBox(        //tạo khung bên ngoài chứa nội dung ,hình ảnh 
-          height: MediaQuery.of(context).size.height*0.75,
+          height: MediaQuery.of(context).size.height*1.2-50,
           child: Stack(          
             children: [
               Positioned(        // đặt vị trí khung
@@ -332,8 +360,9 @@ class _MainScreenState extends State<MainScreen> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(top: 40),
-                    height:MediaQuery.of(context).size.height*0.67,
+                    height:MediaQuery.of(context).size.height+70,
                     child: ListView.builder(
+                      physics: NeverScrollableScrollPhysics(),
                       itemCount: (allProductsuggest.length/2).ceil(),   // làm tròn 
                       itemBuilder: (context, index) {
                         if( allProductsuggest.length %2 !=0 && index == (allProductsuggest.length/2).ceil()-1)
@@ -371,6 +400,7 @@ class _MainScreenState extends State<MainScreen> {
       ],
     )
     ),
+    )
    );
   }
 }

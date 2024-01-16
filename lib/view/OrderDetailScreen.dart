@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:doandidongappthuongmai/components/Navigation.dart';
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
@@ -354,15 +353,10 @@ class ShowAlertDialog extends  StatelessWidget {
   final String orderId;
   @override
   Widget build(BuildContext context) {
-    DatabaseReference paymentRef = FirebaseDatabase.instance.ref().child('orders');
+  DatabaseReference paymentRef = FirebaseDatabase.instance.ref().child('orders');
 
-  // Hàm xóa đơn hàng
-  void deletePayment() {
-    // Xóa đơn hàng dựa trên paymentKey
+  void deletePayment() {      // Hàm xóa đơn hàng
     paymentRef.child(orderId).remove().then((_) {
-      // Xóa thành công, thực hiện các hành động khác nếu cần
-      print('Đơn hàng đã được xóa thành công.');
-     
     }).catchError((error) {
       
       print('Lỗi khi xóa đơn hàng: $error');
@@ -404,9 +398,7 @@ class ShowAlertDialog extends  StatelessWidget {
           child: Text('Đồng ý'),
         ),
         ],)
-       
       ],
     );
-  
   }
 }

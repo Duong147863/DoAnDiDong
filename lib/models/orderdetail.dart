@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+
 
 class OrderDetails {
   final String OrderId;
@@ -13,6 +13,7 @@ class OrderDetails {
   final String productmoney;
   final String deliverycharges;
   final String totalPayment;
+  final String status;
 
   OrderDetails({
     required this.OrderId,
@@ -26,7 +27,8 @@ class OrderDetails {
     required this.typePayment,
     required this.productmoney,
     required this.deliverycharges,
-    required this.totalPayment
+    required this.totalPayment,
+    required this.status
 
   });
 }

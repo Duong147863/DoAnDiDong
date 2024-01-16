@@ -1,7 +1,6 @@
 import 'package:doandidongappthuongmai/components/ProductSellItem.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:doandidongappthuongmai/components/ProductSaleItem.dart';
 import 'package:flutter/material.dart';
 
 class SectionList extends StatefulWidget {
@@ -87,10 +86,10 @@ class _SectionListState extends State<SectionList> {
           ),
         ),
         SizedBox(height: 10),
-        Text(
-          "Xem thêm sản phẩm bán chạy",
-          style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),
-        ),
+        // Text(
+        //   "Xem thêm sản phẩm bán chạy",
+        //   style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),
+        // ),
       ],
     );
   }
