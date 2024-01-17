@@ -1,5 +1,7 @@
 import 'package:doandidongappthuongmai/components/ListAccountItem.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ManageScreen extends StatefulWidget {
   const ManageScreen({Key? key}) : super(key: key);
@@ -9,13 +11,50 @@ class ManageScreen extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<ManageScreen> {
-  List<Map<String, dynamic>> accounts = [
-    {'name': 'Duy', 'email': 'duy@gmail.com'},
-    {'name': 'Tới', 'email': 'toi@gmail.com'},
-    {'name': 'Dương', 'email': 'duong@gmail.com'},
-    {'name': 'Mới', 'email': 'moi@gmail.com'},
-    {'name': 'Olala', 'email': 'Olala@gmail.com'},
-  ];
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final DatabaseReference _database = FirebaseDatabase.instance.reference();
+
+  List<Map<String, dynamic>> accounts = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadAccountsWithFalsePermission();
+    print("Init state called");
+  }
+
+Future<void> loadAccountsWithFalsePermission() async {
+  try {
+    DataSnapshot accountsSnapshot = (await _database.child('users').orderByChild('persission').equalTo(false).once()).snapshot;
+
+    if (accountsSnapshot.value != null) {
+      Map<String, dynamic>? accountsData = (accountsSnapshot.value as Map?)?.cast<String, dynamic>();
+      List<Map<String, dynamic>> filteredAccounts = [];
+  
+      accountsData?.forEach((userId, userData) {
+        String displayname = userData['displayName'] ?? '';
+        String email = userData['email'] ?? '';
+        bool perssion = userData['persission'] ?? false;
+
+        if (!perssion) {
+          filteredAccounts.add({
+            'userId': userId, 
+            'displayName': displayname,
+            'email': email,
+          });
+        }
+      });
+      setState(() {
+        accounts = filteredAccounts;
+      });
+    }
+  } catch (e) {
+    print("Error loading accounts with false permission: $e");
+  }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -28,22 +67,15 @@ class _MyWidgetState extends State<ManageScreen> {
           textAlign: TextAlign.center,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: accounts.length,
-              itemBuilder: (context, index) {
-                return AccountInfoContainer(
-                  name: accounts[index]['name'],
-                  email: accounts[index]['email'],
-                );
-              },
-            ),
-          ],
-        ),
+      body: ListView.builder(
+        itemCount: accounts.length,
+        itemBuilder: (context, index) {
+          return AccountInfoContainer(
+            name: accounts[index]['displayName'] ?? 'N/A',
+            email: accounts[index]['email'] ?? 'N/A',
+            userId: accounts[index]['userId'] ?? 'N/A'
+          );
+        },
       ),
     );
   }

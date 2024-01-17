@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 class AccountInfoContainer extends StatefulWidget {
   final String name;
   final String email;
-
-  const AccountInfoContainer({required this.name, required this.email});
+   final String userId;
+  const AccountInfoContainer({required this.name, required this.email,required this.userId});
 
   @override
   _AccountInfoContainerState createState() => _AccountInfoContainerState();
@@ -12,7 +13,7 @@ class AccountInfoContainer extends StatefulWidget {
 
 class _AccountInfoContainerState extends State<AccountInfoContainer> {
   bool isSwitched = true; // mặc định trạng thái switch là bật
-
+   final DatabaseReference _databaseReference = FirebaseDatabase.instance.reference();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -24,10 +25,10 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
         border: Border.all(width: 0.5, color: Colors.black),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),      // Độ trong suốt 50%
-            spreadRadius: 1,         // Xác định mức độ mà bóng sẽ lan rộng
-            blurRadius: 4,          // Bán kính mờ xác định độ mờ của bóng
-            offset: Offset(0, 2),      // Khoảng cách mà bóng sẽ được dịch chuyển
+            color: Colors.grey.withOpacity(0.5), // Độ trong suốt 50%
+            spreadRadius: 1, // Xác định mức độ mà bóng sẽ lan rộng
+            blurRadius: 4, // Bán kính mờ xác định độ mờ của bóng
+            offset: Offset(0, 2), // Khoảng cách mà bóng sẽ được dịch chuyển
           ),
         ],
       ),
@@ -41,12 +42,15 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('${widget.name}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                '${widget.name}',
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),
-              Text('${widget.email}',
-                style:const TextStyle(fontSize: 16),
+              Text(
+                '${widget.email}',
+                style: const TextStyle(fontSize: 16),
               ),
             ],
           ),
@@ -64,26 +68,38 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
   }
 
   void _showAlertDialog(bool newValue) {
-  showDialog(       // Hiển thị hộp thoại
-    context: context,
-    builder: (BuildContext context) {
-      return _AlertDialog(isSwitched: newValue);  
-    },
-  ).then((confirmed) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return _AlertDialog(isSwitched: newValue);
+      },
+    ).then((confirmed) {
+      if (confirmed != null && confirmed) {
+        // If the user presses "Đồng ý", update the switch state and the database
+        _updateAccountStatus(newValue);
+      }
+    });
+  }
+ void _updateAccountStatus(bool newValue) {
+  // Update the switch state
+  setState(() {
+    isSwitched = newValue;
+  });
 
-    // Kiểm tra kết quả của hộp thoại sau khi nó được đóng
-    if (confirmed != null && confirmed) {
-      // Nếu người dùng nhấn "Đồng ý", thì cập nhật trạng thái của switch
-      setState(() {
-        isSwitched = newValue;
-      });
-    }
+  // Update the account status in the Firebase Realtime Database
+  _databaseReference.child('users').child(widget.userId).update({
+    'status': newValue,
   });
 }
+
+
 }
 
 class _AlertDialog extends StatelessWidget {
-  const _AlertDialog({ Key? key, required this.isSwitched,}) : super(key: key);
+  const _AlertDialog({
+    Key? key,
+    required this.isSwitched,
+  }) : super(key: key);
   final bool isSwitched;
 
   @override
@@ -95,15 +111,17 @@ class _AlertDialog extends StatelessWidget {
           Container(
             child: Row(
               children: [
-                Icon(Icons.notification_important_outlined, color: Colors.black),
+                Icon(Icons.notification_important_outlined,
+                    color: Colors.black),
                 Text("Thông báo"),
               ],
             ),
           ),
         ],
       ),
-      content: Text(
-          isSwitched? "Bạn có muốn mở khóa tài khoản này không?" : "Bạn có muốn khóa tài khoản này không?"),
+      content: Text(isSwitched
+          ? "Bạn có muốn mở khóa tài khoản này không?"
+          : "Bạn có muốn khóa tài khoản này không?"),
       actions: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,

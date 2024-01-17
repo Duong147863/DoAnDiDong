@@ -121,9 +121,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _signIn() async {
-    setState(() {
-      _isSigning = true;
-    });
+    if (mounted) {
+      setState(() {
+        _isSigning = true;
+      });
+    }
 
     String email = _usernameController.text;
     String password = _passwordController.text;
@@ -131,31 +133,46 @@ class _LoginScreenState extends State<LoginScreen> {
     // Kiểm tra tính hợp lệ của tài khoản và mật khẩu
     if (email.isEmpty || password.isEmpty) {
       showSnackBar(context, 'Vui lòng nhập tài khoản và mật khẩu.');
-      setState(() {
-        _isSigning = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isSigning = false;
+        });
+      }
       return;
     }
 
     // Thực hiện đăng nhập với Firebase
     User? user = await _auth.signInWithEmailAndPassword(email, password);
-    setState(() {
-      _isSigning = false;
-    });
+
+    if (mounted) {
+      setState(() {
+        _isSigning = false;
+      });
+    }
 
     if (user != null) {
       // Lấy ID của người dùng đã đăng nhập
       String userId = user.uid;
-      _auth.setUserName(email);
-      print("User is successfully signed in");
-     // Pass user ID to HomeScreen
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NavigationScreen(userId: userId,),
-      ),
-    );
-     print("hahahahahahahahahahaha  $userId");
+
+      // Get the 'status' from the database for the logged-in user
+      bool userStatus = await _auth.getUserStatus(userId);
+
+      if (userStatus) {
+        // Account is active, proceed to HomeScreen
+        _auth.setUserName(email);
+        print("User is successfully signed in");
+        // Pass user ID to HomeScreen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NavigationScreen(userId: userId),
+          ),
+        );
+      } else {
+        // Account is inactive, show a message or handle accordingly
+        print("Đăng nhập thất bại: Tài khoản đã bị khóa.");
+        showSnackBar(context, 'Tài khoản đã bị khóa.');
+      }
     } else {
       print("Đăng nhập thất bại: Tài khoản hoặc mật khẩu không chính xác.");
       showSnackBar(context, 'Tài khoản hoặc mật khẩu không chính xác.');
@@ -250,22 +267,18 @@ class RegisterDialog {
               ),
               TextButton(
                 child: Text('Đăng ký'),
-                onPressed: () async  {
+                onPressed: () async {
                   // Xử lý đăng ký ở đây
                   String username = usernameController.text;
                   String phoneNumber = phoneNumberController.text;
                   String email = emailController.text;
                   String password = passwordController.text;
-
-                   // Gọi hàm đăng ký từ FirebaseAuthService
+                  bool status = true;
+                  // Gọi hàm đăng ký từ FirebaseAuthService
                   FirebaseAuthService authService = FirebaseAuthService();
                   User? user = await authService.signUpWithEmailAndPassword(
-                    username,
-                    phoneNumber,
-                    email,
-                    password,
-                  );
-                   // Kiểm tra xem đăng ký có thành công hay không
+                      username, phoneNumber, email, password, status);
+                  // Kiểm tra xem đăng ký có thành công hay không
                   if (user != null) {
                     print("Đăng ký thành công");
                   } else {
@@ -282,41 +295,52 @@ class RegisterDialog {
       },
     );
   }
-
-  // static void _handleRegistration(String username, String password) {
-  //   // Xử lý đăng ký, bạn có thể thực hiện các bước xác minh và lưu trữ thông tin đăng ký ở đây
-  //   print('Đăng ký với tên người dùng: $username và mật khẩu: $password');
-  // }
 }
 
 class FirebaseAuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  Future<User?> signUpWithEmailAndPassword(
-  String username,
-  String phoneNumber,
-  String email,
-  String password,
-) async {
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-    String uid = userCredential.user?.uid ?? "";
-    saveUserData(uid, username, phoneNumber);
-    return userCredential.user;
-  } catch (e) {
-    print("Error during registration: $e");
+  Future<bool> getUserStatus(String userId) async {
+    try {
+      DataSnapshot statusSnapshot = (await FirebaseDatabase.instance
+              .reference()
+              .child('users')
+              .child(userId)
+              .child('status')
+              .once())
+          .snapshot;
+
+      return (statusSnapshot.value as bool?) ?? false;
+    } catch (e) {
+      print("Error getting user status: $e");
+      return false;
+    }
   }
-}
+
+  Future<User?> signUpWithEmailAndPassword(String username, String phoneNumber,
+      String email, String password, bool status) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      String uid = userCredential.user?.uid ?? "";
+      saveUserData(uid, username, phoneNumber, email, status);
+      return userCredential.user;
+    } catch (e) {
+      print("Error during registration: $e");
+    }
+  }
 
 // Lưu thông tin người dùng vào Realtime Database
-  void saveUserData(String uid, String username, String phoneNumber) {
+  void saveUserData(String uid, String username, String phoneNumber,
+      String email, bool status) {
     final DatabaseReference userRef =
         FirebaseDatabase.instance.reference().child('users').child(uid);
     userRef.set({
       'displayName': username,
       'phoneNumber': phoneNumber,
-      'permission': false
+      'email': email,
+      'status': true,
+      'persission': false
     });
   }
 

@@ -1,3 +1,4 @@
+import 'package:doandidongappthuongmai/view/ManageAccountScreen.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -17,7 +18,17 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Text("hahahaa1 $userId")
+      body: Column(
+        children: [
+          Text("hahahaa1 $userId"),
+          TextButton(
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ManageScreen()));
+      },
+      child: Text("Quản lí tài khoản")
+    )
+        ],
+      )
     );
   }
 }
