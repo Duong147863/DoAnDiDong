@@ -35,6 +35,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: Text('User Profile'),
       ),
       body: Center(
+        // ignore: unnecessary_null_comparison
         child: currentUser != null
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,

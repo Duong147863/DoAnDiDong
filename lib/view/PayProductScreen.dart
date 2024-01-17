@@ -3,7 +3,6 @@ import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
-import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

@@ -131,15 +131,40 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                         children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {
-                             Navigator.push(
+                          onPressed: () async {
+                            List<Cart> _carts= getSelectedProducts();
+                              
+                              if (_carts.length== 0) {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Thông báo'),
+                                      content: Text('Vui lòng chọn sản phẩm !'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              }
+                              else
+                              {
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PaymentScreen(selectedProducts: getSelectedProducts(),
+                                      builder: (context) => PaymentScreen(selectedProducts: _carts,
                                     
                                       ),
                                     ),
                                   );
+                              }
+                            
                             },
                             icon: const Icon(Icons.shopping_cart, color: Colors.black),
                             label: const Text("Mua hàng", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
