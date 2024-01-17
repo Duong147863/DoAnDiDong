@@ -1,3 +1,4 @@
+import 'package:doandidongappthuongmai/components/Navigation.dart';
 import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -143,9 +144,18 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     if (user != null) {
+      // Lấy ID của người dùng đã đăng nhập
+      String userId = user.uid;
       _auth.setUserName(email);
       print("User is successfully signed in");
-      Navigator.pushReplacementNamed(context as BuildContext, "/home");
+     // Pass user ID to HomeScreen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NavigationScreen(userId: userId,),
+      ),
+    );
+     print("hahahahahahahahahahaha  $userId");
     } else {
       print("Đăng nhập thất bại: Tài khoản hoặc mật khẩu không chính xác.");
       showSnackBar(context, 'Tài khoản hoặc mật khẩu không chính xác.');
@@ -306,6 +316,7 @@ class FirebaseAuthService {
     userRef.set({
       'displayName': username,
       'phoneNumber': phoneNumber,
+      'permission': false
     });
   }
 

@@ -11,7 +11,7 @@ import 'package:intl/intl.dart';
 class OrderDetailScreen extends StatefulWidget {
   final OrderDetails orderdetailinfo;
   const OrderDetailScreen({super.key, required this.orderdetailinfo});
-
+  
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
@@ -324,11 +324,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => NavigationScreen()),
-                            (route) => false,
-                          );
+                          // Navigator.pushAndRemoveUntil(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => NavigationScreen()),
+                          //   (route) => false,
+                          // );
                         },
                         style: ElevatedButton.styleFrom(
                           primary: const Color.fromARGB(255, 199, 129, 159),
@@ -394,12 +394,12 @@ class ShowAlertDialog extends  StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-             deletePayment(); 
-             Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => NavigationScreen()),
-              (route) => false,
-            );
+            //  deletePayment(); 
+            //  Navigator.pushAndRemoveUntil(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => NavigationScreen()),
+            //   (route) => false,
+            // );
           },
           child: Text('Đồng ý'),
         ),

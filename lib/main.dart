@@ -30,11 +30,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
       primaryColor: Colors.black
       ),
-   routes: {
-        "/": (context) => LoginScreen(),
-        "/home": (context) => MainScreen(),
-      },
-      initialRoute: '/',
+    home: LoginScreen(),
     );
   }
 }
