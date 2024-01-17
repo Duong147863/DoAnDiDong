@@ -191,23 +191,24 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
             SizedBox(height: 10,),
             Column(
-              children: [
-              Container(
+            children: widget.orderdetailinfo.products.map((product) {
+              return Container(
                 height: 130,
                 padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(bottom: 10), // Để tạo khoảng cách giữa các sản phẩm
                 decoration: BoxDecoration(
-                  border: Border.all(width: 0.1),
-                  color: Colors.white
+                  border: Border.all(color: Colors.black, width: 1.2),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1.2),
+                        border: Border.all(color: Colors.black, width: 1.2),
                       ),
                       margin: EdgeInsets.only(right: 15),
-                      child: Image.asset(widget.orderdetailinfo.image, 
+                      child: Image.asset(
+                        product.image,
                         width: 100,
                         height: 110,
                         fit: BoxFit.fill,
@@ -218,27 +219,34 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text(widget.orderdetailinfo.productName,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),overflow: TextOverflow.ellipsis),
+                          Text(product.productName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                           SizedBox(height: 5),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("x"+ (widget.orderdetailinfo.Quantity).toString(),style: TextStyle(fontSize: 16),),
-                              ],
+                              Row(
+                                children: [
+                                  Text('Số lượng: ', style: TextStyle(fontSize: 16),),
+                                  Text(product.quantity.toString(), style: TextStyle(fontSize: 16),),
+                                ],
+                              ),
+                              Row(
+                                children:[
+                                  (product.promotion == 0)? 
+                                  Text('đ${intToString(product.price)}', style: TextStyle(fontSize: 16)):
+                                  Text('đ${intToString(product.promotion)}', style: TextStyle(fontSize: 16)),
+                                ],
+                              )
+                                                          ],
                           ),
-                          Row(
-                           mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('đ'+ intToString(widget.orderdetailinfo.price),style: TextStyle(fontSize: 16,color: Colors.grey),),
-                              ],
-                          ),
-                          ],
-                        ),
+                        ],
                       ),
-                   ],
-                  ),
+                    ),
+                  ],
                 ),
+              );
+            }).toList(),
+            ),
                 Container(
                   height: 200,
                   width: MediaQuery.sizeOf(context).width,
@@ -340,10 +348,8 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     ),
                   ],
                  ),
-              ],
+             ]
           ),  
-          ],
-        ),
       ),
     );
   }
@@ -355,13 +361,16 @@ class ShowAlertDialog extends  StatelessWidget {
   Widget build(BuildContext context) {
   DatabaseReference paymentRef = FirebaseDatabase.instance.ref().child('orders');
 
-  void deletePayment() {      // Hàm xóa đơn hàng
-    paymentRef.child(orderId).remove().then((_) {
-    }).catchError((error) {
-      
-      print('Lỗi khi xóa đơn hàng: $error');
-    });
-  }
+  void updateStatus() {
+  String newStatus = 'Đã Hủy';
+  paymentRef.child(orderId).update({
+    'status': newStatus,
+  }).then((_) {
+    print('Cập nhật trạng thái thành công');
+  }).catchError((error) {
+    print('Lỗi khi cập nhật trạng thái: $error');
+  });
+}
     return AlertDialog(
       title:Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -388,7 +397,7 @@ class ShowAlertDialog extends  StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-             deletePayment(); 
+             updateStatus(); 
              Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => NavigationScreen()),

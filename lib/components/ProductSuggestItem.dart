@@ -103,7 +103,6 @@ class _ProductItemState extends State<ProductSuggestItem> {
     loadDataFromFirebase();
   }
   void loadDataFromFirebase() async {
-  // print("Load data from Firebase - roomID: ${widget.ProductsaleReference.key}");
   try {
     DatabaseEvent event = await widget.ProductsuggestReference.once();
     DataSnapshot dataSnapshot = event.snapshot;

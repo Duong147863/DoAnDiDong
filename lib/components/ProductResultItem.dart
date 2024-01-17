@@ -1,9 +1,8 @@
-import 'package:doandidongappthuongmai/components/GetCart.dart';
+
 import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:provider/provider.dart';
 
 class ProductResultItem extends StatefulWidget {
 

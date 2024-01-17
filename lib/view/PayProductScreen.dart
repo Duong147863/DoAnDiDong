@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:doandidongappthuongmai/models/load_data.dart';
+import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
@@ -306,23 +307,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // OrderDetails orderDetailsInfo = OrderDetails(
-                      //     image: widget.selectedProducts.,
-                      //     OrderId: orderId,
-                      //     productName: widget.productName,
-                      //     price: widget.price,
-                      //     Quantity: widget.CountQuantity,
-                      //     name: name,
-                      //     phone: phone,
-                      //     address: address,
-                      //     typePayment: typePayment,
-                      //     productmoney: productmoney,
-                      //     deliverycharges: phigiaohang,
-                      //     totalPayment: totalpayment,
-                      //     status: status
-                      //   );
-                      //   saveOrderToFirebase(orderDetailsInfo,orderId);
-                      //  Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,) ),);
+                      OrderDetails orderDetailsInfo = OrderDetails(
+                        OrderId: orderId,
+                        products: widget.selectedProducts, // Thêm danh sách sản phẩm vào đơn hàng
+                        name: name,
+                        phone: phone,
+                        address: address,
+                        typePayment: typePayment,
+                        productmoney: productMoney,
+                        deliverycharges: phigiaohang,
+                        totalPayment: Payment,
+                        status: status,
+                      );
+
+                       saveOrderToFirebase(orderDetailsInfo, orderId);
+                       Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,) ),);
                     },                           //chuyển đến chi tiết hóa đơn
                      
                     style: ElevatedButton.styleFrom(
@@ -438,15 +437,43 @@ String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 10 ký t�
 void saveOrderToFirebase(OrderDetails orderDetails, String orderId) {
   DatabaseReference ordersRef = FirebaseDatabase.instance.ref().child('orders');
   var newOrderRef = ordersRef.child(orderId);
+
+  // Tạo danh sách sản phẩm cho đơn hàng
+  List<Map<String, dynamic>> productsList = [];
+
+  // Lặp qua từng sản phẩm trong danh sách sản phẩm của đơn hàng
+  for (var product in orderDetails.products) {
+  Map<String, dynamic> productData;
+
+  if (product.promotion != null && product.promotion > 0) {
+    // Nếu có khuyến mãi, sử dụng giá khuyến mãi
+    productData = {
+      'productName': product.productName,
+      'price': product.promotion,
+      'quantity': product.quantity,
+    };
+  } else {
+    // Nếu không có khuyến mãi, sử dụng giá gốc
+    productData = {
+      'productName': product.productName,
+      'price': product.price,
+      'quantity': product.quantity,
+    };
+  }
+
+  // Thêm thông tin sản phẩm vào danh sách sản phẩm
+  productsList.add(productData);
+}
+
+
+  // Lưu thông tin đơn hàng và danh sách sản phẩm vào Firebase
   newOrderRef.set({
     'OrderId': orderId,
-    'productName': orderDetails.productName,
-    'price': orderDetails.price,
-    'quantity': orderDetails.Quantity,
     'name': orderDetails.name,
     'phone': orderDetails.phone,
     'address': orderDetails.address,
     'productmoney': orderDetails.productmoney,
-    'status':orderDetails.status
+    'status': orderDetails.status,
+    'products': productsList, // Thêm danh sách sản phẩm vào đơn hàng
   });
 }

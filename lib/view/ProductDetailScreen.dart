@@ -227,10 +227,10 @@ void didChangeDependencies() {
                   onPressed: () {
                     _showBottomSheet(context, widget.image, widget.price, widget.productName, widget.promotion, widget.idproduct);
                   },
-                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
-                  label: const Text("Mua ngay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                  label: const Text("Mua ngay", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green[300],
+                    primary: Colors.pink,
                     side: const BorderSide(color: Colors.black),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
@@ -349,12 +349,12 @@ void didChangeDependencies() {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.green[300],
+                            primary: Colors.pink,
                             side: const BorderSide(color: Colors.black),
                             padding: const EdgeInsets.symmetric(vertical: 15),
                           ),
                           child: const Text("Mua ngay",
-                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
                           ),
                         ),
                       ),
