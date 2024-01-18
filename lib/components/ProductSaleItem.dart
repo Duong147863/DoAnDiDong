@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 
 class ProductSaleItem extends StatefulWidget {
-  ProductSaleItem({Key? key, required this.ProductsaleReference}) : super(key: key);
+  ProductSaleItem({Key? key, required this.ProductsaleReference, required this.id}) : super(key: key);
 
   final DatabaseReference ProductsaleReference;
+  final String id;
 
   @override
   State<ProductSaleItem> createState() => _ProductItemState();
@@ -27,6 +28,7 @@ class _ProductItemState extends State<ProductSaleItem> {
           context,
           MaterialPageRoute(
             builder: (context) => ProductDetailsScreen(
+              Id: widget.id,
               idproduct: products.idproduct,
               image: products.image,
               productName: products.name,

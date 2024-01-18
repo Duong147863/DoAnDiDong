@@ -1,6 +1,10 @@
-
 import 'package:doandidongappthuongmai/components/Navigation.dart';
 import 'package:doandidongappthuongmai/components/GetCart.dart';
+import 'package:doandidongappthuongmai/view/HomeScreen.dart';
+import 'package:doandidongappthuongmai/view/LoginScreen.dart';
+import 'package:doandidongappthuongmai/view/ManageAccountScreen.dart';
+import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
+import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:doandidongappthuongmai/models/firebase_options.dart';
@@ -38,7 +42,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
       primaryColor: Colors.black
       ),
-    home: NavigationScreen(),
+    home: LoginScreen(),
     );
   }
 }

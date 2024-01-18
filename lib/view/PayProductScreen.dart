@@ -8,10 +8,10 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 class PaymentScreen extends StatefulWidget {
- 
+  final String Id;
   final List<Cart> selectedProducts;
  
-  const PaymentScreen({Key? key ,required this.selectedProducts}) : super(key: key);
+  const PaymentScreen({Key? key ,required this.selectedProducts, required this.Id}) : super(key: key);
   
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -321,7 +321,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       );
 
                        saveOrderToFirebase(orderDetailsInfo, orderId);
-                       Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,) ),);
+                       Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,Id: widget.Id,) ),);
                     },                           //chuyển đến chi tiết hóa đơn
                      
                     style: ElevatedButton.styleFrom(

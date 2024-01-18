@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 
 class SectionList extends StatefulWidget {
   final List<CategoryData> categories;
-
-  const SectionList({Key? key, required this.categories}) : super(key: key);
+  final String id;
+  const SectionList({Key? key, required this.categories, required this.id}) : super(key: key);
 
   @override
   _SectionListState createState() => _SectionListState();
@@ -81,6 +81,7 @@ class _SectionListState extends State<SectionList> {
               return ProductSellItem(
                 key: ValueKey<String>(productDetails.id),
                 ProductsellReference: FirebaseDatabase.instance.ref().child('productsell').child(productDetails.id.toString()),
+                id: widget.id,
               );
             },
           ),

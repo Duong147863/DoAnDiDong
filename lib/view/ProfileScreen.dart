@@ -1,8 +1,11 @@
+import 'package:doandidongappthuongmai/view/ManageAccountScreen.dart';
+import 'package:doandidongappthuongmai/view/LoginScreen.dart'; // Import your LoginScreen
 import 'package:flutter/material.dart';
 import '../models/load_data.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key});
+  final String Id;
+  const ProfileScreen({Key? key, required this.Id});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -14,7 +17,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadCurrentUser("user2"); // Thay "user1" bằng ID hoặc key của người dùng bạn muốn hiển thị
+    _loadCurrentUser(widget.Id); // Thay "user1" bằng ID hoặc key của người dùng bạn muốn hiển thị
   }
 
   void _loadCurrentUser(String userId) async {
@@ -40,9 +43,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('ID: ${currentUser.iduser}'),
+                  
                   Text('Name: ${currentUser.name}'),
                   Text('Email: ${currentUser.email}'),
+                  Text('Chức vụ: ${currentUser.typeaccount ? "Admin" : "Người dùng"}'),
+                  Text('Số điện thoại: ${currentUser.phone}')
                   // Add more fields as needed
                 ],
               )

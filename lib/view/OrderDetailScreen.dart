@@ -9,8 +9,9 @@ import 'package:intl/intl.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final OrderDetails orderdetailinfo;
-  const OrderDetailScreen({super.key, required this.orderdetailinfo});
-
+  final String Id;
+  const OrderDetailScreen({super.key, required this.orderdetailinfo, required this.Id});
+  
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
 }
@@ -310,7 +311,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return ShowAlertDialog(orderId: widget.orderdetailinfo.OrderId,);
+                            return ShowAlertDialog(orderId: widget.orderdetailinfo.OrderId,userId: widget.Id,);
                           },
                         );
                         },
@@ -331,11 +332,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => NavigationScreen()),
-                            (route) => false,
-                          );
+                          // Navigator.pushAndRemoveUntil(
+                          //   context,
+                          //   MaterialPageRoute(builder: (context) => NavigationScreen()),
+                          //   (route) => false,
+                          // );
                         },
                         style: ElevatedButton.styleFrom(
                           primary: const Color.fromARGB(255, 199, 129, 159),
@@ -355,8 +356,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
   }
 }
 class ShowAlertDialog extends  StatelessWidget {
-  const ShowAlertDialog({Key? key,required this.orderId }) : super(key: key);
+  const ShowAlertDialog({Key? key,required this.orderId, required this.userId}) : super(key: key);
   final String orderId;
+  final String userId;
   @override
   Widget build(BuildContext context) {
   DatabaseReference paymentRef = FirebaseDatabase.instance.ref().child('orders');
@@ -397,10 +399,10 @@ class ShowAlertDialog extends  StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-             updateStatus(); 
+             updateStatus();
              Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => NavigationScreen()),
+              MaterialPageRoute(builder: (context) => NavigationScreen(userId: userId,)),
               (route) => false,
             );
           },

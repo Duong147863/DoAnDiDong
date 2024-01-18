@@ -5,9 +5,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 
 class SearchResult extends StatefulWidget {
-  SearchResult({super.key, required this.searchText});
+  SearchResult({super.key, required this.searchText, required this.id});
   final String searchText;
-
+  final String id;
   @override
   State<SearchResult> createState() => _SearchResultState();
 }
@@ -76,6 +76,7 @@ class _SearchResultState extends State<SearchResult> {
                             children: [
                               ProductResultItem(key: ValueKey<String>(searchResults[index*2].id),
                                 ProductReference:FirebaseDatabase.instance.ref().child('products').child(searchResults[index*2].id.toString()) ,
+                                id: widget.id,
                                 ),
                             ],
                           );
@@ -84,9 +85,11 @@ class _SearchResultState extends State<SearchResult> {
                             children: [
                               ProductResultItem(key: ValueKey<String>(searchResults[index*2].id),
                                 ProductReference:FirebaseDatabase.instance.ref().child('products').child(searchResults[index*2].id.toString()) ,
+                                id: widget.id,
                                 ),
                               ProductResultItem(key: ValueKey<String>(searchResults[index*2+1].id),
                                 ProductReference:FirebaseDatabase.instance.ref().child('products').child(searchResults[index*2+1].id.toString()) ,
+                                id: widget.id,
                                 ),
                             ],
                           );

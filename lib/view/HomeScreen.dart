@@ -12,8 +12,9 @@ import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
-
+  final String Id;
+  const MainScreen({super.key, required this.Id});
+  
   @override
   State<MainScreen> createState() => _MainScreenState();
 }
@@ -61,7 +62,7 @@ class _MainScreenState extends State<MainScreen> {
         onTap: () {
         Navigator.push( context,
         PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => SearchScreen(),     // chuyển đến trang tìm kiếm
+          pageBuilder: (context, animation, secondaryAnimation) => SearchScreen(id: widget.Id,),     // chuyển đến trang tìm kiếm
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             const begin = Offset(1.0, 0.0);    // Điểm bắt đầu của hiệu ứng chuyển động (phải)
             const end = Offset.zero;           // Điểm kết thúc của hiệu ứng chuyển động (đến)
@@ -111,7 +112,7 @@ class _MainScreenState extends State<MainScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>  ShoppingCartScreen()    //chuyển đến giỏ hàng
+                      builder: (context) =>  ShoppingCartScreen(Id: widget.Id,)    //chuyển đến giỏ hàng
                     ),
                   ).then((value) {
                         if (value != null && value) {
@@ -172,18 +173,18 @@ class _MainScreenState extends State<MainScreen> {
               ),
             ],
           ),
-          child:const Column(
+          child: Column(
             children: [
               Wrap(           // tạo danh mục sản phẩm co khoảng cách = nhau
                 children: [
-                  ProductCategory(image: "assets/img/chao.png",text: "Chảo",CategoryId: "4"),
-                  ProductCategory(image: "assets/img/noi.png", text: "Nồi",CategoryId: "3"),
-                  ProductCategory(image: "assets/img/chen.jpg", text: "Chén, bát",CategoryId: "7"),
-                  ProductCategory(image: "assets/img/dua.png", text: "Đũa",CategoryId: "5"),
-                  ProductCategory(image: "assets/img/ly.png", text: "Ly",CategoryId: "2"),
-                  ProductCategory(image: "assets/img/manboc.png", text: "Màng bọc",CategoryId: "1"),
-                  ProductCategory(image: "assets/img/noicomdien.jpg", text: "Nồi cơm điện",CategoryId: "6"),
-                  ProductCategory(image: "assets/img/ruachen.png", text: "Đồ rửa chén",CategoryId: "8"),
+                  ProductCategory(image: "assets/img/chao.png",text: "Chảo",CategoryId: "4", id: widget.Id,),
+                  ProductCategory(image: "assets/img/noi.png", text: "Nồi",CategoryId: "3", id: widget.Id),
+                  ProductCategory(image: "assets/img/chen.jpg", text: "Chén, bát",CategoryId: "7", id: widget.Id),
+                  ProductCategory(image: "assets/img/dua.png", text: "Đũa",CategoryId: "5", id: widget.Id),
+                  ProductCategory(image: "assets/img/ly.png", text: "Ly",CategoryId: "2", id: widget.Id),
+                  ProductCategory(image: "assets/img/manboc.png", text: "Màng bọc",CategoryId: "1", id: widget.Id),
+                  ProductCategory(image: "assets/img/noicomdien.jpg", text: "Nồi cơm điện",CategoryId: "6", id: widget.Id),
+                  ProductCategory(image: "assets/img/ruachen.png", text: "Đồ rửa chén",CategoryId: "8", id: widget.Id),
                 ],
               ),
             ],
@@ -217,6 +218,7 @@ class _MainScreenState extends State<MainScreen> {
                     CategoryData(id: '7', name: 'Chén,bát'),
                     CategoryData(id: '8', name: 'Đồ rửa chén'),
                   ],
+                  id: widget.Id,
                 ),
               Positioned(        // đặt vị trí tiêu đề
                 top:17,
@@ -299,6 +301,7 @@ class _MainScreenState extends State<MainScreen> {
                       itemBuilder: (context, index) {
                         var productsale =allProductsale[index] ;
                         return ProductSaleItem(ProductsaleReference: FirebaseDatabase.instance.ref().child('productsales').child(productsale.id.toString()),
+                        id: widget.Id,
                         
                         );
                       },
@@ -371,6 +374,7 @@ class _MainScreenState extends State<MainScreen> {
                             children: [
                             ProductSuggestItem(
                               ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
+                             id: widget.Id,
                              ),
                             ],
                           );
@@ -380,9 +384,11 @@ class _MainScreenState extends State<MainScreen> {
                             children: [
                               ProductSuggestItem(
                                 ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
+                                id: widget.Id,
                                 ),
                               ProductSuggestItem(
                                 ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2+1].id.toString()) ,
+                                id: widget.Id,
                                 ),
                             ],
                           );
@@ -408,14 +414,15 @@ class ProductCategory extends StatelessWidget {
   final String image;
   final String text;
   final String CategoryId;
-  const ProductCategory({Key? key, required this.image, required this.text, required this.CategoryId}) : super(key: key);
+  final String id;
+  const ProductCategory({Key? key, required this.image, required this.text, required this.CategoryId, required this.id}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         Navigator.push(context,
-        MaterialPageRoute(builder: (context) => CategoryItem(CategoryId: CategoryId, name: text,), ),); // chuyển đến 1 danh mục được chọn
+        MaterialPageRoute(builder: (context) => CategoryItem(CategoryId: CategoryId, name: text,id:id,), ),); // chuyển đến 1 danh mục được chọn
         },  //
       child: Container(
         width: MediaQuery.of(context).size.width / 4.5,

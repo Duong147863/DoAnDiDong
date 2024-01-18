@@ -3,8 +3,8 @@ import 'package:doandidongappthuongmai/view/NotificationScreen.dart';
 import 'package:doandidongappthuongmai/view/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 class NavigationScreen extends StatefulWidget {
-  const NavigationScreen({super.key});
-
+  const NavigationScreen({super.key,required this.userId});
+   final String userId;
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();
 }
@@ -16,9 +16,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
     return Scaffold(
       body: IndexedStack(        //IndexedStack được sử dụng để hiển thị một trong ba trang tương ứng với chỉ mục được chọn
         children: [
-          MainScreen(),
+          MainScreen(Id: widget.userId,),
           NotificationScreen(),
-          ProfileScreen()
+          ProfileScreen(Id: widget.userId,)
         ],
         index: _selectedScreen,
       ),

@@ -3,7 +3,8 @@ import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:flutter/material.dart';
 class ShoppingCartScreen extends StatefulWidget {
-  const ShoppingCartScreen({Key? key});
+  final String Id;
+  const ShoppingCartScreen({Key? key, required this.Id});
 
   @override
   State<ShoppingCartScreen> createState() => _ShoppingCartScreenState();
@@ -158,7 +159,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => PaymentScreen(selectedProducts: _carts,
+                                      builder: (context) => PaymentScreen(selectedProducts: _carts,Id: widget.Id,
                                     
                                       ),
                                     ),

@@ -274,24 +274,16 @@ class ProductSell{
 
 
 class User {
-  String iduser;
   String name;
   String email;
   String phone;
-  String address;
-  String image;
-  String imageBackground;
-  String typeaccount;
-  String status;
+  bool typeaccount;
+  bool status;
 
   User({
-    required this.iduser,
     required this.name,
     required this.email,
     required this.phone,
-    required this.address,
-    required this.image,
-    required this.imageBackground,
     required this.typeaccount,
     required this.status,
   });
@@ -299,15 +291,11 @@ class User {
   factory User.fromSnapshot(DataSnapshot snapshot) {
     Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
     return User(
-      iduser: data['iduser'] ?? "",
-      name: data['name'] ?? "",
+      name: data['displayName'] ?? "",
       email: data['email'] ?? "",
-      phone: data['phone'] ?? "",
-      address: data['address'] ?? "",
-      image: data['image'] ?? "",
-      imageBackground: data['imageBackground'] ?? "",
-      typeaccount: data['typeaccount'] ?? "",
-      status: data['status'] ?? "",
+      phone: data['phoneNumber'] ?? "",
+      typeaccount: data['persission'] ?? false,
+      status: data['status'] ?? true,
     );
   }
 

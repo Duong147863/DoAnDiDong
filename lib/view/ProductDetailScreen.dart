@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
+  final String Id;
   final String idproduct;
   final String image;
   final String productName;
@@ -19,6 +20,7 @@ class ProductDetailsScreen extends StatefulWidget {
 
   const ProductDetailsScreen({
     Key? key,
+    required this.Id,
     required this.idproduct,
     required this.image,
     required this.productName,
@@ -105,7 +107,7 @@ void didChangeDependencies() {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ShoppingCartScreen(),
+                          builder: (context) => ShoppingCartScreen(Id: widget.Id,),
                         ),
                       ).then((value) {
                         if (value != null && value) {
@@ -225,7 +227,7 @@ void didChangeDependencies() {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    _showBottomSheet(context, widget.image, widget.price, widget.productName, widget.promotion, widget.idproduct);
+                    _showBottomSheet(context, widget.image, widget.price, widget.productName, widget.promotion, widget.idproduct, widget.Id);
                   },
                   icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
                   label: const Text("Mua ngay", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
@@ -244,7 +246,7 @@ void didChangeDependencies() {
     );
   }
 
-  _showBottomSheet(BuildContext context, String image, int price, String productName, int promotion, String idproduct) {
+  _showBottomSheet(BuildContext context, String image, int price, String productName, int promotion, String idproduct, String userId) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -342,6 +344,7 @@ void didChangeDependencies() {
                               MaterialPageRoute(
                                 builder: (context) => PaymentScreen(
                                   selectedProducts: selectedProducts,
+                                  Id: widget.Id,
                                 ),
                               ),
                             ).then((value) {

@@ -5,9 +5,9 @@ import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class ProductResultItem extends StatefulWidget {
-
+  final String id;
   final DatabaseReference ProductReference;
-  const ProductResultItem({Key? key,required this.ProductReference}) : super(key: key);
+  const ProductResultItem({Key? key,required this.ProductReference, required this.id}) : super(key: key);
   @override
   State<ProductResultItem> createState() => _ProductItemState();
 } 
@@ -23,6 +23,7 @@ class _ProductItemState extends State<ProductResultItem> {
       onTap: () {
         Navigator.push(context,MaterialPageRoute(
           builder: (context) => ProductDetailsScreen( 
+            Id: widget.id,
             idproduct: products.idproduct,
             image: products.image,
             productName: products.name,
