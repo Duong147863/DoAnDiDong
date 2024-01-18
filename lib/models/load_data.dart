@@ -277,8 +277,10 @@ class User {
   String name;
   String email;
   String phone;
+  String address;
   bool typeaccount;
   bool status;
+
 
   User({
     required this.name,
@@ -286,6 +288,7 @@ class User {
     required this.phone,
     required this.typeaccount,
     required this.status,
+    required this.address
   });
 
   factory User.fromSnapshot(DataSnapshot snapshot) {
@@ -294,8 +297,10 @@ class User {
       name: data['displayName'] ?? "",
       email: data['email'] ?? "",
       phone: data['phoneNumber'] ?? "",
+      address: data['address'] ?? "",
       typeaccount: data['persission'] ?? false,
       status: data['status'] ?? true,
+
     );
   }
 

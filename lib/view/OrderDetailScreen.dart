@@ -1,7 +1,7 @@
 
 import 'package:doandidongappthuongmai/components/Navigation.dart';
+import 'package:doandidongappthuongmai/models/local_notification.dart';
 import 'package:doandidongappthuongmai/models/orderdetail.dart';
-
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +14,7 @@ class OrderDetailScreen extends StatefulWidget {
   
   @override
   State<OrderDetailScreen> createState() => _OrderDetailScreenState();
-}
-
+  }
   String getToday() {     //lấy ngày hiện tại và thời gian hiện tại
     DateTime now = DateTime.now();
     String formattedToday = DateFormat('dd-MM-yyyy hh:mm').format(now);
@@ -332,11 +331,11 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          // Navigator.pushAndRemoveUntil(
-                          //   context,
-                          //   MaterialPageRoute(builder: (context) => NavigationScreen()),
-                          //   (route) => false,
-                          // );
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => NavigationScreen(userId: widget.Id,)),
+                            (route) => false,
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           primary: const Color.fromARGB(255, 199, 129, 159),
@@ -365,8 +364,7 @@ class ShowAlertDialog extends  StatelessWidget {
 
   void updateStatus() {
   String newStatus = 'Đã Hủy';
-  paymentRef.child(orderId).update({
-    'status': newStatus,
+  paymentRef.child(orderId).update({'status': newStatus,
   }).then((_) {
     print('Cập nhật trạng thái thành công');
   }).catchError((error) {
@@ -398,8 +396,11 @@ class ShowAlertDialog extends  StatelessWidget {
           child: Text('Không'),
         ),
         TextButton(
-          onPressed: () {
+          onPressed: () async {
+             await initNotifications();
+
              updateStatus();
+             showNotificationOderDelete(orderId);
              Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => NavigationScreen(userId: userId,)),

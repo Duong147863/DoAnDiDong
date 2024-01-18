@@ -12,7 +12,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late User currentUser;
+   User currentUser =User(name:"", email: "", phone: "", typeaccount: false, status: true, address:"");
 
   @override
   void initState() {
@@ -43,12 +43,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  
                   Text('Name: ${currentUser.name}'),
                   Text('Email: ${currentUser.email}'),
                   Text('Chức vụ: ${currentUser.typeaccount ? "Admin" : "Người dùng"}'),
                   Text('Số điện thoại: ${currentUser.phone}')
-                  // Add more fields as needed
                 ],
               )
             : Text('User not found'),

@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:doandidongappthuongmai/main.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
@@ -7,9 +8,15 @@ import 'package:doandidongappthuongmai/models/orderdetail.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:doandidongappthuongmai/models/local_notification.dart';
+
+
 class PaymentScreen extends StatefulWidget {
   final String Id;
   final List<Cart> selectedProducts;
+  
  
   const PaymentScreen({Key? key ,required this.selectedProducts, required this.Id}) : super(key: key);
   
@@ -43,18 +50,15 @@ class PaymentScreen extends StatefulWidget {
     int money = (price * Quantity);
     return intToString(money);
   }
-  
-
 // tạo thông tin mặc định
 String typePayment ="Tiền mặt khi nhận hàng";
 const String phigiaohang="15.000";
-const String name ="HuynhThanhDuy";
-const String phone ="0192888888";
-const String address= "45/6 Trần đình xu, Cô giang , Q1 ,Tp. Hồ Chí Minh";
 const String status= "Đang xử lý";
 
 class _PaymentScreenState extends State<PaymentScreen> {
   late String orderId;
+ 
+  User users =User(name:"", email: "", phone: "", typeaccount: false, status: true, address:"");
   String productMoney = "0";  // Tổng tiền hàng
   String Payment = "0";  // Tổng đơn (tổng tiền hàng + phí giao hàng)
 
@@ -62,8 +66,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void initState() {
     super.initState();
     loadOrderId();
+    loadCurrentUser(widget.Id);
   }
 
+  void loadCurrentUser(String userId) async {
+    try {
+      User user = await User.fetchUser(userId);
+      setState(() {
+        users = user;
+      });
+    } catch (error) {
+      print("Error loading user data: $error");
+    }
+  }
   void loadOrderId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -83,7 +98,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   int calculateProductMoney() {
       int total = 0;
       for (var product in widget.selectedProducts) {
-        // Sử dụng trường promotion để xác định giảm giá
         int discountedPrice = getPromotionOrPrice(product.price, product.promotion);
         total += discountedPrice * product.quantity;
       }
@@ -118,21 +132,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
           Column(
             children: [
             Container(
-              height: 150,
+              height: 140,
               padding: EdgeInsets.fromLTRB(35, 5, 0, 0),
                decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Colors.black, width: 1.2),
               ),
-              child:const Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                Row(children: [Text(name,style: TextStyle(fontSize: 17)),],),
+                Row(children: [Text(users.name,style: TextStyle(fontSize: 17)),],),
                 SizedBox(height: 13,),
-                Row(children: [Text(phone,style: TextStyle(fontSize: 17),),],),
+                Row(children: [Text(users.phone,style: TextStyle(fontSize: 17),),],),
                 SizedBox(height: 13,),
                 Expanded(
-                  child: Text(address,
+                  child: Text(users.address,
                       style: TextStyle(fontSize: 17),
                       softWrap: true,
                       maxLines: 3,
@@ -140,11 +154,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                   ],
                 ),
-              
               ),
             ],
           ),
-          SizedBox(height: 20,),
+          SizedBox(height: 10,),
            Column(
             children: widget.selectedProducts.map((product) {
               return Container(
@@ -192,7 +205,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   Text('đ${intToString(product.promotion)}', style: TextStyle(fontSize: 16)),
                                 ],
                               )
-                                                          ],
+                              ],
                           ),
                         ],
                       ),
@@ -306,20 +319,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await initNotifications();
                       OrderDetails orderDetailsInfo = OrderDetails(
                         OrderId: orderId,
                         products: widget.selectedProducts, // Thêm danh sách sản phẩm vào đơn hàng
-                        name: name,
-                        phone: phone,
-                        address: address,
+                        name: users.name,
+                        phone: users.phone,
+                        address: users.address,
                         typePayment: typePayment,
                         productmoney: productMoney,
                         deliverycharges: phigiaohang,
                         totalPayment: Payment,
                         status: status,
                       );
-
+                      showOrderSuccessNotification();
+                    
                        saveOrderToFirebase(orderDetailsInfo, orderId);
                        Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,Id: widget.Id,) ),);
                     },                           //chuyển đến chi tiết hóa đơn
@@ -418,8 +433,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       )
     ),
   );
- }
- 
+ } 
 }
 
 String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 10 ký tự
@@ -437,36 +451,25 @@ String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 10 ký t�
 void saveOrderToFirebase(OrderDetails orderDetails, String orderId) {
   DatabaseReference ordersRef = FirebaseDatabase.instance.ref().child('orders');
   var newOrderRef = ordersRef.child(orderId);
-
-  // Tạo danh sách sản phẩm cho đơn hàng
   List<Map<String, dynamic>> productsList = [];
-
-  // Lặp qua từng sản phẩm trong danh sách sản phẩm của đơn hàng
   for (var product in orderDetails.products) {
   Map<String, dynamic> productData;
 
   if (product.promotion != null && product.promotion > 0) {
-    // Nếu có khuyến mãi, sử dụng giá khuyến mãi
     productData = {
       'productName': product.productName,
       'price': product.promotion,
       'quantity': product.quantity,
     };
   } else {
-    // Nếu không có khuyến mãi, sử dụng giá gốc
     productData = {
       'productName': product.productName,
       'price': product.price,
       'quantity': product.quantity,
     };
   }
-
-  // Thêm thông tin sản phẩm vào danh sách sản phẩm
   productsList.add(productData);
 }
-
-
-  // Lưu thông tin đơn hàng và danh sách sản phẩm vào Firebase
   newOrderRef.set({
     'OrderId': orderId,
     'name': orderDetails.name,
@@ -474,6 +477,6 @@ void saveOrderToFirebase(OrderDetails orderDetails, String orderId) {
     'address': orderDetails.address,
     'productmoney': orderDetails.productmoney,
     'status': orderDetails.status,
-    'products': productsList, // Thêm danh sách sản phẩm vào đơn hàng
+    'products': productsList, 
   });
 }
