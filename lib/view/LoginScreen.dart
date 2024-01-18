@@ -131,11 +131,14 @@ class _LoginScreenState extends State<LoginScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? storedEmail = prefs.getString('storedEmail');
     String? storedPassword = prefs.getString('storedPassword');
-    if (storedEmail != null && storedEmail.isNotEmpty && storedPassword != null && storedPassword.isNotEmpty) {
+    if (storedEmail != null &&
+        storedEmail.isNotEmpty &&
+        storedPassword != null &&
+        storedPassword.isNotEmpty) {
       // Nếu có email đã lưu, bạn có thể tự động điền vào trường email
       // và tiếp tục quá trình đăng nhập
       _usernameController.text = storedEmail;
-      _passwordController.text=storedPassword;
+      _passwordController.text = storedPassword;
     }
   }
 
@@ -209,6 +212,7 @@ class RegisterDialog {
     TextEditingController phoneNumberController = TextEditingController();
     TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+    TextEditingController confirmPasswordController = TextEditingController();
 
     return showDialog(
       context: context,
@@ -270,6 +274,7 @@ class RegisterDialog {
                   Padding(
                     padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
                     child: TextField(
+                      controller: confirmPasswordController,
                       obscureText: true,
                       decoration: InputDecoration(
                           labelText: 'Mật khẩu nhập lại',
@@ -341,17 +346,20 @@ class FirebaseAuthService {
   }
 
   Future<User?> signUpWithEmailAndPassword(String username, String phoneNumber,
-      String email, String password, bool status) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      String uid = userCredential.user?.uid ?? "";
-      saveUserData(uid, username, phoneNumber, email, status);
-      return userCredential.user;
-    } catch (e) {
-      print("Error during registration: $e");
-    }
+    String email, String password, bool status) async {
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(email: email, password: password);
+    String uid = userCredential.user?.uid ?? "";
+    
+    saveUserData(uid, username, phoneNumber, email, status);
+
+    return userCredential.user;
+  } catch (e) {
+    print("Error during registration: $e");
+    return null; // Return null to indicate registration failure
   }
+}
 
 // Lưu thông tin người dùng vào Realtime Database
   void saveUserData(String uid, String username, String phoneNumber,
