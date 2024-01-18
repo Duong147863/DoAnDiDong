@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -120,6 +121,24 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  @override
+  void initState() {
+    super.initState();
+    _loadStoredCredentials();
+  }
+
+  Future<void> _loadStoredCredentials() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? storedEmail = prefs.getString('storedEmail');
+    String? storedPassword = prefs.getString('storedPassword');
+    if (storedEmail != null && storedEmail.isNotEmpty && storedPassword != null && storedPassword.isNotEmpty) {
+      // Nếu có email đã lưu, bạn có thể tự động điền vào trường email
+      // và tiếp tục quá trình đăng nhập
+      _usernameController.text = storedEmail;
+      _passwordController.text=storedPassword;
+    }
+  }
+
   void _signIn() async {
     if (mounted) {
       setState(() {
@@ -160,7 +179,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (userStatus) {
         // Account is active, proceed to HomeScreen
         _auth.setUserName(email);
-        print("User is successfully signed in");
+
+        // Save email to local storage for automatic login
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('storedEmail', email);
+        prefs.setString('storedPassword', password);
         // Pass user ID to HomeScreen
         Navigator.pushReplacement(
           context,
