@@ -1,11 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:doandidongappthuongmai/models/load_data.dart';
 
 class OrderDetails {
   final String OrderId;
-  final String image;
-  final String productName;
-  final int price;
-  final int Quantity;
+  final List<Cart> products; // Thêm danh sách sản phẩm
   final String name;
   final String phone;
   final String address;
@@ -13,20 +10,18 @@ class OrderDetails {
   final String productmoney;
   final String deliverycharges;
   final String totalPayment;
+  final String status;
 
   OrderDetails({
     required this.OrderId,
-    required this.image,
-    required this.productName,
-    required this.price,
-    required this.Quantity,
+    required this.products,
     required this.name,
     required this.phone,
     required this.address,
     required this.typePayment,
     required this.productmoney,
     required this.deliverycharges,
-    required this.totalPayment
-
+    required this.totalPayment,
+    required this.status,
   });
 }

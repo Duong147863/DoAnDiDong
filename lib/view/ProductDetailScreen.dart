@@ -1,8 +1,15 @@
+import 'package:doandidongappthuongmai/components/GetCart.dart';
+import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:doandidongappthuongmai/view/ProductCartScreen.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
+  final String Id;
+  final String idproduct;
   final String image;
   final String productName;
   final int price;
@@ -10,31 +17,78 @@ class ProductDetailsScreen extends StatefulWidget {
   final String description;
   final int quantity;
   final String producer;
-  
+
   const ProductDetailsScreen({
     Key? key,
+    required this.Id,
+    required this.idproduct,
     required this.image,
     required this.productName,
     required this.price,
     required this.promotion,
     required this.producer,
     required this.quantity,
-    required this.description
+    required this.description,
   }) : super(key: key);
+  
 
   @override
   _ProductDetailsScreenState createState() => _ProductDetailsScreenState();
+  
 }
 
+int getPromotionOrPrice(int Price, int promotion) {
+  return (promotion > 0) ? promotion : Price;
+}
+
+Future<int> getCartItemCount() async {
+  DatabaseReference cartRef = FirebaseDatabase.instance.ref().child('carts');
+  DatabaseEvent event = await cartRef.once();
+  DataSnapshot snapshot = event.snapshot;
+
+  if (snapshot.value is Map) {
+    int itemCount = (snapshot.value as Map).length;
+    return itemCount;
+  } else {
+    return 0; // Hoặc giá trị mặc định nếu không phải là Map
+  }
+}
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
-  int totalCartQuantity = 0;  //số lượng trong giỏ hàng
-  int countquantity = 1;  //số lượng sản phẩm
+  int totalCartQuantity =0;
+  int countquantity = 1;
 
   @override
+  void initState() {
+    super.initState();
+    loadCartQuantity();
+  }
+  void loadCartQuantity() async {
+    int quantity = await getCartItemCount();
+    setState(() {
+      totalCartQuantity = quantity;
+     
+    });
+  }
+  @override
+void didChangeDependencies() {
+  super.didChangeDependencies();
+  loadCartQuantity();
+}
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+          Navigator.pop(context,true);
+          return true;
+      },child:Scaffold(
       appBar: AppBar(
-        title: Text('Product Details', style: TextStyle(color: Colors.black)),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context,true);
+            },
+          ),
+        title: Text('Chi tiết sản phẩm', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.pink[50],
         iconTheme: IconThemeData(color: Colors.black),
         elevation: 0.0,
@@ -47,15 +101,22 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  IconButton(
+                 IconButton(
                     icon: const Icon(Icons.shopping_cart, color: Colors.red, size: 30),
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ShoppingCartScreen(),
+                          builder: (context) => ShoppingCartScreen(Id: widget.Id,),
                         ),
-                      );
+                      ).then((value) {
+                        if (value != null && value) {
+                          setState(() {
+                            loadCartQuantity();
+                            Provider.of<CartProvider>(context, listen: false).loadCartQuantity(); 
+                         });
+                        }
+                      });
                     },
                   ),
                 ],
@@ -70,7 +131,8 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       color: Colors.yellow,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text('${totalCartQuantity.toString()}',
+                    child: Text(
+                      '${totalCartQuantity.toString()}',
                       style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                   ),
@@ -91,8 +153,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.productName,style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),softWrap: true),
-                SizedBox(height: 10),
-                Text('${widget.promotion.toString()}đ',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.red)),
                 SizedBox(height: 10),
                 Row(
                   children: [
@@ -136,11 +196,38 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          totalCartQuantity = totalCartQuantity + 1;
-                        });
-                      },
+                       onPressed: () async {
+                    if (totalCartQuantity >= 10) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Thông báo'),
+                            content: Text('Giỏ hàng đã đầy, không thể thêm sản phẩm mới.'),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text('OK'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      Cart carts = Cart(
+                        promotion: widget.promotion,
+                        image: widget.image,
+                        CartId: widget.idproduct,
+                        productName: widget.productName,
+                        price: widget.price,
+                        isSelected:false,
+                        quantity: 1,
+                      );
+                      saveProductToFirebase(carts, widget.idproduct);
+                    }
+                  },
                       icon: const Icon(Icons.add_shopping_cart, color: Colors.black),
                       label: const Text("Thêm giỏ hàng", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
                       style: ElevatedButton.styleFrom(
@@ -154,7 +241,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        _showBottomSheet(context, widget.image, widget.price,widget.productName, widget.promotion);   // hiện bottomSheet 
+                        _showBottomSheet(context, widget.image, widget.price, widget.productName, widget.promotion, widget.idproduct, widget.Id);
                       },
                       icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
                       label: const Text("Mua ngay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
@@ -168,10 +255,11 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ],
         ),
       ),
+      )
     );
   }
-  
-_showBottomSheet(BuildContext context, String image, int price, String productName, int promotion,) {
+
+  _showBottomSheet(BuildContext context, String image, int price, String productName, int promotion, String idproduct, String userId) {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -187,34 +275,34 @@ _showBottomSheet(BuildContext context, String image, int price, String productNa
                     children: [
                       Image.asset(image, height: 150, width: 150),
                       SizedBox(width: 10,),
-                          Row(
-                           children: [
-                              if (promotion > 0)
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text('${promotion}đ',style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold)),
-                                    Text('${price}đ',
-                                        style: const TextStyle(
-                                          fontSize: 16,
-                                          decoration: TextDecoration.lineThrough,
-                                          color: Colors.grey,
-                                        ),
-                                    ),
-                                  ],
+                      Row(
+                        children: [
+                          if (promotion > 0)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${promotion}đ', style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold)),
+                                Text( '${price}đ',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    decoration: TextDecoration.lineThrough,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              if ((promotion == 0) && price > 0)
-                              Text( '${price}đ',
-                                style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
-                              ),
-                          ],
-                        ),
+                              ],
+                            ),
+                          if ((promotion == 0) && price > 0)
+                            Text( '${price}đ',
+                              style: const TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
+                            ),
                         ],
                       ),
+                    ],
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Số lượng",style: TextStyle(fontSize: 17),),
+                      Text("Số lượng", style: TextStyle(fontSize: 17),),
                       Container(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -230,7 +318,7 @@ _showBottomSheet(BuildContext context, String image, int price, String productNa
                                 });
                               },
                             ),
-                            Text('$countquantity',style: TextStyle(fontSize: 17),),
+                            Text('$countquantity', style: TextStyle(fontSize: 17),),
                             IconButton(
                               icon: Icon(Icons.add),
                               onPressed: () {
@@ -246,28 +334,48 @@ _showBottomSheet(BuildContext context, String image, int price, String productNa
                   ),
                   SizedBox(height: 16),
                   Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                         Navigator.push(context,MaterialPageRoute(builder: (context) => PaymentScreen( image: image,price: price, productName: productName, CountQuantity: countquantity,),),
-                          ).then((value) {
-                            // Đóng BottomSheet khi quay lại từ trang thanh toán
-                            Navigator.pop(context);
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.green[300],
-                          side: const BorderSide(color: Colors.black),
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                        ),
-                        child:const Text("Mua ngay",style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            int Price = getPromotionOrPrice(price, promotion);
+                            List<Cart> selectedProducts = [
+                              Cart(
+                                CartId:idproduct,
+                                productName: productName,
+                                image: image,
+                                price: Price,
+                                quantity: countquantity,
+                                promotion: promotion,
+                                isSelected: true
+                              ),
+                              // Add more Cart objects if needed
+                            ];
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PaymentScreen(
+                                  selectedProducts: selectedProducts,
+                                  Id: widget.Id,
+                                ),
+                              ),
+                            ).then((value) {
+                              Navigator.pop(context);
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.pink,
+                            side: const BorderSide(color: Colors.black),
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                          ),
+                          child: const Text("Mua ngay",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                 ),
-               
+                    ],
+                  ),
                 ],
               ),
             );
@@ -276,4 +384,32 @@ _showBottomSheet(BuildContext context, String image, int price, String productNa
       },
     );
   }
+  void saveProductToFirebase(Cart cart, String cartId) {
+    DatabaseReference cartRef = FirebaseDatabase.instance.ref().child('carts');
+    var newCartRef = cartRef.child(cartId);
+
+    newCartRef.once().then((DatabaseEvent event) async {
+      DataSnapshot snapshot = event.snapshot;
+      Map<dynamic, dynamic>? snapshotValue = snapshot.value as Map<dynamic, dynamic>?;
+      if (snapshot.value == null) {
+        newCartRef.set({
+          'cartId': cart.CartId,
+          'productname': cart.productName,
+          'image': cart.image,
+          'price': cart.price,
+          'quantity': cart.quantity,
+          'promotion':cart.promotion
+        });
+        setState(() {totalCartQuantity += 1; });
+        final cartProvider = Provider.of<CartProvider>(context, listen: false);
+        cartProvider.updateCartQuantity(totalCartQuantity);
+      } else {
+        int currentQuantity = snapshotValue?['quantity'] ?? 1;
+        newCartRef.update({'quantity': currentQuantity + 1});
+      }
+    }).catchError((error) {
+      print('Error adding product to Firebase: $error');
+    });
+  }
 }
+

@@ -1,22 +1,36 @@
 import 'package:doandidongappthuongmai/components/Navigation.dart';
+import 'package:doandidongappthuongmai/components/GetCart.dart';
 import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:doandidongappthuongmai/view/LoginScreen.dart';
 import 'package:doandidongappthuongmai/view/ManageAccountScreen.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:doandidongappthuongmai/models/firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
+
 
   void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    await Firebase.initializeApp(
+
+  // Khởi tạo Firebase
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-    
   );
-  runApp(const MyApp());
+// final firebaseMessagingService = FirebaseMessagingService();
+// await firebaseMessagingService.initialize();
+  // Khởi tạo MultiProvider
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CartProvider()),
+       
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

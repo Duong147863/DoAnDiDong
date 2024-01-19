@@ -1,17 +1,17 @@
 import 'dart:math';
-
-import 'package:doandidongappthuongmai/models/orderdetail.dart';
+import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
+import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:doandidongappthuongmai/models/orderdetail.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 class PaymentScreen extends StatefulWidget {
+  final String Id;
+  final List<Cart> selectedProducts;
  
-  final String image;
-  final String productName;
-  final int price;
-  final int CountQuantity;
-  const PaymentScreen({Key? key,required this.image,required this.productName,required this.price,required this.CountQuantity}) : super(key: key);
+  const PaymentScreen({Key? key ,required this.selectedProducts, required this.Id}) : super(key: key);
   
   @override
   State<PaymentScreen> createState() => _PaymentScreenState();
@@ -33,18 +33,17 @@ class PaymentScreen extends StatefulWidget {
     return formatNextday; 
   }
 
-  String totalPayment(int price, int Quantity, String phigiaohang) {    // tính tiền tổng hóa đơn
-   
-    int total = (price * Quantity) + stringToInt(phigiaohang);
+  String totalPayment(int productprice, String phigiaohang) {    // tính tiền tổng hóa đơn
+    int total = (productprice ) + stringToInt(phigiaohang);
     return intToString(total);
   }
 
-
-String ProductMoney(int price, int Quantity)  // tính tiền sản phẩm 
-{
-   int money = (price * Quantity);
-   return intToString(money);
-}
+  String ProductMoney(int price, int Quantity)  // tính tiền sản phẩm 
+  {
+    int money = (price * Quantity);
+    return intToString(money);
+  }
+  
 
 // tạo thông tin mặc định
 String typePayment ="Tiền mặt khi nhận hàng";
@@ -52,13 +51,51 @@ const String phigiaohang="15.000";
 const String name ="HuynhThanhDuy";
 const String phone ="0192888888";
 const String address= "45/6 Trần đình xu, Cô giang , Q1 ,Tp. Hồ Chí Minh";
+const String status= "Đang xử lý";
 
 class _PaymentScreenState extends State<PaymentScreen> {
+  late String orderId;
+  String productMoney = "0";  // Tổng tiền hàng
+  String Payment = "0";  // Tổng đơn (tổng tiền hàng + phí giao hàng)
+
+  @override
+  void initState() {
+    super.initState();
+    loadOrderId();
+  }
+
+  void loadOrderId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      orderId = prefs.getString('orderId') ?? RandomIdOrder();
+    });
+  }
+
+  void saveOrderId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('orderId', orderId);
+  }
+ 
    int selectedPaymentOption = 1;
   @override
   Widget build(BuildContext context) {
-    String totalpayment = totalPayment(widget.price, widget.CountQuantity, phigiaohang); // gán giá trị 
-    String productmoney= ProductMoney(widget.price, widget.CountQuantity);
+
+  int calculateProductMoney() {
+      int total = 0;
+      for (var product in widget.selectedProducts) {
+        // Sử dụng trường promotion để xác định giảm giá
+        int discountedPrice = getPromotionOrPrice(product.price, product.promotion);
+        total += discountedPrice * product.quantity;
+      }
+      return total;
+    }
+
+  // Cập nhật giá trị tổng tiền hàng khi màn hình được build
+   productMoney = intToString(calculateProductMoney());
+
+  // Cập nhật giá trị tổng đơn (tổng tiền hàng + phí giao hàng)
+  Payment = totalPayment(stringToInt(productMoney), phigiaohang);
+
 
     return Scaffold(
       appBar: AppBar(
@@ -108,11 +145,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ],
           ),
           SizedBox(height: 20,),
-          Column(
-            children: [
-              Container(
+           Column(
+            children: widget.selectedProducts.map((product) {
+              return Container(
                 height: 130,
                 padding: EdgeInsets.all(10),
+                margin: EdgeInsets.only(bottom: 10), // Để tạo khoảng cách giữa các sản phẩm
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.black, width: 1.2),
                 ),
@@ -121,47 +159,48 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black, width: 1.2),
+                        border: Border.all(color: Colors.black, width: 1.2),
                       ),
                       margin: EdgeInsets.only(right: 15),
-                      child: Image.asset(widget.image, 
+                      child: Image.asset(
+                        product.image,
                         width: 100,
                         height: 110,
-                        
                         fit: BoxFit.fill,
                       ),
                     ),
-                   Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Text(widget.productName,style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                          Text(product.productName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
                           SizedBox(height: 5),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                            Row(
-                              children: [
-                                Text('Số lượng: ',style: TextStyle(fontSize: 16),),
-                                Text(widget.CountQuantity.toString(),style: TextStyle(fontSize: 16),),
+                              Row(
+                                children: [
+                                  Text('Số lượng: ', style: TextStyle(fontSize: 16),),
+                                  Text(product.quantity.toString(), style: TextStyle(fontSize: 16),),
                                 ],
-                            ),
-                            Column(
-                              children: [
-                                Text('đ'+ intToString(widget.price) ,style: TextStyle(fontSize: 16),),
+                              ),
+                              Row(
+                                children:[
+                                  (product.promotion == 0)? 
+                                  Text('đ${intToString(product.price)}', style: TextStyle(fontSize: 16)):
+                                  Text('đ${intToString(product.promotion)}', style: TextStyle(fontSize: 16)),
                                 ],
-                            ),
-                              ],
-                            ),
-                          ],
+                              )
+                                                          ],
                           ),
+                        ],
                       ),
-              
-                   ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
+              );
+            }).toList(),
           ),
           SizedBox(height: 1,),
           Column(
@@ -238,7 +277,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text("Tiền hàng", style: TextStyle(fontSize: 20)),
-                          Text(productmoney+'đ',style: TextStyle(fontSize: 20),),
+                          Text(productMoney+'đ',style: TextStyle(fontSize: 20),),
                         ],
                       ),
                       SizedBox(height: 10),
@@ -254,7 +293,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                             Text("Tổng đơn hàng",style: TextStyle(fontSize: 20),),
-                            Text(totalpayment+'đ',style: TextStyle(fontSize: 20),),
+                            Text(Payment+'đ',style: TextStyle(fontSize: 20),),
                           ],
                       ),
                     ],
@@ -269,21 +308,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       OrderDetails orderDetailsInfo = OrderDetails(
-                          image: widget.image,
-                          OrderId: RandomIdOrder().toString(),
-                          productName: widget.productName,
-                          price: widget.price,
-                          Quantity: widget.CountQuantity,
-                          name: name,
-                          phone: phone,
-                          address: address,
-                          typePayment: typePayment,
-                          productmoney: productmoney,
-                          deliverycharges: phigiaohang,
-                          totalPayment: totalpayment,
-                        );
-                        saveOrderToFirebase(orderDetailsInfo);
-                       Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,) ),);
+                        OrderId: orderId,
+                        products: widget.selectedProducts, // Thêm danh sách sản phẩm vào đơn hàng
+                        name: name,
+                        phone: phone,
+                        address: address,
+                        typePayment: typePayment,
+                        productmoney: productMoney,
+                        deliverycharges: phigiaohang,
+                        totalPayment: Payment,
+                        status: status,
+                      );
+
+                       saveOrderToFirebase(orderDetailsInfo, orderId);
+                       Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,Id: widget.Id,) ),);
                     },                           //chuyển đến chi tiết hóa đơn
                      
                     style: ElevatedButton.styleFrom(
@@ -384,10 +422,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
  
 }
 
-String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 8 ký tự
+String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 10 ký tự
   const String characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   final Random random = Random();
-  final int length = 8;
+  final int length = 10;
 
   String Id= '';
   for (int i = 0; i < length; i++) {
@@ -396,24 +434,46 @@ String RandomIdOrder() {    //tạo mã đơn hàng ngẫu nhiên có 8 ký tự
   }
   return Id;
 }
-void saveOrderToFirebase(OrderDetails orderDetails) {
+void saveOrderToFirebase(OrderDetails orderDetails, String orderId) {
   DatabaseReference ordersRef = FirebaseDatabase.instance.ref().child('orders');
+  var newOrderRef = ordersRef.child(orderId);
 
-  // Tạo một node mới với key là 'OrderId'
-  var newOrderRef = ordersRef.child(orderDetails.OrderId);
+  // Tạo danh sách sản phẩm cho đơn hàng
+  List<Map<String, dynamic>> productsList = [];
 
-  // Gán thông tin đơn hàng vào node mới
+  // Lặp qua từng sản phẩm trong danh sách sản phẩm của đơn hàng
+  for (var product in orderDetails.products) {
+  Map<String, dynamic> productData;
+
+  if (product.promotion != null && product.promotion > 0) {
+    // Nếu có khuyến mãi, sử dụng giá khuyến mãi
+    productData = {
+      'productName': product.productName,
+      'price': product.promotion,
+      'quantity': product.quantity,
+    };
+  } else {
+    // Nếu không có khuyến mãi, sử dụng giá gốc
+    productData = {
+      'productName': product.productName,
+      'price': product.price,
+      'quantity': product.quantity,
+    };
+  }
+
+  // Thêm thông tin sản phẩm vào danh sách sản phẩm
+  productsList.add(productData);
+}
+
+
+  // Lưu thông tin đơn hàng và danh sách sản phẩm vào Firebase
   newOrderRef.set({
-    'OrderId': orderDetails.OrderId,
-    'productName': orderDetails.productName,
-    'price': orderDetails.price,
-    'quantity': orderDetails.Quantity,
+    'OrderId': orderId,
     'name': orderDetails.name,
     'phone': orderDetails.phone,
     'address': orderDetails.address,
-    'typePayment': orderDetails.typePayment,
-    'totalPayment': orderDetails.totalPayment,
+    'productmoney': orderDetails.productmoney,
+    'status': orderDetails.status,
+    'products': productsList, // Thêm danh sách sản phẩm vào đơn hàng
   });
-
-  print('Đơn hàng đã được lưu vào Firebase với key là ${orderDetails.OrderId}.');
 }

@@ -1,13 +1,12 @@
 import 'package:doandidongappthuongmai/components/ProductSellItem.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:doandidongappthuongmai/components/ProductSaleItem.dart';
 import 'package:flutter/material.dart';
 
 class SectionList extends StatefulWidget {
   final List<CategoryData> categories;
-
-  const SectionList({Key? key, required this.categories}) : super(key: key);
+  final String id;
+  const SectionList({Key? key, required this.categories, required this.id}) : super(key: key);
 
   @override
   _SectionListState createState() => _SectionListState();
@@ -82,15 +81,16 @@ class _SectionListState extends State<SectionList> {
               return ProductSellItem(
                 key: ValueKey<String>(productDetails.id),
                 ProductsellReference: FirebaseDatabase.instance.ref().child('productsell').child(productDetails.id.toString()),
+                id: widget.id,
               );
             },
           ),
         ),
         SizedBox(height: 10),
-        Text(
-          "Xem thêm sản phẩm bán chạy",
-          style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),
-        ),
+        // Text(
+        //   "Xem thêm sản phẩm bán chạy",
+        //   style: TextStyle(decoration: TextDecoration.underline, color: Colors.green),
+        // ),
       ],
     );
   }
