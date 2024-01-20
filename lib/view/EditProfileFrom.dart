@@ -1,3 +1,4 @@
+import 'package:doandidongappthuongmai/models/local_notification.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -75,6 +76,8 @@ class _EditProfileFromState extends State<EditProfileFrom> {
             updateUserInformation(widget.keyId);
             Navigator.pop(context);
             widget.reloadUserDataCallback();
+            initNotifications();
+            showEditProfileNotification();
           },
           child: Text('Save'),
         ),

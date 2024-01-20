@@ -1,5 +1,6 @@
 import 'package:doandidongappthuongmai/components/Navigation.dart';
 import 'package:doandidongappthuongmai/components/GetCart.dart';
+import 'package:doandidongappthuongmai/models/notification.dart';
 import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:doandidongappthuongmai/view/LoginScreen.dart';
 import 'package:doandidongappthuongmai/view/ManageAccountScreen.dart';
@@ -19,8 +20,8 @@ import 'package:provider/provider.dart';
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-// final firebaseMessagingService = FirebaseMessagingService();
-// await firebaseMessagingService.initialize();
+final firebaseMessagingService = FirebaseMessagingService();
+await firebaseMessagingService.initialize();
   // Khởi tạo MultiProvider
   runApp(
     MultiProvider(
