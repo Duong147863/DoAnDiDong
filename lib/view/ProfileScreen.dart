@@ -7,7 +7,8 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        flexibleSpace: Image.asset('assets/img/background.jpg', fit: BoxFit.fill),
+        flexibleSpace:
+            Image.asset('assets/img/background.jpg', fit: BoxFit.fill),
         toolbarHeight: 130,
         iconTheme: const IconThemeData(color: Colors.black),
         actions: <Widget>[
@@ -61,12 +62,14 @@ class ProfileScreen extends StatelessWidget {
               children: [
                 InkWell(
                   onTap: () {
-                  
+                    Navigator.pushNamed(context, '/myorder');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Icon(Icons.shopping_cart_sharp),
+                      Icon(
+                        Icons.shopping_cart_sharp,
+                      ),
                       Text(" Đơn hàng của tôi", style: TextStyle(fontSize: 25)),
                       const SizedBox(width: 107),
                       Icon(Icons.arrow_forward_ios),
@@ -96,11 +99,11 @@ class UserInfoItem extends StatelessWidget {
         children: [
           Text(' $text', style: const TextStyle(fontSize: 17)),
           const SizedBox(width: 10.0),
-          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+          Text(value,
+              style:
+                  const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
         ],
       ),
     );
   }
 }
-
-

@@ -1,3 +1,5 @@
+import 'package:doandidongappthuongmai/view/HomeScreen.dart';
+import 'package:doandidongappthuongmai/view/ProfileScreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../components/OrderHistory.dart';
@@ -19,14 +21,27 @@ class _MyOrderState extends State<MyOrder> {
       _selectedIndex = index;
     });
 
-    // Xử lý logic tương ứng với mỗi tab
     if (_selectedIndex == 0) {
-      // Xử lý khi chọn tab 0
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
     } else if (_selectedIndex == 1) {
-      Navigator.pushNamed(context, '/O');
-      // Xử lý khi chọn tab 1
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const NotificationListener(
+                  child: Text(''),
+                ) //chuyển đến giỏ hàng
+            ),
+      );
     } else if (_selectedIndex == 2) {
-      // Xử lý khi chọn tab 2
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ProfileScreen() //chuyển đến giỏ hàng
+            ),
+      );
     }
   }
 
@@ -38,84 +53,32 @@ class _MyOrderState extends State<MyOrder> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pink[50], // Màu nền hồng nhạt
-        title: Container(
-          height: 45,
-          decoration: BoxDecoration(
-              color: Colors.white, // Màu nền khung tìm kiếm
-              borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Colors.white)),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment
-                .start, // Căn chỉnh các widget con theo chiều ngang
-            children: [
-              IconButton(
-                icon: const Icon(Icons.search),
-                color: Colors.grey, // Màu biểu tượng tìm kiếm
-                onPressed: () {
-                  // Xử lý khi nhấn vào Icon shop
-                },
-              ),
-              const SizedBox(
-                width: 2,
-              ),
-              const Expanded(
-                child: Align(
-                  alignment: Alignment.center,
-                  child: TextField(
-                    textAlign: TextAlign.left,
-                    decoration: InputDecoration(
-                      hintText: 'Tìm sản phẩm',
-                      border: InputBorder.none,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8.0),
-            decoration: BoxDecoration(
-              color: Colors.pink[50], // Màu nền Icon
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: IconButton(
-              icon: const Icon(
-                Icons.shopping_cart,
-              ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back_ios),
               onPressed: () {
-                // Xử lý khi nhấn vào Icon shop
+                Navigator.pushNamed(context, '/profile');
               },
             ),
-          ),
-        ],
+            const Text(
+              'Đơn hàng của tôi',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Container(
+              width: 1,
+              color: Colors.grey,
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.arrow_back_ios),
-                onPressed: () {
-                  // Xử lý khi nhấn vào nút quay lại
-                },
-              ),
-              const Text(
-                'Đơn hàng của tôi',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                width: 1,
-                color: Colors.grey,
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-            ],
-          ),
           Container(
             height: 1,
             color: Colors.black,

@@ -1,5 +1,6 @@
+import 'package:doandidongappthuongmai/view/HomeScreen.dart';
+import 'package:doandidongappthuongmai/view/ProfileScreen.dart';
 import 'package:flutter/material.dart';
-
 import '../components/ProfileManageProduct.dart';
 
 class ManageProduct extends StatefulWidget {
@@ -10,6 +11,9 @@ class ManageProduct extends StatefulWidget {
 }
 
 class _ManageProductState extends State<ManageProduct> {
+  String searchQuery = '';
+  TextEditingController searchController = TextEditingController();
+
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -17,14 +21,24 @@ class _ManageProductState extends State<ManageProduct> {
       _selectedIndex = index;
     });
 
-    // Xử lý logic tương ứng với mỗi tab
     if (_selectedIndex == 0) {
-      // Xử lý khi chọn tab 0
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainScreen()),
+      );
     } else if (_selectedIndex == 1) {
-      // Navigator.pushNamed(context, '/O');
-      // Xử lý khi chọn tab 1
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const NotificationListener(
+                  child: Text(''),
+                )),
+      );
     } else if (_selectedIndex == 2) {
-      // Xử lý khi chọn tab 2
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfileScreen()),
+      );
     }
   }
 
@@ -37,6 +51,7 @@ class _ManageProductState extends State<ManageProduct> {
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () {
             // Xử lý khi nhấn vào nút quay lại
+            Navigator.pushNamed(context, '/profile');
           },
         ),
         centerTitle: true,
@@ -65,17 +80,16 @@ class _ManageProductState extends State<ManageProduct> {
                   IconButton(
                     icon: const Icon(Icons.search),
                     color: Colors.grey,
-                    onPressed: () {
-                      // Xử lý khi nhấn vào Icon tìm kiếm
-                    },
+                    onPressed: () {},
                   ),
                   const SizedBox(
                     width: 5,
                   ),
-                  const Expanded(
+                  Expanded(
                     child: TextField(
+                      controller: searchController,
                       textAlign: TextAlign.left,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Tìm sản phẩm',
                         border: InputBorder.none,
                       ),
@@ -93,7 +107,7 @@ class _ManageProductState extends State<ManageProduct> {
                   child: TextButton(
                     onPressed: () {
                       //chuyển hướng thêm sản phẩm
-                      Navigator.pushNamed(context, '/add');
+                      Navigator.pushNamed(context, '/addpro');
                     },
                     style: TextButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 146, 255, 208),
@@ -124,9 +138,12 @@ class _ManageProductState extends State<ManageProduct> {
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black),
               ),
-              child: const ProfileManageProduct(),
+              child: ProfileManageProduct(
+                searchQuery:
+                    searchQuery, // Truyền thông tin tìm kiếm vào ProfileManageProduct
+              ),
             ),
-          ),
+          )
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

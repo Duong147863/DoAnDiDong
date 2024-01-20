@@ -240,14 +240,14 @@ class RegisterDialog {
               ),
               TextButton(
                 child: Text('Đăng ký'),
-                onPressed: () async  {
+                onPressed: () async {
                   // Xử lý đăng ký ở đây
                   String username = usernameController.text;
                   String phoneNumber = phoneNumberController.text;
                   String email = emailController.text;
                   String password = passwordController.text;
 
-                   // Gọi hàm đăng ký từ FirebaseAuthService
+                  // Gọi hàm đăng ký từ FirebaseAuthService
                   FirebaseAuthService authService = FirebaseAuthService();
                   User? user = await authService.signUpWithEmailAndPassword(
                     username,
@@ -255,7 +255,7 @@ class RegisterDialog {
                     email,
                     password,
                   );
-                   // Kiểm tra xem đăng ký có thành công hay không
+                  // Kiểm tra xem đăng ký có thành công hay không
                   if (user != null) {
                     print("Đăng ký thành công");
                   } else {
@@ -283,21 +283,21 @@ class FirebaseAuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
 
   Future<User?> signUpWithEmailAndPassword(
-  String username,
-  String phoneNumber,
-  String email,
-  String password,
-) async {
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-    String uid = userCredential.user?.uid ?? "";
-    saveUserData(uid, username, phoneNumber);
-    return userCredential.user;
-  } catch (e) {
-    print("Error during registration: $e");
+    String username,
+    String phoneNumber,
+    String email,
+    String password,
+  ) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      String uid = userCredential.user?.uid ?? "";
+      saveUserData(uid, username, phoneNumber);
+      return userCredential.user;
+    } catch (e) {
+      print("Error during registration: $e");
+    }
   }
-}
 
 // Lưu thông tin người dùng vào Realtime Database
   void saveUserData(String uid, String username, String phoneNumber) {
