@@ -6,6 +6,7 @@ import FlutterMacOS
 import Foundation
 
 import file_selector_macos
+<<<<<<< HEAD
 import firebase_auth
 import firebase_core
 import firebase_database
@@ -23,4 +24,9 @@ func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   FLTFirebaseStoragePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseStoragePlugin"))
   FlutterLocalNotificationsPlugin.register(with: registry.registrar(forPlugin: "FlutterLocalNotificationsPlugin"))
   SharedPreferencesPlugin.register(with: registry.registrar(forPlugin: "SharedPreferencesPlugin"))
+=======
+
+func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
+  FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
+>>>>>>> 0a2524c14b885fefcf82824428f496fdb89b358c
 }
