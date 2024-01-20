@@ -49,17 +49,17 @@ class _ManageProductState extends State<ManageProductScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.pink[50], 
-         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) =>ProfileScreen(Id: widget.Id,)),
-              (route) => false,
-            );
+        //  leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
+        //   onPressed: () {
+        //     Navigator.pushAndRemoveUntil(
+        //       context,
+        //       MaterialPageRoute(builder: (context) =>ProfileScreen(Id: widget.Id,)),
+        //       (route) => false,
+        //     );
    
-          },
-        ),// Màu nền hồng nhạt
+        //   },
+        // ),// Màu nền hồng nhạt
         title: Center(child: Text("Quản lý sản phẩm",style: TextStyle(color: Colors.black, fontSize: 25),)),
         iconTheme: const IconThemeData(color: Colors.black),   
       ),

@@ -148,7 +148,7 @@ void didChangeDependencies() {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Image.asset(widget.image, height: 220, width: MediaQuery.of(context).size.width, fit: BoxFit.cover),
+          Image.network(widget.image, height: 220, width: MediaQuery.of(context).size.width, fit: BoxFit.cover),
           SizedBox(height: 8),
           Text(
             widget.productName,
@@ -270,7 +270,7 @@ void didChangeDependencies() {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Image.asset(image, height: 150, width: 150),
+                    Image.network(image, height: 150, width: 150),
                       SizedBox(width: 10,),
                       Row(
                         children: [

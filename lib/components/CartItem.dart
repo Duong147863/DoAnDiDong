@@ -104,7 +104,7 @@ class _CartItemState extends State<CartItem> {
                     height: 120,
                     decoration: BoxDecoration(
                       image: DecorationImage(
-                        image: AssetImage(widget.cart.image),
+                        image: NetworkImage(widget.cart.image),
                         fit: BoxFit.fill,
                       ),
                     ),

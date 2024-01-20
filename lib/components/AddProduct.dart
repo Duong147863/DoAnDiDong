@@ -67,7 +67,14 @@ class _AddProductState extends State<AddProduct> {
       persistenceEnabled: true, // cho phép lưu trữ off
     );
   }
-
+  String generateRandomString(int length) {
+      const chars ='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      final random = Random();
+      return String.fromCharCodes(
+        List.generate(
+            length, (_) => chars.codeUnitAt(random.nextInt(chars.length))),
+      );
+    }
   Future<void> addProductToFirebase() async {
     final name = _nameController.text;
     final quantity = int.parse(_quantityController.text);
@@ -75,18 +82,18 @@ class _AddProductState extends State<AddProduct> {
     final promotion = double.parse(_promotionController.text);
     final description = _desciptionController.text;
     final producer = _producerController.text;
-
-// tạo mã sản phẩm
-
+    String idProduct = generateRandomString(10);  
+   
     try {
       DatabaseReference productsRef =
           FirebaseDatabase.instance.ref().child('products');
 
       String productId = productsRef.push().key!;
       //cho phép tạo một khóa mới cho dữ liệu sản phẩm và trả về một tham chiếu đến vị trí mới được tạo
-
+     
+      
       Map<String, dynamic> productData = {
-        // 'idproduct': ,
+        'idproduct': idProduct,
         'name': name,
         'quantity': quantity,
         'price': price,
@@ -96,7 +103,7 @@ class _AddProductState extends State<AddProduct> {
         'categoryId': selectedCategoryId, // số mã lsp,
         'image': imageData, // link ảnh lưu trữ fire storage
       };
-     
+      
       productsRef.child(productId).set(productData).then((_) {
         _showSnackBar('Thêm sản phẩm thành công');
       }).catchError((error) {
@@ -105,7 +112,79 @@ class _AddProductState extends State<AddProduct> {
     } catch (error) {
       _showSnackBar('Thêm sản phẩm thất bại: $error');
     }
-    
+
+    // Nếu có giảm giá, thêm sản phẩm vào bảng productsale
+    if (promotion > 0) {
+      DatabaseReference saleProductsRef = FirebaseDatabase.instance.reference().child('productsales');
+      String saleProductId = saleProductsRef.push().key!;
+
+      Map<String, dynamic> saleProductData = {
+        'idproduct': idProduct,
+        'name': name,
+        'quantity': quantity,
+        'price': price,
+        'promotion': promotion,
+        'description': description,
+        'producer': producer,
+        'categoryId': selectedCategoryId, // số mã lsp,
+        'image': imageData, // link ảnh lưu trữ fire storage
+      };
+
+      saleProductsRef.child(saleProductId).set(saleProductData).then((_) {
+        _showSnackBar('Thêm sản phẩm giảm giá thành công');
+      }).catchError((error) {
+        _showSnackBar('Thêm sản phẩm giảm giá thất bại: $error');
+      });
+
+      // Kiểm tra xem sản phẩm có nên được thêm vào bảng productsuggest hay không
+      if (isRecommended) {
+        DatabaseReference suggestProductsRef = FirebaseDatabase.instance.ref().child('productsuggests');
+        String suggestProductId = suggestProductsRef.push().key!;
+
+        Map<String, dynamic> suggestProductData = {
+        'idproduct': idProduct,
+        'name': name,
+        'quantity': quantity,
+        'price': price,
+        'promotion': promotion,
+        'description': description,
+        'producer': producer,
+        'categoryId': selectedCategoryId, // số mã lsp,
+        'image': imageData, // link ảnh lưu trữ fire storage
+        };
+
+        suggestProductsRef.child(suggestProductId).set(suggestProductData).then((_) {
+          _showSnackBar('Thêm sản phẩm gợi ý thành công');
+        }).catchError((error) {
+          _showSnackBar('Thêm sản phẩm gợi ý thất bại: $error');
+        });
+      }
+    }
+
+    // Kiểm tra xem sản phẩm có nên được thêm vào bảng productsell hay không
+    if (isBestSeller) {
+      DatabaseReference sellProductsRef = FirebaseDatabase.instance.ref().child('productsells');
+      String sellProductId = sellProductsRef.push().key!;
+
+      Map<String, dynamic> sellProductData = {
+        'idproduct': idProduct,
+        'name': name,
+        'quantity': quantity,
+        'price': price,
+        'promotion': promotion,
+        'description': description,
+        'producer': producer,
+        'categoryId': selectedCategoryId, // số mã lsp,
+        'image': imageData, // link ảnh lưu trữ fire storage
+      };
+
+      sellProductsRef.child(sellProductId).set(sellProductData).then((_) {
+        _showSnackBar('Thêm sản phẩm bán chạy thành công');
+      }).catchError((error) {
+        _showSnackBar('Thêm sản phẩm bán chạy thất bại: $error');
+      });
+    }
+        
   }
 
   Future<void> _pickImage() async {
@@ -575,7 +654,9 @@ class _AddProductState extends State<AddProduct> {
                 //thêm sp, thông báo
                 addProductToFirebase();
                 await initNotifications();
+                Navigator.pop(context);
                 showAddProductSuccessNotification();
+
               } else {
                 return _showSnackBar('Vui lòng nhập đầy đủ thông tin sản phẩm');
               }

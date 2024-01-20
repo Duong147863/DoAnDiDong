@@ -240,7 +240,7 @@ class ProductSell{
   }
 
   static  getProductSellReference() {
-    return FirebaseDatabase.instance.ref().child('productsell');
+    return FirebaseDatabase.instance.ref().child('productsells');
   }
 
   static Future<List<ProductSell>> fetchProductSell() async {
@@ -258,7 +258,7 @@ class ProductSell{
     return productsell;
   }
   static Future<List<ProductSell>> getProductsell(String categoryId) async {
-    DatabaseReference productsellReference = FirebaseDatabase.instance.ref().child('productsell');
+    DatabaseReference productsellReference = FirebaseDatabase.instance.ref().child('productsells');
     DatabaseEvent event = await productsellReference.once();
     DataSnapshot dataSnapshot = event.snapshot;
     Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;

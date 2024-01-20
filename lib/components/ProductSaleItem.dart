@@ -15,7 +15,7 @@ class ProductSaleItem extends StatefulWidget {
 
 class _ProductItemState extends State<ProductSaleItem> {
   DatabaseReference productsale = FirebaseDatabase.instance.ref().child('productsales');
-  ProductSale products = ProductSale(id: "0", category: "", name: "", description: "", idproduct: "", image: "assets/img/noImage.jpg", producer: "", price: 0, promotion: 0, quantity: 0);
+  ProductSale products = ProductSale(id: "0", category: "", name: "", description: "", idproduct: "", image: "", producer: "", price: 0, promotion: 0, quantity: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _ProductItemState extends State<ProductSaleItem> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 image: DecorationImage(
-                  image: AssetImage('${products.image}'),
+                  image:NetworkImage('${products.image}'),
                   fit: BoxFit.fill,
                 ),
               ),

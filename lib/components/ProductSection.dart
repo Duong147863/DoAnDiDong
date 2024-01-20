@@ -77,10 +77,10 @@ class _SectionListState extends State<SectionList> {
             scrollDirection: Axis.horizontal,
             itemCount: products.length,
             itemBuilder: (context, index) {
-              var productDetails = products[index];
+              var productsell = products[index];
               return ProductSellItem(
-                key: ValueKey<String>(productDetails.id),
-                ProductsellReference: FirebaseDatabase.instance.ref().child('productsell').child(productDetails.id.toString()),
+                key: ValueKey<String>(productsell.id),
+                ProductsellReference: FirebaseDatabase.instance.ref().child('productsells').child(productsell.id.toString()),
                 id: widget.id,
               );
             },

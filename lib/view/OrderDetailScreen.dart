@@ -207,7 +207,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         border: Border.all(color: Colors.black, width: 1.2),
                       ),
                       margin: EdgeInsets.only(right: 15),
-                      child: Image.asset(
+                      child: Image.network(
                         product.image,
                         width: 100,
                         height: 110,

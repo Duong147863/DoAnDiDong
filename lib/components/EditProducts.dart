@@ -194,19 +194,19 @@ class _EditProductState extends State<EditProduct> {
     // final String  productId  = ModalRoute.of(context)!Settings.
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.pink[50], // Màu nền hồng nhạt
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
-          onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) =>ManageProductScreen(Id: widget.id,)),
-              (route) => false,
-            );
+        // backgroundColor: Colors.pink[50], // Màu nền hồng nhạt
+        // // leading: IconButton(
+        // //   icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
+        // //   onPressed: () {
+        // //     // Navigator.pushAndRemoveUntil(
+        // //     //   context,
+        // //     //   MaterialPageRoute(builder: (context) =>ManageProductScreen(Id: widget.id,)),
+        // //     //   (route) => false,
+        // //     // );
    
-          },
-        ),
-        centerTitle: true, // căn giữa tiêu đề theo chiều ngang
+        // //   },
+        // ),
+        // centerTitle: true, // căn giữa tiêu đề theo chiều ngang
         title: const Text(
           'Quản lý sửa thông tin sản phẩm',
           style: TextStyle(
@@ -567,6 +567,7 @@ class _EditProductState extends State<EditProduct> {
                 //thêm sp, thông báo
                 updateProductInFirebase(widget.productId);
                 await initNotifications();
+                Navigator.pop(context);
                 showEditProductSuccessNotification();
               } else {
                 return _showSnackBar('Vui lòng nhập đầy đủ thông tin sản phẩm');
