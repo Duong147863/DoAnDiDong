@@ -5,8 +5,8 @@ class CartProvider extends ChangeNotifier {
   int _totalCartQuantity = 0;
 
   int get totalCartQuantity => _totalCartQuantity;
-  Future<void> loadCartQuantity() async {
-    int quantity = await getCartItemCount();
+  Future<void> loadCartQuantity(String userId) async {
+    int quantity = await getCartItemCount(userId);
     _totalCartQuantity = quantity;
     notifyListeners(); // Thông báo về sự thay đổi đến các người nghe
   }

@@ -1,16 +1,9 @@
-import 'package:doandidongappthuongmai/components/Navigation.dart';
 import 'package:doandidongappthuongmai/components/GetCart.dart';
-import 'package:doandidongappthuongmai/models/local_notification.dart';
 import 'package:doandidongappthuongmai/models/notification.dart';
-import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:doandidongappthuongmai/view/LoginScreen.dart';
-import 'package:doandidongappthuongmai/view/ManageAccountScreen.dart';
-import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
-import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:doandidongappthuongmai/models/firebase_options.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 
@@ -24,8 +17,6 @@ import 'package:provider/provider.dart';
   );
   final firebaseMessagingService = FirebaseMessagingService();
   await firebaseMessagingService.initialize();
-
-  // Khởi tạo MultiProvider
   runApp(
     MultiProvider(
       providers: [
@@ -35,7 +26,6 @@ import 'package:provider/provider.dart';
     ),
   );
 }
- 
 
 class MyApp extends StatelessWidget {
    MyApp({super.key});

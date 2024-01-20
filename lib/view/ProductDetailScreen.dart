@@ -41,9 +41,11 @@ int getPromotionOrPrice(int Price, int promotion) {
   return (promotion > 0) ? promotion : Price;
 }
 
-Future<int> getCartItemCount() async {
+Future<int> getCartItemCount(String userId) async {
   DatabaseReference cartRef = FirebaseDatabase.instance.ref().child('carts');
-  DatabaseEvent event = await cartRef.once();
+  Query query = cartRef.orderByChild('userId').equalTo(userId);
+
+  DatabaseEvent event = await query.once();
   DataSnapshot snapshot = event.snapshot;
 
   if (snapshot.value is Map) {
@@ -53,6 +55,7 @@ Future<int> getCartItemCount() async {
     return 0; // Hoặc giá trị mặc định nếu không phải là Map
   }
 }
+
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int totalCartQuantity =0;
   int countquantity = 1;
@@ -63,7 +66,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     loadCartQuantity();
   }
   void loadCartQuantity() async {
-    int quantity = await getCartItemCount();
+    int quantity = await getCartItemCount(widget.Id);
     setState(() {
       totalCartQuantity = quantity;
      
@@ -113,7 +116,7 @@ void didChangeDependencies() {
                         if (value != null && value) {
                           setState(() {
                             loadCartQuantity();
-                            Provider.of<CartProvider>(context, listen: false).loadCartQuantity(); 
+                            Provider.of<CartProvider>(context, listen: false).loadCartQuantity(widget.Id); 
                          });
                         }
                       });
@@ -176,6 +179,12 @@ void didChangeDependencies() {
               ),
             ],
           ),
+           const SizedBox(height: 10),
+          const Text("Thông tin sản phẩm: ",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color.fromARGB(255, 12, 2, 46))),
+          const SizedBox(height: 5),
+          Text(widget.description,style: const TextStyle(fontSize: 17,fontWeight: FontWeight.w400,color: Color.fromARGB(255, 12, 2, 46)),softWrap: true,),
+          const SizedBox(height: 8),
+          Text('Nhà sản xuất: ${ widget.producer}',style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Color.fromARGB(255, 12, 2, 46)),softWrap: true,),
           Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -210,8 +219,9 @@ void didChangeDependencies() {
                         price: widget.price,
                         isSelected:false,
                         quantity: 1,
+                        userId: widget.Id
                       );
-                      saveProductToFirebase(carts, widget.idproduct);
+                      saveProductToFirebase(carts);
                     }
                   },
                   icon: const Icon(Icons.add_shopping_cart, color: Colors.black),
@@ -334,6 +344,7 @@ void didChangeDependencies() {
                                 price: Price,
                                 quantity: countquantity,
                                 promotion: promotion,
+                                userId: widget.Id,
                                 isSelected: true
                               ),
                               // Add more Cart objects if needed
@@ -371,31 +382,88 @@ void didChangeDependencies() {
       },
     );
   }
-  void saveProductToFirebase(Cart cart, String cartId) {
-    DatabaseReference cartRef = FirebaseDatabase.instance.ref().child('carts');
-    var newCartRef = cartRef.child(cartId);
+  void saveProductToFirebase(Cart cart) {
+  DatabaseReference cartRef = FirebaseDatabase.instance.ref().child('carts');
+  Query query = cartRef.orderByChild('userId').equalTo(cart.userId);
 
-    newCartRef.once().then((DatabaseEvent event) async {
-      DataSnapshot snapshot = event.snapshot;
-      Map<dynamic, dynamic>? snapshotValue = snapshot.value as Map<dynamic, dynamic>?;
-      if (snapshot.value == null) {
-        newCartRef.set({
+  query.once().then((DatabaseEvent event) async {
+    DataSnapshot snapshot = event.snapshot;
+
+    if (snapshot.value != null) {
+      // Duyệt qua tất cả các sản phẩm trong giỏ hàng
+      Map<dynamic, dynamic>? cartItems = snapshot.value as Map<dynamic, dynamic>?;
+
+      bool isProductInCart = false;
+      String existingProductId = '';
+
+      cartItems?.forEach((key, value) {
+        if (value['productname'] == cart.productName) {
+          isProductInCart = true;
+          existingProductId = key;
+        }
+      });
+
+      if (isProductInCart) {
+        // Nếu sản phẩm đã có trong giỏ hàng, bạn có thể thực hiện hành động tương ứng
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Thông báo'),
+              content: Text('Sản phẩm đã có trong giỏ hàng.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        // Ngược lại, thêm sản phẩm vào giỏ hàng
+        cartRef.push().set({
           'cartId': cart.CartId,
           'productname': cart.productName,
           'image': cart.image,
           'price': cart.price,
           'quantity': cart.quantity,
-          'promotion':cart.promotion
+          'promotion': cart.promotion,
+          'userId': cart.userId,
         });
-        setState(() {totalCartQuantity += 1; });
+
+        setState(() {
+          totalCartQuantity += 1;
+        });
+
         final cartProvider = Provider.of<CartProvider>(context, listen: false);
         cartProvider.updateCartQuantity(totalCartQuantity);
-      } else {
-        int currentQuantity = snapshotValue?['quantity'] ?? 1;
-        newCartRef.update({'quantity': currentQuantity + 1});
       }
-    }).catchError((error) {
-      print('Error adding product to Firebase: $error');
-    });
-  }
+    } else {
+      // Nếu giỏ hàng chưa có sản phẩm, thêm sản phẩm vào giỏ hàng
+      cartRef.push().set({
+        'cartId': cart.CartId,
+        'productname': cart.productName,
+        'image': cart.image,
+        'price': cart.price,
+        'quantity': cart.quantity,
+        'promotion': cart.promotion,
+        'userId': cart.userId,
+      });
+
+      setState(() {
+        totalCartQuantity += 1;
+      });
+
+      final cartProvider = Provider.of<CartProvider>(context, listen: false);
+      cartProvider.updateCartQuantity(totalCartQuantity);
+    }
+  }).catchError((error) {
+    print('Error adding product to Firebase: $error');
+  });
+}
+
+
 }

@@ -10,7 +10,7 @@ class Category {
 
   factory Category.fromJson(String id,Map<dynamic, dynamic> json) {
     return Category(
-      id: id,
+      id: json['id'].toString(),
       name:json['name'] ??"",
       description: json['description'] ?? "",
     );
@@ -84,6 +84,11 @@ class Product {
   }
   static  getProductReference() {
     return FirebaseDatabase.instance.ref().child('products');
+  }
+  static Future<void> deleteProduct(String idPro) async {
+    DatabaseReference productRef =
+        FirebaseDatabase.instance.ref().child('products').child(idPro);
+    await productRef.remove();
   }
 
   static Future<List<Product>> fetchProducts() async {
@@ -273,45 +278,62 @@ class ProductSell{
 }
 
 
-class User {
+class Users {
   String name;
   String email;
   String phone;
   String address;
   bool typeaccount;
   bool status;
+  String image;
+  String imageBackground;
 
 
-  User({
+  Users({
     required this.name,
     required this.email,
     required this.phone,
     required this.typeaccount,
     required this.status,
-    required this.address
+    required this.address,
+    required this.image,
+    required this.imageBackground
   });
 
-  factory User.fromSnapshot(DataSnapshot snapshot) {
+  factory Users.fromSnapshot(DataSnapshot snapshot) {
     Map<dynamic, dynamic> data = snapshot.value as Map<dynamic, dynamic>;
-    return User(
+    return Users(
       name: data['displayName'] ?? "",
       email: data['email'] ?? "",
       phone: data['phoneNumber'] ?? "",
       address: data['address'] ?? "",
       typeaccount: data['persission'] ?? false,
       status: data['status'] ?? true,
+      image: data['image'] ??"",
+      imageBackground: data['imageBackground']??""
 
     );
   }
+   Future<void> updateInformation(String newUsername, String newPhone, String newAddress,String id) async {
+    DatabaseReference userReference = FirebaseDatabase.instance.ref().child('users').child(id);
+    await userReference.update({
+      'displayName': newUsername,
+      'phoneNumber': newPhone,
+      'address': newAddress,
+    });
+    
+  }
 
-  static Future<User> fetchUser(String userId) async {
+  
+
+  static Future<Users> fetchUser(String userId) async {
     DatabaseReference reference = FirebaseDatabase.instance.ref().child("users").child(userId);
     DatabaseEvent event = await reference.once() ;
     DataSnapshot snapshot= event.snapshot;
     
 
     if (snapshot.value != null) {
-      return User.fromSnapshot(snapshot);
+      return Users.fromSnapshot(snapshot);
     } else {
       throw Exception("User not found");
     }
@@ -324,10 +346,11 @@ class Cart {
   final int quantity;
   final String image;
   final int promotion;
+  final String userId;
   bool isSelected= false;
   
 
-  Cart({required this.CartId, required this.image, required this.productName, required this.price, required this.quantity, required this.promotion, required this.isSelected});
+  Cart({required this.CartId, required this.image, required this.productName, required this.price, required this.quantity, required this.promotion,required this.userId, required this.isSelected});
   
   factory Cart.fromJson(String id, Map<dynamic, dynamic> json) {
     return Cart(
@@ -337,6 +360,7 @@ class Cart {
       price: json['price']?? 0,
       promotion: json['promotion']?? 0,
       quantity: json['quantity']?? 0 ,
+      userId: json['userId']??"",
       isSelected: false 
     );
   }
@@ -346,19 +370,71 @@ class Cart {
     return FirebaseDatabase.instance.ref().child('carts');
   }
 
-  static Future<List<Cart>> fetchCart() async {
-    DatabaseReference CartReference = getCartReference();
-    DatabaseEvent event = await CartReference.once();
-    DataSnapshot dataSnapshot = event.snapshot;
+ static Future<List<Cart>> fetchCart(String userId) async {
+    DatabaseReference cartReference = getCartReference();
+
+    // Sử dụng orderByChild để lọc theo userId
+    Query query = cartReference.orderByChild('userId').equalTo(userId);
+    
+    DataSnapshot dataSnapshot = (await query.once()).snapshot;
     Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<Cart> Carts = [];
+    List<Cart> carts = [];
     if (values != null) {
       values.forEach((key, value) {
-        Carts.add(Cart.fromJson(key, value));
+        carts.add(Cart.fromJson(key, value));
       });
     }
-    return Carts;
+    return carts;
+  }
+}
+class Purchased {
+  String name;
+  String price;
+
+  Purchased({
+    required this.price,
+    required this.name,
+  });
+
+  factory Purchased.fromJson(String id, Map<dynamic, dynamic> json) {
+    return Purchased(
+      name: json['productName'] ?? "",
+      price: json['price'] ?? "",
+    );
+  }
+  static DatabaseReference getPrReference() {
+    return FirebaseDatabase.instance.ref().child('orders').child('products');
+  }
+
+//   static Future<List<PurchasedProduct>> fetchProducts() async {
+//   DatabaseReference productsReference = PurchasedProduct.getCategoryReference();
+//   DatabaseEvent event = await productsReference.once();
+//   DataSnapshot dataSnapshot = event.snapshot;
+//   Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+//   List<PurchasedProduct> products = [];
+//   if (values != null) {
+//     values.forEach((key, value) {
+//       products.add(PurchasedProduct.fromJson(key, value));
+//     });
+//   }
+//   return products;
+// }
+
+  static Future<List<Purchased>> getP() async {
+    DatabaseReference roomReference = getPrReference();
+    DatabaseEvent event = await roomReference.once();
+    DataSnapshot dataSnapshot = event.snapshot;
+    Map<dynamic, dynamic>? value = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+    List<Purchased> purchasedProducts = []; //_
+    if (value != null) {
+      value.forEach((key, value) {
+        purchasedProducts.add(Purchased.fromJson(key, value));
+      });
+    }
+    return purchasedProducts;
   }
 }
 

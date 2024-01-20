@@ -1,5 +1,4 @@
 import 'package:doandidongappthuongmai/components/Navigation.dart';
-import 'package:doandidongappthuongmai/view/HomeScreen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -379,11 +378,10 @@ class FirebaseAuthService {
   }
 
   Future<void> setUserName(String username) async {
-    // Your setUserName logic goes here
   }
 
   Future<String> getUserName() async {
-    // Your getUserName logic goes here
+
     return "";
   }
 }

@@ -43,12 +43,12 @@ class _MainScreenState extends State<MainScreen> {
     super.initState();
     _loadProductsales();
     _loadProductsuggests();
-     Provider.of<CartProvider>(context, listen: false).loadCartQuantity();  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
+     Provider.of<CartProvider>(context, listen: false).loadCartQuantity(widget.Id);  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
    
   }
   Future<void> _refreshData() async {
     setState(() {
-     Provider.of<CartProvider>(context, listen: false).loadCartQuantity();  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
+     Provider.of<CartProvider>(context, listen: false).loadCartQuantity(widget.Id);  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
     });
     return Future.value();
   }
@@ -117,7 +117,7 @@ class _MainScreenState extends State<MainScreen> {
                   ).then((value) {
                         if (value != null && value) {
                           setState(() {
-                             Provider.of<CartProvider>(context, listen: false).loadCartQuantity(); 
+                             Provider.of<CartProvider>(context, listen: false).loadCartQuantity(widget.Id); 
                          });
                         }
                       });

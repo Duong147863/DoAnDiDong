@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:doandidongappthuongmai/main.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
@@ -8,8 +7,6 @@ import 'package:doandidongappthuongmai/models/orderdetail.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:doandidongappthuongmai/models/local_notification.dart';
 
 
@@ -58,7 +55,7 @@ const String status= "Đang xử lý";
 class _PaymentScreenState extends State<PaymentScreen> {
   late String orderId;
  
-  User users =User(name:"", email: "", phone: "", typeaccount: false, status: true, address:"");
+  Users users =Users(name:"", email: "", phone: "", typeaccount: false, status: true, address:"",image: "", imageBackground: "");
   String productMoney = "0";  // Tổng tiền hàng
   String Payment = "0";  // Tổng đơn (tổng tiền hàng + phí giao hàng)
 
@@ -71,7 +68,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   void loadCurrentUser(String userId) async {
     try {
-      User user = await User.fetchUser(userId);
+      Users user = await Users.fetchUser(userId);
       setState(() {
         users = user;
       });

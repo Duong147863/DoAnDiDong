@@ -58,3 +58,65 @@ Future<void> showNotificationOderDelete (String OrderId) async {
     payload: 'item x',
   );
 }
+Future<void> showAddProductSuccessNotification() async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'order_channel_id',
+    'order_channel_name',
+    channelDescription: 'Thông báo khi thực hiện thêm sản phẩm thành công',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    'Thêm sản phẩm thành công',
+    'bạn đã thực hiện thêm sản phẩm thành công',
+    platformChannelSpecifics,
+    payload: 'item x',
+  );
+}
+
+Future<void> showEditProductSuccessNotification() async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'order_channel_id',
+    'order_channel_name',
+    channelDescription: 'Thông báo khi thực hiện cập nhật sản phẩm thành công',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    'Cập nhật sản phẩm thành công',
+    'bạn đã thực hiện cập nhật thông tin sản phẩm thành công',
+    platformChannelSpecifics,
+    payload: 'item x',
+  );
+}
+
+Future<void> showDeleteProductSuccessNotification() async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'order_channel_id',
+    'order_channel_name',
+    channelDescription: 'Thông báo khi thực hiện xóa sản phẩm thành công',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    'Xóa sản sản phẩm thành công',
+    'bạn đã thực hiện xóa sản phẩm thành công',
+    platformChannelSpecifics,
+    payload: 'item x',
+  );
+}

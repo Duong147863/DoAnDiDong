@@ -16,7 +16,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
   int totalAmount = 0;    //lấy tổng tiền các sản phẩm được chọn
 
   Future<void> _loadCartItem() async {
-  List<Cart> carts = await Cart.fetchCart();
+  List<Cart> carts = await Cart.fetchCart(widget.Id);
   setState(() {
     allCartItem = carts;
     calculateTotalAmount();   
