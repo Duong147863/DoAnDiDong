@@ -80,13 +80,13 @@ class _AddProductState extends State<AddProduct> {
 
     try {
       DatabaseReference productsRef =
-          FirebaseDatabase.instance.reference().child('products');
+          FirebaseDatabase.instance.ref().child('products');
 
       String productId = productsRef.push().key!;
       //cho phép tạo một khóa mới cho dữ liệu sản phẩm và trả về một tham chiếu đến vị trí mới được tạo
 
       Map<String, dynamic> productData = {
-        // 'idproduct': idProduct,
+        // 'idproduct': ,
         'name': name,
         'quantity': quantity,
         'price': price,
@@ -96,7 +96,7 @@ class _AddProductState extends State<AddProduct> {
         'categoryId': selectedCategoryId, // số mã lsp,
         'image': imageData, // link ảnh lưu trữ fire storage
       };
-
+     
       productsRef.child(productId).set(productData).then((_) {
         _showSnackBar('Thêm sản phẩm thành công');
       }).catchError((error) {
@@ -105,6 +105,7 @@ class _AddProductState extends State<AddProduct> {
     } catch (error) {
       _showSnackBar('Thêm sản phẩm thất bại: $error');
     }
+    
   }
 
   Future<void> _pickImage() async {
