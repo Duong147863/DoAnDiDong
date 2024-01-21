@@ -5,7 +5,6 @@ import 'package:firebase_database/firebase_database.dart';
 
 class ManageScreen extends StatefulWidget {
   const ManageScreen({Key? key}) : super(key: key);
-
   @override
   State<ManageScreen> createState() => _MyWidgetState();
 }
@@ -13,7 +12,7 @@ class ManageScreen extends StatefulWidget {
 class _MyWidgetState extends State<ManageScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
-
+  
   List<Map<String, dynamic>> accounts = [];
 
   @override
@@ -22,7 +21,7 @@ class _MyWidgetState extends State<ManageScreen> {
     loadAccountsWithFalsePermission();
     print("Init state called");
   }
-
+//Load tài khoản có phân quyền user và admin
 Future<void> loadAccountsWithFalsePermission() async {
   try {
     DataSnapshot accountsSnapshot = (await _database.child('users').orderByChild('persission').equalTo(false).once()).snapshot;
@@ -35,12 +34,13 @@ Future<void> loadAccountsWithFalsePermission() async {
         String displayname = userData['displayName'] ?? '';
         String email = userData['email'] ?? '';
         bool perssion = userData['persission'] ?? false;
-
+        bool status =userData['status'] ?? true;
         if (!perssion) {
           filteredAccounts.add({
             'userId': userId, 
             'displayName': displayname,
             'email': email,
+            'status':status
           });
         }
       });
@@ -71,9 +71,10 @@ Future<void> loadAccountsWithFalsePermission() async {
         itemCount: accounts.length,
         itemBuilder: (context, index) {
           return AccountInfoContainer(
-            name: accounts[index]['displayName'] ?? 'N/A',
+            displayName: accounts[index]['displayName'] ?? 'N/A',
             email: accounts[index]['email'] ?? 'N/A',
-            userId: accounts[index]['userId'] ?? 'N/A'
+            userId: accounts[index]['userId'] ?? 'N/A',
+            status: accounts[index]['status'] ?? 'N/A',
           );
         },
       ),

@@ -325,6 +325,32 @@ class User {
     return users;
   }
 }
+class NotificationData {
+  final String userId;
+  final String title;
+  final String description;
+  final bool status;
+  final int time;
+
+  NotificationData({
+    required this.userId,
+    required this.title,
+    required this.status,
+    required this.description,
+    required this.time,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'userId': userId,
+      'title': title,
+      'description': description,
+      'status': status,
+      'time': time
+    };
+  }
+}
+
 
  
 

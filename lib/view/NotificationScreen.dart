@@ -22,7 +22,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Container(
             width: MediaQuery.sizeOf(context).width,
             padding: EdgeInsets.all(10),
-            child: Text("Cập nhật đơn hàng"),
+            child: Text("Cập nhật thông báo"),
             decoration: BoxDecoration(color: Colors.grey[350]),
             
           ),

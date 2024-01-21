@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
   bool _isSigning = false;
+  //Messagse thông báo
   void showSnackBar(BuildContext context, String message) {
     final snackBar = SnackBar(
         content: Text(message,
@@ -127,6 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
     _loadStoredCredentials();
   }
 
+  //Hàm lưu dữ liệu tại local
   Future<void> _loadStoredCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? storedEmail = prefs.getString('storedEmail');
@@ -141,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordController.text = storedPassword;
     }
   }
-
+  //Hàm đăng nhập
   void _signIn() async {
     if (mounted) {
       setState(() {
@@ -205,8 +207,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 }
-
+void showSnackBar(BuildContext context, String message) {
+    final snackBar = SnackBar(
+        content: Text(message,
+            style: TextStyle(fontSize: 15), textAlign: TextAlign.center),
+        backgroundColor: Colors.pink);
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+//DiaLog Giao Diện Đăng Kí
 class RegisterDialog {
+   
   static Future<void> showRegisterDialog(BuildContext context) async {
     TextEditingController usernameController = TextEditingController();
     TextEditingController phoneNumberController = TextEditingController();
@@ -301,7 +311,14 @@ class RegisterDialog {
                   String phoneNumber = phoneNumberController.text;
                   String email = emailController.text;
                   String password = passwordController.text;
+                  String confirmPassword = confirmPasswordController.text;
                   bool status = true;
+                  // Kiểm tra xem mật khẩu có khớp không
+                  if (password.trim() != confirmPassword.trim()) {
+                    print("Mật khẩu và mật khẩu nhập lại không khớp");
+                    showSnackBar(context, 'Mật khẩu và mật khẩu nhập lại không khớp');
+                    return;
+                  }
                   // Gọi hàm đăng ký từ FirebaseAuthService
                   FirebaseAuthService authService = FirebaseAuthService();
                   User? user = await authService.signUpWithEmailAndPassword(
@@ -309,11 +326,11 @@ class RegisterDialog {
                   // Kiểm tra xem đăng ký có thành công hay không
                   if (user != null) {
                     print("Đăng ký thành công");
+                     showSnackBar(context, 'Đăng ký thành công');
                   } else {
                     print("Đăng ký thất bại");
+                    showSnackBar(context, 'Đăng ký thất bại');
                   }
-
-                  // Đóng hộp thoại
                   Navigator.of(context).pop();
                 },
               ),
@@ -324,7 +341,7 @@ class RegisterDialog {
     );
   }
 }
-
+// Lớp lấy trạng thái status của user
 class FirebaseAuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
 
@@ -346,20 +363,20 @@ class FirebaseAuthService {
   }
 
   Future<User?> signUpWithEmailAndPassword(String username, String phoneNumber,
-    String email, String password, bool status) async {
-  try {
-    UserCredential userCredential = await FirebaseAuth.instance
-        .createUserWithEmailAndPassword(email: email, password: password);
-    String uid = userCredential.user?.uid ?? "";
-    
-    saveUserData(uid, username, phoneNumber, email, status);
+      String email, String password, bool status) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      String uid = userCredential.user?.uid ?? "";
 
-    return userCredential.user;
-  } catch (e) {
-    print("Error during registration: $e");
-    return null; // Return null to indicate registration failure
+      saveUserData(uid, username, phoneNumber, email, status);
+
+      return userCredential.user;
+    } catch (e) {
+      print("Error during registration: $e");
+      return null; // Return null to indicate registration failure
+    }
   }
-}
 
 // Lưu thông tin người dùng vào Realtime Database
   void saveUserData(String uid, String username, String phoneNumber,
@@ -374,7 +391,7 @@ class FirebaseAuthService {
       'persission': false
     });
   }
-
+//Xử lý dữ liệu đăng kí
   Future<User?> signInWithEmailAndPassword(
       String email, String password) async {
     try {
