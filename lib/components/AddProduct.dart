@@ -29,6 +29,11 @@ class _AddProductState extends State<AddProduct> {
   String? encodedImage;
   String? imageData;
   String? idProduct;
+  bool isSuggestedProduts = false;
+  bool isSaleProducts = false;
+
+//thanh thông báo
+  bool isSnackBarVisible = false;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -36,9 +41,6 @@ class _AddProductState extends State<AddProduct> {
   final TextEditingController _promotionController = TextEditingController();
   final TextEditingController _desciptionController = TextEditingController();
   final TextEditingController _producerController = TextEditingController();
-
-//thanh thông báo
-  bool isSnackBarVisible = false;
 
   void _showSnackBar(String message) {
     if (!isSnackBarVisible) {
@@ -72,8 +74,10 @@ class _AddProductState extends State<AddProduct> {
     final promotion = double.parse(_promotionController.text);
     final description = _desciptionController.text;
     final producer = _producerController.text;
-
-// tạo mã sản phẩm
+    int valueSuggestedProduts = 0;
+    int valueSaleProducts = 0;
+    valueSaleProducts = isSaleProducts == true ? 1 : 0;
+    valueSuggestedProduts = isSuggestedProduts == true ? 1 : 0;
 
     try {
       DatabaseReference productsRef =
@@ -92,6 +96,8 @@ class _AddProductState extends State<AddProduct> {
         'producer': producer,
         'categoryId': selectedCategoryId, // số mã lsp,
         'image': imageData, // link ảnh lưu trữ fire storage
+        'sale': valueSaleProducts,
+        'suggest': valueSuggestedProduts,
       };
 
       productsRef.child(productId).set(productData).then((_) {
@@ -380,6 +386,98 @@ class _AddProductState extends State<AddProduct> {
                           border: InputBorder.none,
                           hintText: 'Nhập giảm giá',
                         ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 5),
+                ),
+                const Text(
+                  "Sản phẩm gợi ý: ",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Row(
+                        children: [
+                          const Spacer(), // tạo khoảng trống
+                          Checkbox(
+                            value: isSuggestedProduts,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                isSuggestedProduts = newValue ?? false;
+                              });
+                            },
+                            checkColor: Colors
+                                .white, // Màu của dấu tích khi ô được chọn
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return Colors.blue;
+                                }
+                                return Colors.white;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 5),
+                ),
+                const Text(
+                  "Sản phẩm bán chạy: ",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Row(
+                        children: [
+                          const Spacer(), // tạo khoảng trống
+                          Checkbox(
+                            value: isSaleProducts,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                isSaleProducts = newValue ?? false;
+                              });
+                            },
+                            checkColor: Colors
+                                .white, // Màu của dấu tích khi ô được chọn
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return Colors.blue;
+                                }
+                                return Colors.white;
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
