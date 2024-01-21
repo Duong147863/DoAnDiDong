@@ -2,6 +2,28 @@ import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/widgets.dart';
 
+// CollectionReference collectionRef = FirebaseFirestore.instance.collection('orders');
+
+// // Lấy tất cả các tài liệu trong collection "orders"
+// collectionRef.get().then((QuerySnapshot querySnapshot) {
+//   if (querySnapshot.size > 0) {
+//     // Lặp qua từng tài liệu và lấy thông tin về "productName" và "price"
+//     querySnapshot.docs.forEach((DocumentSnapshot documentSnapshot) {
+//       // Lấy giá trị của "productName" và "price"
+//       String productName = documentSnapshot.data()['productName'];
+//       int price = documentSnapshot.data()['price'];
+
+//       // Sử dụng dữ liệu
+//       print('Product Name: $productName');
+//       print('Price: $price');
+//     });
+//   } else {
+//     print('No documents found');
+//   }
+// }).catchError((error) {
+//   print('Error getting documents: $error');
+// });
+
 class Category {
   String id;
   String name;

@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primaryColor: Colors.black),
       routes: {
-        "/": (context) => MyOrder(),
+        "/": (context) => ManageProduct(),
         "/home": (context) => MainScreen(),
         "/addpro": (context) => AddProduct(),
         "/editpro": (context) => EditProduct(

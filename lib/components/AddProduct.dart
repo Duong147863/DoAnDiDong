@@ -174,6 +174,7 @@ class _AddProductState extends State<AddProduct> {
                 border: Border.all(width: 1, color: Colors.grey),
               ),
               child: GestureDetector(
+                //bắt các sự kiện tương tác, thực thi mã tương tác với phần tử trong giao diện
                 onTap: () {
                   if (imagePath != null) {
                     _pickImage();
@@ -465,7 +466,9 @@ class _AddProductState extends State<AddProduct> {
                   _priceController.text.isNotEmpty &&
                   _promotionController.text.isNotEmpty &&
                   _desciptionController.text.isNotEmpty &&
-                  _producerController.text.isNotEmpty) {
+                  _producerController.text.isNotEmpty &&
+                  imagePath != null &&
+                  imageData != null) {
                 //thông báo sl sp
                 int quantityNum = int.tryParse(_priceController.text) ?? 0;
                 String quantityW = _quantityController.text.toString();

@@ -224,19 +224,34 @@ class _EditProductState extends State<EditProduct> {
                     _pickImage();
                   }
                 },
-                child: imagePath != null ||
-                        widget.image.isNotEmpty ||
-                        widget.image != null
+                child: widget.image.isNotEmpty
                     ? SizedBox(
                         height: 150,
                         width: MediaQuery.of(context).size.width,
-                        child: Image.network(
-                          widget.image,
-                          fit: BoxFit.fill,
-                        ),
-                      )
+                        child: imageData == null
+                            ? InkWell(
+                                // widget bao bọc phần tử
+                                onTap: () {
+                                  _pickImage(); // Gọi hàm _pickImage() khi người dùng nhấn vào ảnh
+                                },
+                                child: Image.network(
+                                  widget.image,
+                                  fit: BoxFit.fill,
+                                ),
+                              )
+                            : InkWell(
+                                // widget bao bọc phần tử
+                                onTap: () {
+                                  _pickImage(); // Gọi hàm _pickImage() khi người dùng nhấn vào ảnh
+                                },
+                                child: Image.network(
+                                  imageData.toString(),
+                                  fit: BoxFit.fill,
+                                ),
+                              ))
                     : IconButton(
                         icon: const Icon(
+                          // ảnh mặc định khi chưa có ảnh
                           Icons.image,
                           size: 50,
                         ),
