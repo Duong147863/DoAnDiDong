@@ -52,10 +52,6 @@ Future<void> loadAccountsWithFalsePermission() async {
     print("Error loading accounts with false permission: $e");
   }
 }
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

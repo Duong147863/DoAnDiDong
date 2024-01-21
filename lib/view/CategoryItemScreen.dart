@@ -5,9 +5,10 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class CategoryItem extends StatefulWidget {
-  const CategoryItem({super.key, required this.name, required this.CategoryId});
+  const CategoryItem({super.key, required this.name, required this.CategoryId, required this.id});
   final String CategoryId;
   final String name;
+  final String id;
 
    @override
   _CategoryItemState createState() => _CategoryItemState();
@@ -52,7 +53,7 @@ class _CategoryItemState extends State<CategoryItem> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[350],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         backgroundColor: Colors.pink[50],
         iconTheme: IconThemeData(color: Colors.black),
@@ -149,6 +150,7 @@ class _CategoryItemState extends State<CategoryItem> {
                         children:[
                           ProductSuggestItem(key: ValueKey<String>(_product[index*2].id),
                             ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
+                            id: widget.id,
                             ),
                         ]
                       );
@@ -158,9 +160,11 @@ class _CategoryItemState extends State<CategoryItem> {
                       children: [
                        ProductSuggestItem(key: ValueKey<String>(_product[index*2].id),
                           ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2].id.toString()) ,
+                          id: widget.id,
                           ),
                         ProductSuggestItem(key: ValueKey<String>(_product[index*2+1].id),
                           ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(_product[index*2+1].id.toString()) ,
+                          id: widget.id,
                           ),
                       ],
                      );

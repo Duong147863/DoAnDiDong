@@ -16,9 +16,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
     return Scaffold(
       body: IndexedStack(        //IndexedStack được sử dụng để hiển thị một trong ba trang tương ứng với chỉ mục được chọn
         children: [
-          MainScreen(),
+          MainScreen(Id: widget.userId,),
           NotificationScreen(),
-          ProfileScreen(userId: widget.userId,)
+          ProfileScreen(Id: widget.userId,)
         ],
         index: _selectedScreen,
       ),
