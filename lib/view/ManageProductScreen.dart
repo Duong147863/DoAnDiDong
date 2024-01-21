@@ -16,33 +16,8 @@ class _ManageProductState extends State<ManageProductScreen> {
   String searchQuery = '';
   TextEditingController searchController = TextEditingController();
 
-  int _selectedIndex = 0;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
 
-    if (_selectedIndex == 0) {
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => MainScreen()),
-      // );
-    } else if (_selectedIndex == 1) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => const NotificationListener(
-                  child: Text(''),
-                )),
-      );
-    } else if (_selectedIndex == 2) {
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => ProfileScreen()),
-      // );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {

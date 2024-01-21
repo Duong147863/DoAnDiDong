@@ -83,7 +83,7 @@ Future<void> AccountUnlockNotification(String displayName) async {
       AndroidNotificationDetails(
     'order_channel_id',
     'order_channel_name',
-    channelDescription: 'Thông báo khi thực hiện thêm sản phẩm thành công',
+    channelDescription: 'Thông báo khi thực hiện mở tài khoản',
     importance: Importance.max,
     priority: Priority.high,
   );
@@ -92,8 +92,8 @@ Future<void> AccountUnlockNotification(String displayName) async {
 
   await flutterLocalNotificationsPlugin.show(
     0,
-    'Thêm sản phẩm thành công',
-    'bạn đã thực hiện thêm sản phẩm thành công',
+    'Mở tài khoản thành công',
+    'Tài khoản $displayName đã mở khóa ',
     platformChannelSpecifics,
     payload: 'item x',
   );

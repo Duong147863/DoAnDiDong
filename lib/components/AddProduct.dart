@@ -184,14 +184,12 @@ class _AddProductState extends State<AddProduct> {
         _showSnackBar('Thêm sản phẩm bán chạy thất bại: $error');
       });
     }
-        
   }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     // final storageRef = FirebaseStorage.instance.ref();
-
     if (pickedFile != null) {
       String generateRandomString(int length) {
         const chars ='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';

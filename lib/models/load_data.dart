@@ -435,31 +435,68 @@ class Purchased {
   }
 }
 class NotificationData {
+  
   final String userId;
   final String title;
   final String description;
-  final bool status;
-  final int time;
+  final DateTime time;
+  final String AdminId;
 
   NotificationData({
     required this.userId,
     required this.title,
-    required this.status,
     required this.description,
     required this.time,
+    required this.AdminId
   });
 
-  Map<String, dynamic> toJson() {
-    return {
-      'userId': userId,
-      'title': title,
-      'description': description,
-      'status': status,
-      'time': time
-    };
-  }
+  factory NotificationData.fromJson(String id, Map<dynamic, dynamic> json) {
+  return NotificationData(
+    userId: json['userId'],
+    time: json['time'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(json['time'])
+        : DateTime.now(),
+    title: json['title'],
+    description: json['description'],
+    AdminId: json['AdminId'],
+  );
 }
 
 
- 
+  static DatabaseReference getNotiReference() {
+    return FirebaseDatabase.instance.ref().child('notifications');
+  }
 
+ static Future<List<NotificationData>> fetchNotifications(String adminId) async {
+    DatabaseReference notiReference = getNotiReference();
+
+    // Sử dụng orderByChild để lọc theo userId
+    Query query = notiReference.orderByChild('AdminId').equalTo(adminId);
+    
+    DataSnapshot dataSnapshot = (await query.once()).snapshot;
+    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+    List<NotificationData> notifications = [];
+    if (values != null) {
+      values.forEach((key, value) {
+        notifications.add(NotificationData.fromJson(key, value));
+      });
+    }
+    return notifications;
+  }
+  static Future<void> deleteNotifications(String adminId) async {
+  DatabaseReference notiReference = getNotiReference();
+
+  // Sử dụng orderByChild để lọc theo userId
+  Query query = notiReference.orderByChild('AdminId').equalTo(adminId);
+
+  DataSnapshot dataSnapshot = (await query.once()).snapshot;
+  Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+  if (values != null) {
+    values.forEach((key, value) async {
+      await notiReference.child(key).remove();
+    });
+  }
+}
+}

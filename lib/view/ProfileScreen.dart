@@ -20,14 +20,18 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late DatabaseReference userReference;
-  late Users currentUser = Users(
-      name: "",
-      email: "",
-      phone: "",
-      typeaccount: true,
-      status: true,
-      address: "",
-      image: "",);
+  Users? currentUser;
+
+  void _loadCurrentUser(String userId) async {
+    try {
+      Users user = await Users.fetchUser(userId);
+      setState(() {
+        currentUser = user;
+      });
+    } catch (error) {
+      print("Error loading user data: $error");
+    }
+  }
 
   @override
   void initState() {
@@ -47,36 +51,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _loadCurrentUser(String userId) async {
-    try {
-      Users user = await Users.fetchUser(userId);
-      setState(() {
-        currentUser = user;
-      });
-    } catch (error) {
-      print("Error loading user data: $error");
-    }
-  }
-
   void showEditProfileDialog(BuildContext context, Users user, String id) {
     showDialog(
       context: context,
       builder: (context) {
         return EditProfileFrom(
-            user: currentUser,
-            keyId: widget.Id,
-            reloadUserDataCallback: reloadUser);
+            user: currentUser!, keyId: widget.Id, reloadUserDataCallback: reloadUser);
       },
     );
   }
 
   Future<void> updateImage(String imagePath, String id) async {
-    // Kiểm tra xem tệp tin có tồn tại không
     if (File(imagePath).existsSync()) {
       DatabaseReference userReference =
           FirebaseDatabase.instance.ref().child('users').child(id);
       await userReference.update({
         'image': imagePath,
+      });
+
+      // Cập nhật đường dẫn ảnh trực tiếp trong đối tượng currentUser
+      setState(() {
+        currentUser!.image = imagePath;
       });
     } else {
       print('Tệp tin không tồn tại: $imagePath');
@@ -85,7 +80,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Users user = currentUser;
+    if (currentUser == null) {
+      // Trường hợp currentUser chưa được gán giá trị
+      return CircularProgressIndicator(); // hoặc widget loading khác
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -94,15 +93,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text(
           'Thông tin cá nhân',
           style: TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 12, 2, 46)),
+              fontSize: 25, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 12, 2, 46)),
         ),
         actions: [
           Padding(padding: EdgeInsets.all(5)),
           IconButton(
               onPressed: () {
-                showEditProfileDialog(context, currentUser, widget.Id);
+                showEditProfileDialog(context, currentUser!, widget.Id);
               },
               icon: const Icon(Icons.settings, color: Colors.red)),
           IconButton(
@@ -131,10 +128,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.white,
                     ),
                     child: Image(
-                      height: MediaQuery.of(context).size.height / 3,
-                      fit: BoxFit.fitWidth,
-                      image: NetworkImage('https://firebasestorage.googleapis.com/v0/b/doandidong-a3982.appspot.com/o/image%2Fbackground.jpg?alt=media&token=7ba6adf0-e1c6-43a9-bae8-94fb6f05a186'),
-                    ),
+                        height: MediaQuery.of(context).size.height / 3,
+                        fit: BoxFit.fitWidth,
+                        image: NetworkImage(
+                            'https://firebasestorage.googleapis.com/v0/b/doandidong-a3982.appspot.com/o/image%2Fbackground.jpg?alt=media&token=7ba6adf0-e1c6-43a9-bae8-94fb6f05a186')),
                   ),
                   Positioned(
                     bottom: -70.0,
@@ -143,7 +140,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _pickImage();
                       },
                       child: DisplayImage(
-                        imagePath: user.image,
+                        imagePath: currentUser!.image,
                         onPressed: () {},
                       ),
                     ),
@@ -157,40 +154,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 30),
-                    Text(
-                      'Họ&Tên: ${currentUser.name}',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 12, 2, 46)),
-                    ),
+                    Text('Họ&Tên: ${currentUser!.name}',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 12, 2, 46))),
                     const SizedBox(height: 10),
                     Text(
-                      'Chức vụ: ${currentUser.typeaccount ? "Admin" : "Người dùng"}',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 12, 2, 46)),
-                    ),
+                        'Chức vụ: ${currentUser!.typeaccount ? "Admin" : "Người dùng" }',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 12, 2, 46))),
                     const SizedBox(height: 10),
-                    Text(
-                      'SĐT: ${currentUser.phone}',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color.fromARGB(255, 12, 2, 46)),
-                    ),
+                    Text('SĐT: ${currentUser!.phone}',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 12, 2, 46))),
                     SizedBox(height: 10),
                     Row(
                       children: [
                         Expanded(
-                          child: Text('Địa chỉ: ${currentUser.address}',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(255, 12, 2, 46)),
-                              softWrap: true,
-                              maxLines: 3),
+                          child: Text(
+                            'Địa chỉ: ${currentUser!.address}',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 12, 2, 46)),
+                            softWrap: true,
+                            maxLines: 3,
+                          ),
                         )
                       ],
                     )
@@ -217,8 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         const Text(
                           "Đơn hàng của tôi",
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         IconButton(
                           onPressed: () {
@@ -242,7 +235,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
               ),
-              if (currentUser.typeaccount == true) ProfileAdmin(id: widget.Id)
+              if (currentUser!.typeaccount == true) ProfileAdmin(id: widget.Id)
             ],
           ),
         ],
@@ -251,17 +244,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
-      // Cập nhật đường dẫn ảnh trên Firebase
       await updateImage(pickedFile.path, widget.Id);
 
-      // Gọi setState để widget được tái tạo và hiển thị đường dẫn ảnh mới
-      setState(() {
-        currentUser.image = pickedFile.path;
-      });
+      // Gọi reloadUser để cập nhật dữ liệu người dùng
+      reloadUser();
     }
   }
 }

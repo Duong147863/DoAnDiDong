@@ -10,8 +10,10 @@ class AccountInfoContainer extends StatefulWidget {
   final String email;
   final String userId;
   final bool status;
+  final String admin;
   const AccountInfoContainer(
       {required this.displayName,
+      required this.admin,
       required this.email,
       required this.userId,
       required this.status});
@@ -104,7 +106,9 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
   void _updateAccountStatus(bool newValue) async {
     DatabaseReference userReference =
         _databaseReference.child('users').child(widget.userId);
-
+    setState(() {
+          isSwitched = newValue;
+        });
     userReference.update({
       'status': newValue,
     });
@@ -113,41 +117,56 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
       // Tài khoản bị khóa
       initNotifications();
       NotificationOfLockedAccount(widget.displayName);
-      showSnackBar(context, "Khóa tài khoản");
-      // Tạo thông báo và lưu vào Firebase
       NotificationData notificationData = NotificationData(
+        AdminId: widget.admin,
         userId: widget.userId,
         title: "Tài khoản bị khóa",
         description: "Tài khoản của ${widget.displayName} đã bị khóa",
-        status: isSwitched,
-        time: DateTime.now().millisecondsSinceEpoch,
+        time: DateTime.now(),
       );
 
-      await _databaseReference.child('notifications').push().set(
-            notificationData.toJson(),
-          );
+      await _databaseReference.child('notifications').push().set({
+          'AdminId': notificationData.AdminId,
+          'userId': notificationData.userId,
+          'title': notificationData.title,
+          'description': notificationData.description,
+          'time': notificationData.time.millisecondsSinceEpoch,
+        }).then((value) {
+          print("Data saved successfully!");
+        }).catchError((error) {
+          print("Failed to save data: $error");
+        });
+
+      showSnackBar(context, "Khóa tài khoản");
+      // Tạo thông báo và lưu vào Firebase
+     
     } else {
       // Tài khoản được mở khóa
       initNotifications();
       AccountUnlockNotification(widget.displayName);
+       NotificationData notificationData = NotificationData(
+          AdminId: widget.admin,
+          userId: widget.userId,
+          title: "Tài khoản được mở khóa",
+          description: "Tài khoản của ${widget.displayName} đã được mở khóa",
+          time: DateTime.now(),
+        );
+
+        await _databaseReference.child('notifications').push().set({
+          'AdminId': notificationData.AdminId,
+          'userId': notificationData.userId,
+          'title': notificationData.title,
+          'description': notificationData.description,
+          'time': notificationData.time.millisecondsSinceEpoch,
+        }).then((value) {
+          print("Data saved successfully!");
+        }).catchError((error) {
+          print("Failed to save data: $error");
+        });
+
       showSnackBar(context, "Mở khóa tài khoản");
       // Tạo thông báo và lưu vào Firebase
-      NotificationData notificationData = NotificationData(
-        userId: widget.userId,
-        title: "Tài khoản được mở khóa",
-        description: "Tài khoản của ${widget.displayName} đã được mở khóa",
-        status: isSwitched,
-        time: DateTime.now().millisecondsSinceEpoch,
-      );
-
-      await _databaseReference.child('notifications').push().set(
-            notificationData.toJson(),
-          );
     }
-
-    setState(() {
-      isSwitched = newValue;
-    });
   }
 }
 

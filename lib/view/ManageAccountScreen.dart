@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-class ManageScreen extends StatefulWidget {
-  const ManageScreen({Key? key}) : super(key: key);
+class ManageAccountScreen extends StatefulWidget {
+  const ManageAccountScreen({Key? key, required this.AdminId}) : super(key: key);
+  final String AdminId;
   @override
-  State<ManageScreen> createState() => _MyWidgetState();
+  State<ManageAccountScreen> createState() => _MyWidgetState();
 }
 
-class _MyWidgetState extends State<ManageScreen> {
+class _MyWidgetState extends State<ManageAccountScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseReference _database = FirebaseDatabase.instance.reference();
   
@@ -56,6 +57,7 @@ Future<void> loadAccountsWithFalsePermission() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.black),
         backgroundColor: Colors.pink[50],
         title: Text(
           "Quản lý tài khoản",
@@ -67,6 +69,7 @@ Future<void> loadAccountsWithFalsePermission() async {
         itemCount: accounts.length,
         itemBuilder: (context, index) {
           return AccountInfoContainer(
+            admin:widget.AdminId,
             displayName: accounts[index]['displayName'] ?? 'N/A',
             email: accounts[index]['email'] ?? 'N/A',
             userId: accounts[index]['userId'] ?? 'N/A',
