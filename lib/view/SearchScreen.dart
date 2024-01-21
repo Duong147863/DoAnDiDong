@@ -2,8 +2,8 @@ import 'package:doandidongappthuongmai/components/SearchResult.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
-
+  const SearchScreen({Key? key, required this.id}) : super(key: key);
+  final String id;
   @override
   State<SearchScreen> createState() => _SearchScreen1State();
 }
@@ -69,7 +69,7 @@ class _SearchScreen1State extends State<SearchScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SearchResult(searchText: _searchController.text),
+                  builder: (context) => SearchResult(searchText: _searchController.text, id: widget.id,),
                 ),
               ).then((_) {
                 // Khối này sẽ được thực hiện khi màn hình SearchResult được đóng lại.
@@ -111,7 +111,7 @@ class _SearchScreen1State extends State<SearchScreen> {
                       _searchController.text = searchHistory[index];   // nếu ô nào được chọn hiện text lên khung tìm kiếm
                        Navigator.push(context,
                         MaterialPageRoute(
-                          builder: (context) => SearchResult(searchText: _searchController.text),
+                          builder: (context) => SearchResult(searchText: _searchController.text,id:widget.id),
                           ),
                         ).then((_) {
                           _searchController.clear();   //xóa text khi màn hình SearchResult được đóng lại.

@@ -1,12 +1,13 @@
-import 'package:doandidongappthuongmai/view/ProductDeatailScreen.dart';
+import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 
 class ProductSaleItem extends StatefulWidget {
-  ProductSaleItem({Key? key, required this.ProductsaleReference}) : super(key: key);
+  ProductSaleItem({Key? key, required this.ProductsaleReference, required this.id}) : super(key: key);
 
   final DatabaseReference ProductsaleReference;
+  final String id;
 
   @override
   State<ProductSaleItem> createState() => _ProductItemState();
@@ -14,7 +15,7 @@ class ProductSaleItem extends StatefulWidget {
 
 class _ProductItemState extends State<ProductSaleItem> {
   DatabaseReference productsale = FirebaseDatabase.instance.ref().child('productsales');
-  ProductSale products = ProductSale(id: "0", category: "", name: "", description: "", idproduct: "", image: "assets/img/noImage.jpg", producer: "", price: 0, promotion: 0, quantity: 0);
+  ProductSale products = ProductSale(id: "0", category: "", name: "", description: "", idproduct: "", image: "", producer: "", price: 0, promotion: 0, quantity: 0);
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,8 @@ class _ProductItemState extends State<ProductSaleItem> {
           context,
           MaterialPageRoute(
             builder: (context) => ProductDetailsScreen(
+              Id: widget.id,
+              idproduct: products.idproduct,
               image: products.image,
               productName: products.name,
               price: products.price,
@@ -56,7 +59,7 @@ class _ProductItemState extends State<ProductSaleItem> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 image: DecorationImage(
-                  image: AssetImage('${products.image}'),
+                  image:NetworkImage('${products.image}'),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -84,7 +87,7 @@ class _ProductItemState extends State<ProductSaleItem> {
                       ),
                     ],
                   ),
-                if ((products.promotion == 0) && (products.price != null))
+                if ((products.promotion == 0) && (products.price >0))
                   Text(
                     '${products.price}đ',
                     style: const TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),

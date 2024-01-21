@@ -2,7 +2,6 @@ import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/models/local_notification.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 
