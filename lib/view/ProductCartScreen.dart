@@ -170,7 +170,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                             icon: const Icon(Icons.shopping_cart, color: Colors.black),
                             label: const Text("Mua hàng", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.green[300],
+                              primary: Colors.pink[300],
                               side: const BorderSide(color: Colors.black),
                               padding: const EdgeInsets.symmetric(vertical: 15),
                             ),

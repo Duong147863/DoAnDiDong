@@ -3,7 +3,6 @@ import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/view/OrderDetailScreen.dart';
 import 'package:doandidongappthuongmai/view/ProductDetailScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:doandidongappthuongmai/models/orderdetail.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -336,43 +335,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
                        Navigator.push(context,MaterialPageRoute(builder: (context) => OrderDetailScreen(orderdetailinfo: orderDetailsInfo,Id: widget.Id,) ),);
                     },                           //chuyển đến chi tiết hóa đơn
                      
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.transparent,
-                      elevation: 0, 
-                      padding: EdgeInsets.all(12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient:const LinearGradient(
-                          colors: [Color.fromARGB(255, 237, 161, 227), Colors.white],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.4),   // Màu của đổ bóng
-                            spreadRadius: 2,   // Bán kính đổ bóng
-                            blurRadius: 10,    // Độ mờ của đổ bóng
-                            offset: Offset(0, 7),   // Vị trí đổ bóng
+                   style: ElevatedButton.styleFrom(
+                            primary: Colors.pink[300],
+                            side: const BorderSide(color: Colors.black),
+                            padding: const EdgeInsets.symmetric(vertical:15),
+
                           ),
-                        ],
-                      ),
-                      padding: EdgeInsets.all(15),
-                      child: const Center(
-                        child: Text("ĐẶT HÀNG NGAY",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black, 
+                          child: const Text("Đặt hàng ngay",
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
                           ),
-                        ),
-                      ),
-                    ),
+                    
                   ),
                 ),
               ],
@@ -454,15 +426,19 @@ void saveOrderToFirebase(OrderDetails orderDetails, String orderId) {
 
   if (product.promotion != null && product.promotion > 0) {
     productData = {
+      'image':product.image,
       'productName': product.productName,
       'price': product.promotion,
       'quantity': product.quantity,
+      'idproduct':product.idproduct
     };
   } else {
     productData = {
+      'image':product.image,
       'productName': product.productName,
       'price': product.price,
       'quantity': product.quantity,
+      'idproduct':product.idproduct
     };
   }
   productsList.add(productData);

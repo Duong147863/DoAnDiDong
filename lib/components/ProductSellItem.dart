@@ -11,10 +11,10 @@ class ProductSellItem extends StatefulWidget {
   @override
   State<ProductSellItem> createState() => _ProductItemState();
 }
-
+final  String defaultimage="https://firebasestorage.googleapis.com/v0/b/doandidong-a3982.appspot.com/o/image%2FnoImage.jpg?alt=media&token=c8152bb5-3f3b-4dac-ace4-a64b231f15e4";
 class _ProductItemState extends State<ProductSellItem> {
   DatabaseReference productsell = FirebaseDatabase.instance.ref().child('productsells');
-  Product products = Product(id: "0", category: "", name: "", description: "", idproduct: "", image: "", producer: "", price: 0, promotion: 0, quantity: 0, sell: false, suggest: false);
+  Product products = Product(id: "0", category: "", name: "", description: "", idproduct: "", image: defaultimage, producer: "", price: 0, promotion: 0, quantity: 0, sell: false, suggest: false);
   
   @override
 

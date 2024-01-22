@@ -1,7 +1,7 @@
 
 import 'package:doandidongappthuongmai/components/Navigation.dart';
+import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:doandidongappthuongmai/models/local_notification.dart';
-import 'package:doandidongappthuongmai/models/orderdetail.dart';
 import 'package:doandidongappthuongmai/view/PayProductScreen.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -315,7 +315,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                         );
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.green[300],
+                          primary: Colors.red[400],
                           side: const BorderSide(color: Colors.black),
                           padding: const EdgeInsets.symmetric(vertical: 15),
                         ),
@@ -338,7 +338,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                           );
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: const Color.fromARGB(255, 199, 129, 159),
+                          primary: Colors.pink[300],
                           side: const BorderSide(color: Colors.black),
                           padding: const EdgeInsets.symmetric(vertical: 15),
                         ),
@@ -395,11 +395,13 @@ class ShowAlertDialog extends  StatelessWidget {
           },
           child: Text('Không'),
         ),
+       
         TextButton(
           onPressed: () async {
              await initNotifications();
              updateStatus();
              showNotificationOderDelete(orderId);
+            saveNotification(userId, orderId);
              Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => NavigationScreen(userId: userId,)),
@@ -412,4 +414,26 @@ class ShowAlertDialog extends  StatelessWidget {
       ],
     );
   }
+}
+void saveNotification(String userId, String orderId)
+{
+NotificationData notificationData = NotificationData(
+    AdminId: userId,
+    userId: "",
+    title: "Đơn hàng đã bị hủy",
+    description: "Bạn đã hủy đơn hàng ${orderId} thành công.",
+    time: DateTime.now(),
+  );
+  DatabaseReference _databaseReference = FirebaseDatabase.instance.ref();
+  _databaseReference.child('notifications').push().set({
+    'AdminId': notificationData.AdminId,
+    'userId': notificationData.userId,
+    'title': notificationData.title,
+    'description': notificationData.description,
+    'time': notificationData.time.millisecondsSinceEpoch,
+  }).then((value) {
+    print("Data saved successfully!");
+  }).catchError((error) {
+    print("Failed to save data: $error");
+  });
 }

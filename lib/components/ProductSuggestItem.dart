@@ -10,9 +10,10 @@ class ProductSuggestItem extends StatefulWidget {
   @override
   State<ProductSuggestItem> createState() => _ProductItemState();
 } 
+final  String defaultimage="https://firebasestorage.googleapis.com/v0/b/doandidong-a3982.appspot.com/o/image%2FnoImage.jpg?alt=media&token=c8152bb5-3f3b-4dac-ace4-a64b231f15e4";
 class _ProductItemState extends State<ProductSuggestItem> {
   DatabaseReference productsuggests = FirebaseDatabase.instance.ref().child('products');
-  Product products= Product(id: "0",category: "",name: "", description: "", idproduct: "",image: "", producer: "", price: 0,promotion: 0, quantity: 0,sell: false, suggest: false);
+  Product products= Product(id: "0",category: "",name: "", description: "", idproduct: "",image: defaultimage, producer: "", price: 0,promotion: 0, quantity: 0,sell: false, suggest: false);
   @override
   Widget build(BuildContext context) {
      if (products.id==0) {
@@ -113,7 +114,7 @@ class _ProductItemState extends State<ProductSuggestItem> {
         Map<dynamic, dynamic> data = dataSnapshot.value as Map<dynamic, dynamic>;
         // print("Data from Firebase: $data");
         String productsId = data["idproduct"]?.toString() ?? "";
-
+       
         setState(() {
          products = Product.fromJson(productsId, data);
         });

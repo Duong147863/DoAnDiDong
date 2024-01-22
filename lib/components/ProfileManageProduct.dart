@@ -24,7 +24,7 @@ class _ProfileManageProductState extends State<ProfileManageProduct> {
         builder: (context) => EditProduct(
           id: widget.id,
           idPro: idpro,
-          cartId: catId,
+          catId: catId,
           productId: productId,
           image: image,
         ),

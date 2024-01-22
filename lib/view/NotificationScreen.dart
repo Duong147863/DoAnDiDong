@@ -52,6 +52,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
       body: RefreshIndicator(
         onRefresh: _refresh,
         child: SingleChildScrollView(
+          physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
               Container(
@@ -64,6 +65,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                     TextButton(
                       onPressed: () {
                           NotificationData.deleteNotifications(widget.userId);
+                          setState(() {
+                            
+                            _refresh();
+                          });
                       },
                       child: Text(
                         "Xóa tất cả",

@@ -219,7 +219,8 @@ void didChangeDependencies() {
                         price: widget.price,
                         isSelected:false,
                         quantity: 1,
-                        userId: widget.Id
+                        userId: widget.Id,
+                        idproduct: widget.idproduct
                       );
                       saveProductToFirebase(carts);
                     }
@@ -239,10 +240,10 @@ void didChangeDependencies() {
                   onPressed: () {
                     _showBottomSheet(context, widget.image, widget.price, widget.productName, widget.promotion, widget.idproduct, widget.Id);
                   },
-                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-                  label: const Text("Mua ngay", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+                  icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black),
+                  label: const Text("Mua ngay", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.pink,
+                    primary: Colors.pink[300],
                     side: const BorderSide(color: Colors.black),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
@@ -345,7 +346,8 @@ void didChangeDependencies() {
                                 quantity: countquantity,
                                 promotion: promotion,
                                 userId: widget.Id,
-                                isSelected: true
+                                isSelected: true,
+                                idproduct: widget.idproduct
                               ),
                               // Add more Cart objects if needed
                             ];
@@ -363,12 +365,12 @@ void didChangeDependencies() {
                             });
                           },
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.pink,
+                            primary: Colors.pink[300],
                             side: const BorderSide(color: Colors.black),
                             padding: const EdgeInsets.symmetric(vertical: 15),
                           ),
                           child: const Text("Mua ngay",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
                           ),
                         ),
                       ),

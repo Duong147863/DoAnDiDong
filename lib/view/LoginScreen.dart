@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
                 child: Text(
                   "Đăng Nhập",
                   style: TextStyle(
@@ -53,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextField(
                 controller: _usernameController,
                 decoration: InputDecoration(
-                  labelText: 'Đăng Nhập',
+                  labelText: 'Tài khoản',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20.0)),
                   ),
@@ -77,16 +77,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: ElevatedButton(
                   style: ButtonStyle(
+                    
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
+                        borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
+                    padding:MaterialStatePropertyAll(EdgeInsets.fromLTRB(60, 13, 60, 13)),
                     backgroundColor:
                         MaterialStateProperty.all(Colors.pinkAccent),
+                        
                   ),
                   onPressed: _signIn,
-                  child: Text("Đăng Nhập"),
+                  child: Text("Đăng Nhập",textAlign: TextAlign.center,),
                 ),
               ),
               Padding(

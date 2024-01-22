@@ -12,7 +12,7 @@ import '../models/local_notification.dart';
 
 class EditProduct extends StatefulWidget {
   final String idPro;
-  final String cartId;
+  final String catId;
   final String productId;
   final String image;
   final String id;
@@ -21,7 +21,7 @@ class EditProduct extends StatefulWidget {
       {Key? key,
       required this.id,
       required this.idPro,
-      required this.cartId,
+      required this.catId,
       required this.productId,
       required this.image})
       : super(key: key);
@@ -36,6 +36,8 @@ class _EditProductState extends State<EditProduct> {
   String selectedCategoryId = '';
   String? idProduct;
   String? imageData;
+  bool isSellProducts = false;
+  bool isSuggestedProducts = false;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
@@ -59,7 +61,9 @@ class _EditProductState extends State<EditProduct> {
           _promotionController.text = product.promotion.toString();
           _desciptionController.text = product.description;
           _producerController.text = product.producer;
-          final selectedCategoryId = widget.cartId;
+          final selectedCategoryId = widget.catId;
+          isSellProducts = product.sell ;
+          isSuggestedProducts =product.suggest;
         });
         break;
       }
@@ -108,6 +112,8 @@ class _EditProductState extends State<EditProduct> {
     final description = _desciptionController.text;
     final producer = _producerController.text;
     final image = imageData; // Thay thế bằng đường dẫn hình ảnh
+    bool valueSaleProducts = isSellProducts;
+    bool valueSuggestedProduts = isSuggestedProducts;
 
     try {
       DatabaseReference productsRef =
@@ -123,6 +129,8 @@ class _EditProductState extends State<EditProduct> {
         'producer': producer,
         'categoryId': selectedCategoryId,
         'image': image,
+        'sell': valueSaleProducts,
+        'suggest': valueSuggestedProduts,
       };
 
       productsRef.child(widget.idPro).update(productData).then((_) {
@@ -194,25 +202,15 @@ class _EditProductState extends State<EditProduct> {
     // final String  productId  = ModalRoute.of(context)!Settings.
     return Scaffold(
       appBar: AppBar(
-        // backgroundColor: Colors.pink[50], // Màu nền hồng nhạt
-        // // leading: IconButton(
-        // //   icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
-        // //   onPressed: () {
-        // //     // Navigator.pushAndRemoveUntil(
-        // //     //   context,
-        // //     //   MaterialPageRoute(builder: (context) =>ManageProductScreen(Id: widget.id,)),
-        // //     //   (route) => false,
-        // //     // );
-   
-        // //   },
-        // ),
-        // centerTitle: true, // căn giữa tiêu đề theo chiều ngang
+        backgroundColor: Colors.pink[50], // Màu nền hồng nhạt
+        iconTheme: IconThemeData(color: Colors.black),
+        centerTitle: true, // căn giữa tiêu đề theo chiều ngang
         title: const Text(
           'Quản lý sửa thông tin sản phẩm',
           style: TextStyle(
             fontSize: 20,
-            color: Colors.black,
             fontWeight: FontWeight.bold,
+            color: Colors.black
           ),
         ),
       ),
@@ -232,19 +230,33 @@ class _EditProductState extends State<EditProduct> {
                     _pickImage();
                   }
                 },
-                child: imagePath != null ||
-                        widget.image.isNotEmpty ||
-                        widget.image != null
+                child: widget.image.isNotEmpty
                     ? SizedBox(
                         height: 150,
                         width: MediaQuery.of(context).size.width,
-                        child: Image.network(
-                          widget.image,
-                          fit: BoxFit.fill,
-                        ),
-                      )
+                        child: imageData == null
+                            ? InkWell(
+                                //  bao bọc đối tướng
+                                onTap: () {
+                                  _pickImage();
+                                },
+                                child: Image.network(
+                                  widget.image,
+                                  fit: BoxFit.fill,
+                                ),
+                              )
+                            : InkWell(
+                                onTap: () {
+                                  _pickImage();
+                                },
+                                child: Image.network(
+                                  imageData.toString(),
+                                  fit: BoxFit.fill,
+                                ),
+                              ))
                     : IconButton(
                         icon: const Icon(
+                          // ảnh mặc định khi chưa có ảnh
                           Icons.image,
                           size: 50,
                         ),
@@ -315,8 +327,8 @@ class _EditProductState extends State<EditProduct> {
                           // });
 
                           return DropdownButtonFormField<String>(
-                            value: widget.cartId.isNotEmpty
-                                ? widget.cartId
+                            value: widget.catId.isNotEmpty
+                                ? widget.catId
                                 : null, // lấy id sp đã chọn để hiển thị tên lsp
                             items: categories.map((Category category) {
                               return DropdownMenuItem<String>(
@@ -454,6 +466,98 @@ class _EditProductState extends State<EditProduct> {
                   padding: EdgeInsets.only(left: 5),
                 ),
                 const Text(
+                  "Sản phẩm gợi ý: ",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Row(
+                        children: [
+                          const Spacer(), // tạo khoảng trống
+                          Checkbox(
+                            value: isSuggestedProducts,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                isSuggestedProducts = newValue ?? false;
+                              });
+                            },
+                            checkColor: Colors
+                                .white, // Màu của dấu tích khi ô được chọn
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return Colors.blue;
+                                }
+                                return Colors.white;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 5),
+                ),
+                const Text(
+                  "Sản phẩm bán chạy: ",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Row(
+                        children: [
+                          const Spacer(), // tạo khoảng trống
+                          Checkbox(
+                            value: isSellProducts,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                isSellProducts = newValue ?? false;
+                              });
+                            },
+                            checkColor: Colors
+                                .white, // Màu của dấu tích khi ô được chọn
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return Colors.blue;
+                                }
+                                return Colors.white;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Divider(
+              color: Colors.grey,
+              thickness: 1,
+            ),
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 5),
+                ),
+                const Text(
                   "Thông tin sản phẩm: ",
                   style: TextStyle(fontSize: 16),
                 ),
@@ -567,8 +671,16 @@ class _EditProductState extends State<EditProduct> {
                 //thêm sp, thông báo
                 updateProductInFirebase(widget.productId);
                 await initNotifications();
-                Navigator.pop(context);
                 showEditProductSuccessNotification();
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ManageProductScreen(Id: widget.id,),
+                ),
+              ).then((_) {
+                // Sau khi thêm/sửa sản phẩm và quay lại, popUntil để quay lại màn hình quản lý sản phẩm
+                Navigator.popUntil(context, (route) => route.isFirst);
+              });
               } else {
                 return _showSnackBar('Vui lòng nhập đầy đủ thông tin sản phẩm');
               }

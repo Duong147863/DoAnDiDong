@@ -22,7 +22,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
  
  List<Product> allProductsale=[];
- List<Product> allProductsuggest=[];
+ List<Product> randomProductsuggest=[];
  int selectedButtonIndex = 0;  
 
  void _loadProductsales() async {    //lấy danh sách sản phẩm khuyến mãi
@@ -32,24 +32,26 @@ class _MainScreenState extends State<MainScreen> {
     });
     print("all productsale : ${allProductsale}");
   }
-  void _loadProductsuggests() async {    // lấy danh sách sản phẩm gợi ý
+    void _loadProductSuggests() async {
     List<Product> productsuggest = await Product.fetchProductSuggests();
+    productsuggest.shuffle();
+    List<Product> randomProducts = productsuggest.take(8).toList();
     setState(() {
-     allProductsuggest = productsuggest;
+      randomProductsuggest = randomProducts;
     });
-    print("all productsale : ${allProductsuggest}");
   }
-
   @override
   void initState() {
     super.initState();
     _loadProductsales();
-    _loadProductsuggests();
+    _loadProductSuggests();
      Provider.of<CartProvider>(context, listen: false).loadCartQuantity(widget.Id);  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
    
   }
   Future<void> _refreshData() async {
+     _loadProductSuggests();
     setState(() {
+     
      Provider.of<CartProvider>(context, listen: false).loadCartQuantity(widget.Id);  // cập nhật số lượng giỏ hàng đồng bộ vs productdetail
     });
     return Future.value();
@@ -321,7 +323,7 @@ class _MainScreenState extends State<MainScreen> {
         Column(
          children: [
           SizedBox(        //tạo khung bên ngoài chứa nội dung ,hình ảnh 
-          height: MediaQuery.of(context).size.height*1.2-50,
+          height: ((MediaQuery.of(context).size.height / 2.52 ) * (randomProductsuggest.length/2).ceil()),
           child: Stack(          
             children: [
               Positioned(        // đặt vị trí khung
@@ -365,17 +367,17 @@ class _MainScreenState extends State<MainScreen> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(top: 40),
-                    height:MediaQuery.of(context).size.height+70,
+                    height: ((MediaQuery.of(context).size.height / 2.6 ) * (randomProductsuggest.length/2).ceil()),
                     child: ListView.builder(
                       physics: NeverScrollableScrollPhysics(),
-                      itemCount: (allProductsuggest.length/2).ceil(),   // làm tròn 
+                      itemCount: (randomProductsuggest.length/2).ceil(),   // làm tròn 
                       itemBuilder: (context, index) {
-                        if( allProductsuggest.length %2 !=0 && index == (allProductsuggest.length/2).ceil()-1)
+                        if(randomProductsuggest.length %2 !=0 && index == (randomProductsuggest.length/2).ceil()-1)
                         {
                           return Row(
                             children: [
-                            ProductSuggestItem(
-                              ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(allProductsuggest[index*2].id.toString()) ,
+                            ProductSuggestItem(key: ValueKey<String>(randomProductsuggest[index*2].id),
+                              ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(randomProductsuggest[index*2].id.toString()) ,
                              id: widget.Id,
                              ),
                             ],
@@ -385,11 +387,13 @@ class _MainScreenState extends State<MainScreen> {
                           return Row(
                             children: [
                               ProductSuggestItem(
-                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(allProductsuggest[index*2].id.toString()) ,
+                                key: ValueKey<String>(randomProductsuggest[index*2].id),
+                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(randomProductsuggest[index*2].id.toString()) ,
                                 id: widget.Id,
                                 ),
                               ProductSuggestItem(
-                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(allProductsuggest[index*2+1].id.toString()) ,
+                                key:ValueKey<String>(randomProductsuggest[index*2+1].id),
+                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(randomProductsuggest[index*2+1].id.toString()) ,
                                 id: widget.Id,
                                 ),
                             ],
@@ -397,11 +401,13 @@ class _MainScreenState extends State<MainScreen> {
                         }
                       },
                     ),
+                  )
+                  ],
                   ),
                 ],
               )
-             ],
-            ),
+             
+            
           ),
         ],
         ),

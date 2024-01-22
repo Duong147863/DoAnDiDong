@@ -33,6 +33,9 @@ class _AddProductState extends State<AddProduct> {
   String? idProduct;
   bool isRecommended = false;
   bool isBestSeller = false;
+  bool sell = false;
+  bool suggets = false;
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quantityController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -67,14 +70,16 @@ class _AddProductState extends State<AddProduct> {
       persistenceEnabled: true, // cho phép lưu trữ off
     );
   }
+
   String generateRandomString(int length) {
-      const chars ='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      final random = Random();
-      return String.fromCharCodes(
-        List.generate(
-            length, (_) => chars.codeUnitAt(random.nextInt(chars.length))),
-      );
-    }
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = Random();
+    return String.fromCharCodes(
+      List.generate(
+          length, (_) => chars.codeUnitAt(random.nextInt(chars.length))),
+    );
+  }
+
   Future<void> addProductToFirebase() async {
     final name = _nameController.text;
     final quantity = int.parse(_quantityController.text);
@@ -82,16 +87,15 @@ class _AddProductState extends State<AddProduct> {
     final promotion = double.parse(_promotionController.text);
     final description = _desciptionController.text;
     final producer = _producerController.text;
-    String idProduct = generateRandomString(10);  
-   
+    String idProduct = generateRandomString(10);
+
     try {
       DatabaseReference productsRef =
           FirebaseDatabase.instance.ref().child('products');
 
       String productId = productsRef.push().key!;
       //cho phép tạo một khóa mới cho dữ liệu sản phẩm và trả về một tham chiếu đến vị trí mới được tạo
-     
-      
+
       Map<String, dynamic> productData = {
         'idproduct': idProduct,
         'name': name,
@@ -102,8 +106,10 @@ class _AddProductState extends State<AddProduct> {
         'producer': producer,
         'categoryId': selectedCategoryId, // số mã lsp,
         'image': imageData, // link ảnh lưu trữ fire storage
+        'sell': sell,
+        'suggets': suggets
       };
-      
+
       productsRef.child(productId).set(productData).then((_) {
         _showSnackBar('Thêm sản phẩm thành công');
       }).catchError((error) {
@@ -114,76 +120,82 @@ class _AddProductState extends State<AddProduct> {
     }
 
     // Nếu có giảm giá, thêm sản phẩm vào bảng productsale
-    if (promotion > 0) {
-      DatabaseReference saleProductsRef = FirebaseDatabase.instance.reference().child('productsales');
-      String saleProductId = saleProductsRef.push().key!;
+    // if (promotion > 0) {
+    //   DatabaseReference saleProductsRef =
+    //       FirebaseDatabase.instance.reference().child('productsales');
+    //   String saleProductId = saleProductsRef.push().key!;
 
-      Map<String, dynamic> saleProductData = {
-        'idproduct': idProduct,
-        'name': name,
-        'quantity': quantity,
-        'price': price,
-        'promotion': promotion,
-        'description': description,
-        'producer': producer,
-        'categoryId': selectedCategoryId, // số mã lsp,
-        'image': imageData, // link ảnh lưu trữ fire storage
-      };
+    //   Map<String, dynamic> saleProductData = {
+    //     'idproduct': idProduct,
+    //     'name': name,
+    //     'quantity': quantity,
+    //     'price': price,
+    //     'promotion': promotion,
+    //     'description': description,
+    //     'producer': producer,
+    //     'categoryId': selectedCategoryId, // số mã lsp,
+    //     'image': imageData, // link ảnh lưu trữ fire storage
+    //   };
 
-      saleProductsRef.child(saleProductId).set(saleProductData).then((_) {
-        _showSnackBar('Thêm sản phẩm giảm giá thành công');
-      }).catchError((error) {
-        _showSnackBar('Thêm sản phẩm giảm giá thất bại: $error');
-      });
+    //   saleProductsRef.child(saleProductId).set(saleProductData).then((_) {
+    //     _showSnackBar('Thêm sản phẩm giảm giá thành công');
+    //   }).catchError((error) {
+    //     _showSnackBar('Thêm sản phẩm giảm giá thất bại: $error');
+    //   });
 
-      // Kiểm tra xem sản phẩm có nên được thêm vào bảng productsuggest hay không
-      if (isRecommended) {
-        DatabaseReference suggestProductsRef = FirebaseDatabase.instance.ref().child('productsuggests');
-        String suggestProductId = suggestProductsRef.push().key!;
+    //   // Kiểm tra xem sản phẩm có nên được thêm vào bảng productsuggest hay không
+    //   if (isRecommended) {
+    //     DatabaseReference suggestProductsRef =
+    //         FirebaseDatabase.instance.ref().child('productsuggests');
+    //     String suggestProductId = suggestProductsRef.push().key!;
 
-        Map<String, dynamic> suggestProductData = {
-        'idproduct': idProduct,
-        'name': name,
-        'quantity': quantity,
-        'price': price,
-        'promotion': promotion,
-        'description': description,
-        'producer': producer,
-        'categoryId': selectedCategoryId, // số mã lsp,
-        'image': imageData, // link ảnh lưu trữ fire storage
-        };
+    //     Map<String, dynamic> suggestProductData = {
+    //       'idproduct': idProduct,
+    //       'name': name,
+    //       'quantity': quantity,
+    //       'price': price,
+    //       'promotion': promotion,
+    //       'description': description,
+    //       'producer': producer,
+    //       'categoryId': selectedCategoryId, // số mã lsp,
+    //       'image': imageData, // link ảnh lưu trữ fire storage
+    //     };
 
-        suggestProductsRef.child(suggestProductId).set(suggestProductData).then((_) {
-          _showSnackBar('Thêm sản phẩm gợi ý thành công');
-        }).catchError((error) {
-          _showSnackBar('Thêm sản phẩm gợi ý thất bại: $error');
-        });
-      }
-    }
+    //     suggestProductsRef
+    //         .child(suggestProductId)
+    //         .set(suggestProductData)
+    //         .then((_) {
+    //       _showSnackBar('Thêm sản phẩm gợi ý thành công');
+    //     }).catchError((error) {
+    //       _showSnackBar('Thêm sản phẩm gợi ý thất bại: $error');
+    //     });
+    //   }
+    // }
 
     // Kiểm tra xem sản phẩm có nên được thêm vào bảng productsell hay không
-    if (isBestSeller) {
-      DatabaseReference sellProductsRef = FirebaseDatabase.instance.ref().child('productsells');
-      String sellProductId = sellProductsRef.push().key!;
+    // if (isBestSeller) {
+    //   DatabaseReference sellProductsRef =
+    //       FirebaseDatabase.instance.ref().child('productsells');
+    //   String sellProductId = sellProductsRef.push().key!;
 
-      Map<String, dynamic> sellProductData = {
-        'idproduct': idProduct,
-        'name': name,
-        'quantity': quantity,
-        'price': price,
-        'promotion': promotion,
-        'description': description,
-        'producer': producer,
-        'categoryId': selectedCategoryId, // số mã lsp,
-        'image': imageData, // link ảnh lưu trữ fire storage
-      };
+    //   Map<String, dynamic> sellProductData = {
+    //     'idproduct': idProduct,
+    //     'name': name,
+    //     'quantity': quantity,
+    //     'price': price,
+    //     'promotion': promotion,
+    //     'description': description,
+    //     'producer': producer,
+    //     'categoryId': selectedCategoryId, // số mã lsp,
+    //     'image': imageData, // link ảnh lưu trữ fire storage
+    //   };
 
-      sellProductsRef.child(sellProductId).set(sellProductData).then((_) {
-        _showSnackBar('Thêm sản phẩm bán chạy thành công');
-      }).catchError((error) {
-        _showSnackBar('Thêm sản phẩm bán chạy thất bại: $error');
-      });
-    }
+    //   sellProductsRef.child(sellProductId).set(sellProductData).then((_) {
+    //     _showSnackBar('Thêm sản phẩm bán chạy thành công');
+    //   }).catchError((error) {
+    //     _showSnackBar('Thêm sản phẩm bán chạy thất bại: $error');
+    //   });
+    // }
   }
 
   Future<void> _pickImage() async {
@@ -192,7 +204,8 @@ class _AddProductState extends State<AddProduct> {
     // final storageRef = FirebaseStorage.instance.ref();
     if (pickedFile != null) {
       String generateRandomString(int length) {
-        const chars ='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const chars =
+            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         final random = Random();
         return String.fromCharCodes(
           List.generate(
@@ -229,24 +242,26 @@ class _AddProductState extends State<AddProduct> {
       appBar: AppBar(
         backgroundColor: Colors.pink[50], // Màu nền hồng nhạt
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black,),
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+          ),
           onPressed: () {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) =>ManageProductScreen(Id:  widget.Id,)),
+              MaterialPageRoute(
+                  builder: (context) => ManageProductScreen(
+                        Id: widget.Id,
+                      )),
               (route) => false,
             );
-   
           },
         ),
         centerTitle: true,
         title: const Text(
           'Quản lý thêm sản phẩm',
           style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.black
-          ),
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
         ),
       ),
       body: SingleChildScrollView(
@@ -475,7 +490,7 @@ class _AddProductState extends State<AddProduct> {
               color: Colors.grey,
               thickness: 1,
             ),
-             // Widget Checkbox để chọn xem sản phẩm có nên được thêm vào danh sách gợi ý hay không
+            // Widget Checkbox để chọn xem sản phẩm có nên được thêm vào danh sách gợi ý hay không
             Row(
               children: [
                 const Padding(
@@ -488,13 +503,31 @@ class _AddProductState extends State<AddProduct> {
                 Expanded(
                   child: Align(
                     alignment: Alignment.centerRight,
-                    child: Checkbox(
-                      value: isRecommended,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          isRecommended = value!;
-                        });
-                      },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Row(
+                        children: [
+                          const Spacer(), // tạo khoảng trống
+                          Checkbox(
+                            value: suggets,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                suggets = newValue ?? false;
+                              });
+                            },
+                            checkColor: Colors
+                                .white, // Màu của dấu tích khi ô được chọn
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return Colors.blue;
+                                }
+                                return Colors.white;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -504,30 +537,51 @@ class _AddProductState extends State<AddProduct> {
               color: Colors.grey,
               thickness: 1,
             ),
+
             // Widget Checkbox để chọn xem sản phẩm có nên được thêm vào danh sách bán chạy hay không
-           Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 5),
-              ),
-              const Text(
-                "Sản phẩm bán chạy: ",
-                style: TextStyle(fontSize: 16),
-              ),
-              Expanded(
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Checkbox(
-                    value: isBestSeller,
-                    onChanged: (bool? value) {
-                      setState(() {
-                        isBestSeller = value!;
-                      });
-                    },
+            Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 5),
+                ),
+                const Text(
+                  "Sản phẩm bán chạy: ",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 5),
+                      child: Row(
+                        children: [
+                          const Spacer(), // tạo khoảng trống
+                          Checkbox(
+                            value: sell,
+                            onChanged: (bool? newValue) {
+                              setState(() {
+                                sell = newValue ?? false;
+                              });
+                            },
+                            checkColor: Colors
+                                .white, // Màu của dấu tích khi ô được chọn
+                            fillColor: MaterialStateProperty.resolveWith<Color>(
+                              //fill: xd thuộc tính màu cho wg
+                              //resolveWith: định nghĩa 1 thuộc tính màu sắc dựa trên trang thái trả về đt Color
+                              (Set<MaterialState> states) {
+                                if (states.contains(MaterialState.selected)) {
+                                  return Colors.blue;
+                                }
+                                return Colors.white;
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
             ),
             const Divider(
               color: Colors.grey,
@@ -652,9 +706,17 @@ class _AddProductState extends State<AddProduct> {
                 //thêm sp, thông báo
                 addProductToFirebase();
                 await initNotifications();
-                Navigator.pop(context);
-                showAddProductSuccessNotification();
 
+                showAddProductSuccessNotification();
+                Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ManageProductScreen(Id: widget.Id),
+                ),
+              ).then((_) {
+                // Sau khi thêm/sửa sản phẩm và quay lại, popUntil để quay lại màn hình quản lý sản phẩm
+                Navigator.popUntil(context, (route) => route.isFirst);
+              });
               } else {
                 return _showSnackBar('Vui lòng nhập đầy đủ thông tin sản phẩm');
               }
