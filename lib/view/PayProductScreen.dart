@@ -55,7 +55,7 @@ const String status= "Đang xử lý";
 class _PaymentScreenState extends State<PaymentScreen> {
   late String orderId;
  
-  Users users =Users(name:"", email: "", phone: "", typeaccount: false, status: true, address:"",image: "", imageBackground: "");
+  Users users =Users(name:"", email: "", phone: "", typeaccount: false, status: true, address:"",image: "",);
   String productMoney = "0";  // Tổng tiền hàng
   String Payment = "0";  // Tổng đơn (tổng tiền hàng + phí giao hàng)
 

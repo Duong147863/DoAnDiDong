@@ -286,7 +286,6 @@ class Users {
   bool typeaccount;
   bool status;
   String image;
-  String imageBackground;
 
 
   Users({
@@ -297,7 +296,6 @@ class Users {
     required this.status,
     required this.address,
     required this.image,
-    required this.imageBackground
   });
 
   factory Users.fromSnapshot(DataSnapshot snapshot) {
@@ -310,7 +308,6 @@ class Users {
       typeaccount: data['persission'] ?? false,
       status: data['status'] ?? true,
       image: data['image'] ??"",
-      imageBackground: data['imageBackground']??""
 
     );
   }

@@ -142,13 +142,15 @@ class _LoginScreenState extends State<LoginScreen> {
       _passwordController.text = storedPassword;
     }
   }
+
   //Hàm đăng nhập
   void _signIn() async {
-    if (mounted) {
-      setState(() {
-        _isSigning = true;
-      });
+    if (!mounted) {
+      return; // Check if the widget is still mounted
     }
+    setState(() {
+      _isSigning = true;
+    });
 
     String email = _usernameController.text;
     String password = _passwordController.text;
@@ -206,16 +208,17 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 }
+
 void showSnackBar(BuildContext context, String message) {
-    final snackBar = SnackBar(
-        content: Text(message,
-            style: TextStyle(fontSize: 15), textAlign: TextAlign.center),
-        backgroundColor: Colors.pink);
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
+  final snackBar = SnackBar(
+      content: Text(message,
+          style: TextStyle(fontSize: 15), textAlign: TextAlign.center),
+      backgroundColor: Colors.pink);
+  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+}
+
 //DiaLog Giao Diện Đăng Kí
 class RegisterDialog {
-   
   static Future<void> showRegisterDialog(BuildContext context) async {
     TextEditingController usernameController = TextEditingController();
     TextEditingController phoneNumberController = TextEditingController();
@@ -315,7 +318,8 @@ class RegisterDialog {
                   // Kiểm tra xem mật khẩu có khớp không
                   if (password.trim() != confirmPassword.trim()) {
                     print("Mật khẩu và mật khẩu nhập lại không khớp");
-                    showSnackBar(context, 'Mật khẩu và mật khẩu nhập lại không khớp');
+                    showSnackBar(
+                        context, 'Mật khẩu và mật khẩu nhập lại không khớp');
                     return;
                   }
                   // Gọi hàm đăng ký từ FirebaseAuthService
@@ -325,7 +329,7 @@ class RegisterDialog {
                   // Kiểm tra xem đăng ký có thành công hay không
                   if (user != null) {
                     print("Đăng ký thành công");
-                     showSnackBar(context, 'Đăng ký thành công');
+                    showSnackBar(context, 'Đăng ký thành công');
                   } else {
                     print("Đăng ký thất bại");
                     showSnackBar(context, 'Đăng ký thất bại');
@@ -340,6 +344,7 @@ class RegisterDialog {
     );
   }
 }
+
 // Lớp lấy trạng thái status của user
 class FirebaseAuthService {
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -390,6 +395,7 @@ class FirebaseAuthService {
       'persission': false
     });
   }
+
 //Xử lý dữ liệu đăng kí
   Future<User?> signInWithEmailAndPassword(
       String email, String password) async {
@@ -402,11 +408,9 @@ class FirebaseAuthService {
     }
   }
 
-  Future<void> setUserName(String username) async {
-  }
+  Future<void> setUserName(String username) async {}
 
   Future<String> getUserName() async {
-
     return "";
   }
 }

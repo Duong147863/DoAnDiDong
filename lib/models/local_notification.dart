@@ -160,3 +160,23 @@ Future<void> showDeleteProductSuccessNotification() async {
     payload: 'item x',
   );
 }
+Future<void> showEditProfileNotification() async {
+  const AndroidNotificationDetails androidPlatformChannelSpecifics =
+      AndroidNotificationDetails(
+    'order_channel_id',
+    'order_channel_name',
+    channelDescription: 'Thông báo sửa thông tin cá nhân thành công',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+  const NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    'Sửa thông tin thành công',
+    'Hãy kiểm tra lại thông tin của bạn!',
+    platformChannelSpecifics,
+    payload: 'item x',
+  );
+}

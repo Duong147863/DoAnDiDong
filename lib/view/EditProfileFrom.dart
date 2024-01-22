@@ -1,3 +1,4 @@
+import 'package:doandidongappthuongmai/models/local_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:doandidongappthuongmai/models/load_data.dart';
 
@@ -72,6 +73,8 @@ class _EditProfileFromState extends State<EditProfileFrom> {
             updateUserInformation(widget.keyId);
             Navigator.pop(context);
             widget.reloadUserDataCallback();
+            initNotifications();
+            showEditProfileNotification();
           },
           child: Text('Save'),
         ),
