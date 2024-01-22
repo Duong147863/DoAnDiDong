@@ -241,9 +241,9 @@ class _EditProductState extends State<EditProduct> {
                         width: MediaQuery.of(context).size.width,
                         child: imageData == null
                             ? InkWell(
-                                // widget bao bọc phần tử
+                                //  bao bọc đối tướng
                                 onTap: () {
-                                  _pickImage(); // Gọi hàm _pickImage() khi người dùng nhấn vào ảnh
+                                  _pickImage();
                                 },
                                 child: Image.network(
                                   widget.image,
@@ -251,9 +251,8 @@ class _EditProductState extends State<EditProduct> {
                                 ),
                               )
                             : InkWell(
-                                // widget bao bọc phần tử
                                 onTap: () {
-                                  _pickImage(); // Gọi hàm _pickImage() khi người dùng nhấn vào ảnh
+                                  _pickImage();
                                 },
                                 child: Image.network(
                                   imageData.toString(),
