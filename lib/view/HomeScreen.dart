@@ -21,21 +21,23 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
  
- List<ProductSale> allProductsale = [];
- List<ProductSuggest> allProductsuggest = [];
+ List<Product> allProductsale=[];
+ List<Product> allProductsuggest=[];
  int selectedButtonIndex = 0;  
 
  void _loadProductsales() async {    //lấy danh sách sản phẩm khuyến mãi
-  List<ProductSale> productsale = await ProductSale.fetchProductSales();
+  List<Product> productsale = await Product.fetchProductsWithPromotion();
     setState(() {
      allProductsale = productsale;
     });
+    print("all productsale : ${allProductsale}");
   }
   void _loadProductsuggests() async {    // lấy danh sách sản phẩm gợi ý
-    List<ProductSuggest> productsuggest = await ProductSuggest.fetchProductSuggests();
+    List<Product> productsuggest = await Product.fetchProductSuggests();
     setState(() {
      allProductsuggest = productsuggest;
     });
+    print("all productsale : ${allProductsuggest}");
   }
 
   @override
@@ -300,7 +302,7 @@ class _MainScreenState extends State<MainScreen> {
                       itemCount: allProductsale.length,
                       itemBuilder: (context, index) {
                         var productsale =allProductsale[index] ;
-                        return ProductSaleItem(ProductsaleReference: FirebaseDatabase.instance.ref().child('productsales').child(productsale.id.toString()),
+                        return ProductSaleItem(ProductsaleReference: FirebaseDatabase.instance.ref().child('products').child(productsale.id.toString()),
                         id: widget.Id,
                         
                         );
@@ -373,7 +375,7 @@ class _MainScreenState extends State<MainScreen> {
                           return Row(
                             children: [
                             ProductSuggestItem(
-                              ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
+                              ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(allProductsuggest[index*2].id.toString()) ,
                              id: widget.Id,
                              ),
                             ],
@@ -383,11 +385,11 @@ class _MainScreenState extends State<MainScreen> {
                           return Row(
                             children: [
                               ProductSuggestItem(
-                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2].id.toString()) ,
+                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(allProductsuggest[index*2].id.toString()) ,
                                 id: widget.Id,
                                 ),
                               ProductSuggestItem(
-                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('productsuggests').child(allProductsuggest[index*2+1].id.toString()) ,
+                                ProductsuggestReference:FirebaseDatabase.instance.ref().child('products').child(allProductsuggest[index*2+1].id.toString()) ,
                                 id: widget.Id,
                                 ),
                             ],

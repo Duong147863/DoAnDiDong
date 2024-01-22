@@ -21,7 +21,7 @@ class CategoryData {
 
 class _SectionListState extends State<SectionList> {
   int selectedButtonIndex = 0;
-  List<ProductSell> products = [];
+  List<Product> products = [];
 
   @override
   void initState() {
@@ -31,7 +31,7 @@ class _SectionListState extends State<SectionList> {
 
   void _loadProductsell() async {
    
-    List<ProductSell> productsell = await ProductSell.getProductsell(widget.categories[selectedButtonIndex].id);
+    List<Product> productsell = await Product.fecthProductSell(widget.categories[selectedButtonIndex].id);
     setState(() {
       products = productsell;
     });
@@ -80,7 +80,7 @@ class _SectionListState extends State<SectionList> {
               var productsell = products[index];
               return ProductSellItem(
                 key: ValueKey<String>(productsell.id),
-                ProductsellReference: FirebaseDatabase.instance.ref().child('productsells').child(productsell.id.toString()),
+                ProductsellReference: FirebaseDatabase.instance.ref().child('products').child(productsell.id.toString()),
                 id: widget.id,
               );
             },

@@ -1,5 +1,6 @@
 
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class Category {
   String id;
@@ -63,9 +64,11 @@ class Product {
   int price;
   int promotion;
   int quantity;
+  bool sell;
+  bool suggest;
   Product({
    required this.id,required this.category,required this.name,required this.description,required this.idproduct,
-   required this.image,required this.price,required this.producer,required this.quantity, required this.promotion
+   required this.image,required this.price,required this.producer,required this.quantity, required this.promotion, required this.sell, required this.suggest
   });
 
   factory Product.fromJson(String id, Map<dynamic, dynamic> json) {
@@ -79,7 +82,9 @@ class Product {
       price: json['price']?? 0,
       promotion: json['promotion']?? 0,
       producer: json['producer']??"",
-      quantity: json['quantity']?? 0 
+      quantity: json['quantity']?? 0 ,
+      sell:json['sell']?? false,
+      suggest: json['suggets']?? false,
     );
   }
   static  getProductReference() {
@@ -90,6 +95,29 @@ class Product {
         FirebaseDatabase.instance.ref().child('products').child(idPro);
     await productRef.remove();
   }
+
+  static Future<List<Product>> fetchProductSuggests() async {
+  try {
+    Query productsReference = getProductReference().orderByChild('suggets').equalTo(true);
+    DatabaseEvent event =await productsReference.once();
+    DataSnapshot dataSnapshot = event.snapshot;
+    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+    List<Product> productSellList = [];
+
+    if (values != null) {
+      values.forEach((idproduct, productData) {
+        Product product = Product.fromJson(idproduct, productData);
+        productSellList.add(product);
+      });
+    }
+
+    return productSellList;
+  } catch (e) {
+    print("Error fetching products for selling: $e");
+    return [];
+  }
+}
 
   static Future<List<Product>> fetchProducts() async {
     DatabaseReference productsReference = getProductReference();
@@ -105,177 +133,227 @@ class Product {
     }
     return products;
   }
+  static Future<List<Product>> fecthProductSell(String categoriesId) async {
+  try {
+    Query _productSell = await getProductReference().orderByChild('sell').equalTo(true);
+    DatabaseEvent event = await _productSell.once();
+    DataSnapshot dataSnapshot = event.snapshot;
+     Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+    List<Product> productSellList = [];
+  
+  if(values!=null)
+  {
+    values.forEach((key, value) {
+          Product product = Product.fromJson(key, value);
+          if (product.category == categoriesId) {
+            productSellList.add(product);
+          }
+        });
+  }
+  return productSellList;
+  } catch (e) {
+    print("Error loading suggested products: $e");
+    return [];
+  }
+}
+static Future<List<Product>> fetchProductsWithPromotion() async {
+  try {
+   Query productsReference = getProductReference().orderByChild('promotion').startAt(1);
+    DatabaseEvent event= await productsReference.once();
+    DataSnapshot dataSnapshot = event.snapshot;
+    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+
+    List<Product> productsWithPromotionList = [];
+
+    if (values != null) {
+      values.forEach((idproduct, productData) {
+        int promotion = productData['promotion'] ?? 0;
+
+        // Lọc sản phẩm có giảm giá (promotion > 0)
+        if (promotion > 0) {
+          Product product = Product.fromJson(idproduct, productData);
+          productsWithPromotionList.add(product);
+        }
+      });
+    }
+
+    return productsWithPromotionList;
+  } catch (e) {
+    print("Error fetching products with promotion: $e");
+    return [];
+  }
+}
   @override
   String toString() {
     return 'Product{id: $id, name: $name, price: $price, promotion: $promotion}';
   }
 }
-class ProductSale{
-  String id;
-  String category;
-  String name;
-  String description;
-  String idproduct;
-  String image;
-  String producer;
-  int price;
-  int promotion;
-  int quantity;
-  ProductSale({
-   required this.id,required this.category,required this.name,required this.description,required this.idproduct,
-   required this.image,required this.price,required this.producer,required this.quantity, required this.promotion
-  });
+// class ProductSale{
+//   String id;
+//   String category;
+//   String name;
+//   String description;
+//   String idproduct;
+//   String image;
+//   String producer;
+//   int price;
+//   int promotion;
+//   int quantity;
+//   ProductSale({
+//    required this.id,required this.category,required this.name,required this.description,required this.idproduct,
+//    required this.image,required this.price,required this.producer,required this.quantity, required this.promotion
+//   });
 
-  factory ProductSale.fromJson(String id, Map<dynamic, dynamic> json) {
-    return ProductSale(
-      id: id,
-      idproduct: json['idproduct'] ?? "",
-      name: json['name'] ?? "",
-      category: json['categoryId'] ?? "",
-      description: json['description'] ??"",
-      image: json['image']??"",
-      price: json['price']?? 0,
-      promotion: json['promotion']?? 0,
-      producer: json['producer']??"",
-      quantity: json['quantity']?? 0 
-    );
-  }
-  static  getProductSaleReference() {
-    return FirebaseDatabase.instance.ref().child('productsales');
-  }
-  static Future<List<ProductSale>> fetchProductSales() async {
-    DatabaseReference productsaleReference = getProductSaleReference();
-    DatabaseEvent event = await  productsaleReference.once();
-    DataSnapshot dataSnapshot = event.snapshot;
-    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+//   factory ProductSale.fromJson(String id, Map<dynamic, dynamic> json) {
+//     return ProductSale(
+//       id: id,
+//       idproduct: json['idproduct'] ?? "",
+//       name: json['name'] ?? "",
+//       category: json['categoryId'] ?? "",
+//       description: json['description'] ??"",
+//       image: json['image']??"",
+//       price: json['price']?? 0,
+//       promotion: json['promotion']?? 0,
+//       producer: json['producer']??"",
+//       quantity: json['quantity']?? 0 
+//     );
+//   }
+//   static  getProductSaleReference() {
+//     return FirebaseDatabase.instance.ref().child('productsales');
+//   }
+//   static Future<List<ProductSale>> fetchProductSales() async {
+//     DatabaseReference productsaleReference = getProductSaleReference();
+//     DatabaseEvent event = await  productsaleReference.once();
+//     DataSnapshot dataSnapshot = event.snapshot;
+//     Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<ProductSale> productsales = [];
-    if (values != null) {
-      values.forEach((key, value) {
-        productsales.add(ProductSale.fromJson(key, value));
-      });
-    }
-    return productsales;
-  }
-}
-class ProductSuggest{
-  String id;
-  String category;
-  String name;
-  String description;
-  String idproduct;
-  String image;
-  String producer;
-  int price;
-  int promotion;
-  int quantity;
-  ProductSuggest({
-   required this.id,required this.category,required this.name,required this.description,required this.idproduct,
-   required this.image,required this.price,required this.producer,required this.quantity, required this.promotion
-  });
+//     List<ProductSale> productsales = [];
+//     if (values != null) {
+//       values.forEach((key, value) {
+//         productsales.add(ProductSale.fromJson(key, value));
+//       });
+//     }
+//     return productsales;
+//   }
+// }
+// class ProductSuggest{
+//   String id;
+//   String category;
+//   String name;
+//   String description;
+//   String idproduct;
+//   String image;
+//   String producer;
+//   int price;
+//   int promotion;
+//   int quantity;
+//   ProductSuggest({
+//    required this.id,required this.category,required this.name,required this.description,required this.idproduct,
+//    required this.image,required this.price,required this.producer,required this.quantity, required this.promotion
+//   });
 
-  factory ProductSuggest.fromJson(String id, Map<dynamic, dynamic> json) {
-    return ProductSuggest(
-      id: id,
-      idproduct: json['idproduct'] ?? "",
-      name: json['name'] ?? "",
-      category: json['categoryId'] ?? "",
-      description: json['description'] ??"",
-      image: json['image']??"",
-      price: json['price']?? 0,
-      promotion: json['promotion']?? 0,
-      producer: json['producer']??"",
-      quantity: json['quantity']?? 0 
-    );
-  }
+//   factory ProductSuggest.fromJson(String id, Map<dynamic, dynamic> json) {
+//     return ProductSuggest(
+//       id: id,
+//       idproduct: json['idproduct'] ?? "",
+//       name: json['name'] ?? "",
+//       category: json['categoryId'] ?? "",
+//       description: json['description'] ??"",
+//       image: json['image']??"",
+//       price: json['price']?? 0,
+//       promotion: json['promotion']?? 0,
+//       producer: json['producer']??"",
+//       quantity: json['quantity']?? 0 
+//     );
+//   }
 
-  static  getProductSuggestReference() {
-    return FirebaseDatabase.instance.ref().child('productsuggests');
-  }
+//   static  getProductSuggestReference() {
+//     return FirebaseDatabase.instance.ref().child('productsuggests');
+//   }
 
-  static Future<List<ProductSuggest>> fetchProductSuggests() async {
-    DatabaseReference ProductSuggestReference = getProductSuggestReference();
-    DatabaseEvent event = await  ProductSuggestReference.once();
-    DataSnapshot dataSnapshot = event.snapshot;
-    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+//   static Future<List<ProductSuggest>> fetchProductSuggests() async {
+//     DatabaseReference ProductSuggestReference = getProductSuggestReference();
+//     DatabaseEvent event = await  ProductSuggestReference.once();
+//     DataSnapshot dataSnapshot = event.snapshot;
+//     Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<ProductSuggest> productsuggests = [];
-    if (values != null) {
-      values.forEach((key, value) {
-        productsuggests.add(ProductSuggest.fromJson(key, value));
-      });
-    }
-    return productsuggests;
-  }
-}
-class ProductSell{
-  String id;
-  String category;
-  String name;
-  String description;
-  String idproduct;
-  String image;
-  String producer;
-  int price;
-  int promotion;
-  int quantity;
-  ProductSell({
-   required this.id,required this.category,required this.name,required this.description,required this.idproduct,
-   required this.image,required this.price,required this.producer,required this.quantity, required this.promotion
-  });
+//     List<ProductSuggest> productsuggests = [];
+//     if (values != null) {
+//       values.forEach((key, value) {
+//         productsuggests.add(ProductSuggest.fromJson(key, value));
+//       });
+//     }
+//     return productsuggests;
+//   }
+// }
+// class ProductSell{
+//   String id;
+//   String category;
+//   String name;
+//   String description;
+//   String idproduct;
+//   String image;
+//   String producer;
+//   int price;
+//   int promotion;
+//   int quantity;
+//   ProductSell({
+//    required this.id,required this.category,required this.name,required this.description,required this.idproduct,
+//    required this.image,required this.price,required this.producer,required this.quantity, required this.promotion
+//   });
 
-  factory ProductSell.fromJson(String id, Map<dynamic, dynamic> json) {
-    return ProductSell(
-      id: id,
-      idproduct: json['idproduct'] ?? "",
-      name: json['name'] ?? "",
-      category: json['categoryId'] ?? "",
-      description: json['description'] ??"",
-      image: json['image']??"",
-      price: json['price']?? 0,
-      promotion: json['promotion']?? 0,
-      producer: json['producer']??"",
-      quantity: json['quantity']?? 0 
-    );
-  }
+//   factory ProductSell.fromJson(String id, Map<dynamic, dynamic> json) {
+//     return ProductSell(
+//       id: id,
+//       idproduct: json['idproduct'] ?? "",
+//       name: json['name'] ?? "",
+//       category: json['categoryId'] ?? "",
+//       description: json['description'] ??"",
+//       image: json['image']??"",
+//       price: json['price']?? 0,
+//       promotion: json['promotion']?? 0,
+//       producer: json['producer']??"",
+//       quantity: json['quantity']?? 0 
+//     );
+//   }
 
-  static  getProductSellReference() {
-    return FirebaseDatabase.instance.ref().child('productsells');
-  }
+//   static  getProductSellReference() {
+//     return FirebaseDatabase.instance.ref().child('productsells');
+//   }
 
-  static Future<List<ProductSell>> fetchProductSell() async {
-    DatabaseReference ProductSellReference = getProductSellReference();
-    DatabaseEvent event = await  ProductSellReference.once();
-    DataSnapshot dataSnapshot = event.snapshot;
-    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+//   static Future<List<ProductSell>> fetchProductSell() async {
+//     DatabaseReference ProductSellReference = getProductSellReference();
+//     DatabaseEvent event = await  ProductSellReference.once();
+//     DataSnapshot dataSnapshot = event.snapshot;
+//     Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<ProductSell> productsell = [];
-    if (values != null) {
-      values.forEach((key, value) {
-        productsell.add(ProductSell.fromJson(key, value));
-      });
-    }
-    return productsell;
-  }
-  static Future<List<ProductSell>> getProductsell(String categoryId) async {
-    DatabaseReference productsellReference = FirebaseDatabase.instance.ref().child('productsells');
-    DatabaseEvent event = await productsellReference.once();
-    DataSnapshot dataSnapshot = event.snapshot;
-    Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
+//     List<ProductSell> productsell = [];
+//     if (values != null) {
+//       values.forEach((key, value) {
+//         productsell.add(ProductSell.fromJson(key, value));
+//       });
+//     }
+//     return productsell;
+//   }
+  // static Future<List<ProductSell>> getProductsell(String categoryId) async {
+  //   DatabaseReference productsellReference = FirebaseDatabase.instance.ref().child('productsells');
+  //   DatabaseEvent event = await productsellReference.once();
+  //   DataSnapshot dataSnapshot = event.snapshot;
+  //   Map<dynamic, dynamic>? values = dataSnapshot.value as Map<dynamic, dynamic>?;
 
-    List<ProductSell> productsell = [];
-    if (values != null) {
-      values.forEach((key, value) {
-        ProductSell products =ProductSell.fromJson(key, value);
-        if(products.category == categoryId)
-        {
-          productsell.add(products);
-        }
-      });
-    }
-    return productsell;
-  }
-}
+  //   List<ProductSell> productsell = [];
+  //   if (values != null) {
+  //     values.forEach((key, value) {
+  //       ProductSell products =ProductSell.fromJson(key, value);
+  //       if(products.category == categoryId)
+  //       {
+  //         productsell.add(products);
+  //       }
+  //     });
+  //   }
+  //   return productsell;
+  // }
+//}
 
 
 class Users {

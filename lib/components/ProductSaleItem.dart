@@ -14,8 +14,8 @@ class ProductSaleItem extends StatefulWidget {
 }
 
 class _ProductItemState extends State<ProductSaleItem> {
-  DatabaseReference productsale = FirebaseDatabase.instance.ref().child('productsales');
-  ProductSale products = ProductSale(id: "0", category: "", name: "", description: "", idproduct: "", image: "", producer: "", price: 0, promotion: 0, quantity: 0);
+  DatabaseReference productsale = FirebaseDatabase.instance.ref().child('products');
+  Product products = Product(id: "0", category: "", name: "", description: "", idproduct: "", image: "", producer: "", price: 0, promotion: 0, quantity: 0,sell: false, suggest: false);
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +116,7 @@ class _ProductItemState extends State<ProductSaleItem> {
           String productsId = data["idproduct"]?.toString() ?? "";
 
           setState(() {
-            products = ProductSale.fromJson(productsId, data);
+            products = Product.fromJson(productsId, data);
           });
         } else {}
       }

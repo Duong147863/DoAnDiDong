@@ -4,15 +4,15 @@ import 'package:doandidongappthuongmai/models/load_data.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class ProductSuggestItem extends StatefulWidget {
-   final String id;
+  final String id;
   final DatabaseReference ProductsuggestReference;
   const ProductSuggestItem({Key? key,required this.ProductsuggestReference, required this.id}) : super(key: key);
   @override
   State<ProductSuggestItem> createState() => _ProductItemState();
 } 
 class _ProductItemState extends State<ProductSuggestItem> {
-    DatabaseReference productsuggests = FirebaseDatabase.instance.ref().child('productsuggests');
-  ProductSuggest products= ProductSuggest(id: "0",category: "",name: "", description: "", idproduct: "",image: "", producer: "", price: 0,promotion: 0, quantity: 0);
+  DatabaseReference productsuggests = FirebaseDatabase.instance.ref().child('products');
+  Product products= Product(id: "0",category: "",name: "", description: "", idproduct: "",image: "", producer: "", price: 0,promotion: 0, quantity: 0,sell: false, suggest: false);
   @override
   Widget build(BuildContext context) {
      if (products.id==0) {
@@ -31,6 +31,7 @@ class _ProductItemState extends State<ProductSuggestItem> {
             promotion: products.promotion,
             description: products.description,
             quantity: products.quantity,
+            
           ),
           ),
         );
@@ -114,7 +115,7 @@ class _ProductItemState extends State<ProductSuggestItem> {
         String productsId = data["idproduct"]?.toString() ?? "";
 
         setState(() {
-         products = ProductSuggest.fromJson(productsId, data);
+         products = Product.fromJson(productsId, data);
         });
       } else {}
     }
