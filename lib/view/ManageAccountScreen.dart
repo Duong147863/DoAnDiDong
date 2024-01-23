@@ -34,6 +34,7 @@ Future<void> loadAccountsWithFalsePermission() async {
       accountsData?.forEach((userId, userData) {
         String displayname = userData['displayName'] ?? '';
         String email = userData['email'] ?? '';
+        //phân quyền
         bool perssion = userData['persission'] ?? false;
         bool status =userData['status'] ?? true;
         if (!perssion) {

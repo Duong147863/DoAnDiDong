@@ -24,7 +24,7 @@ class AccountInfoContainer extends StatefulWidget {
 
 class _AccountInfoContainerState extends State<AccountInfoContainer> {
   final _firebaseMessaging = FirebaseMessaging.instance;
-  late bool isSwitched = widget.status; // mặc định trạng thái switch là bật
+  late bool isSwitched = widget.status; //lấy trạng thái 
   final DatabaseReference _databaseReference =
       FirebaseDatabase.instance.reference();
   @override
@@ -47,10 +47,10 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
         border: Border.all(width: 0.5, color: Colors.black),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Độ trong suốt 50%
-            spreadRadius: 1, // Xác định mức độ mà bóng sẽ lan rộng
-            blurRadius: 4, // Bán kính mờ xác định độ mờ của bóng
-            offset: Offset(0, 2), // Khoảng cách mà bóng sẽ được dịch chuyển
+            color: Colors.grey.withOpacity(0.5), 
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -97,24 +97,23 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
       },
     ).then((confirmed) {
       if (confirmed != null && confirmed) {
-        // If the user presses "Đồng ý", update the switch state and the database
         _updateAccountStatus(newValue);
       }
     });
   }
-
-  void _updateAccountStatus(bool newValue) async {
+  //Cập nhật trạng thái và tạo notification trên firebase
+  void _updateAccountStatus(bool updatevalue) async {
     DatabaseReference userReference =
         _databaseReference.child('users').child(widget.userId);
     setState(() {
-          isSwitched = newValue;
+          isSwitched = updatevalue;
         });
     userReference.update({
-      'status': newValue,
+      'status': updatevalue,
     });
 
-    if (!newValue) {
-      // Tài khoản bị khóa
+    if (!updatevalue) {
+      // Tài khoản bị khóa và hiển thị thông báo
       initNotifications();
       NotificationOfLockedAccount(widget.displayName);
       NotificationData notificationData = NotificationData(
@@ -124,7 +123,7 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
         description: "Tài khoản của ${widget.displayName} đã bị khóa",
         time: DateTime.now(),
       );
-
+      //tạo trường thông báo
       await _databaseReference.child('notifications').push().set({
           'AdminId': notificationData.AdminId,
           'userId': notificationData.userId,
@@ -141,7 +140,7 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
       // Tạo thông báo và lưu vào Firebase
      
     } else {
-      // Tài khoản được mở khóa
+      // Tài khoản được mở khóa và hiển thị thông báo
       initNotifications();
       AccountUnlockNotification(widget.displayName);
        NotificationData notificationData = NotificationData(
@@ -151,7 +150,7 @@ class _AccountInfoContainerState extends State<AccountInfoContainer> {
           description: "Tài khoản của ${widget.displayName} đã được mở khóa",
           time: DateTime.now(),
         );
-
+        //tạo trường thông báo
         await _databaseReference.child('notifications').push().set({
           'AdminId': notificationData.AdminId,
           'userId': notificationData.userId,
