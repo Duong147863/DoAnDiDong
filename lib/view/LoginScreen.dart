@@ -77,19 +77,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    
                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                       RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
-                    padding:MaterialStatePropertyAll(EdgeInsets.fromLTRB(60, 13, 60, 13)),
+                    padding: MaterialStatePropertyAll(
+                        EdgeInsets.fromLTRB(60, 13, 60, 13)),
                     backgroundColor:
                         MaterialStateProperty.all(Colors.pinkAccent),
-                        
                   ),
                   onPressed: _signIn,
-                  child: Text("Đăng Nhập",textAlign: TextAlign.center,),
+                  child: Text(
+                    "Đăng Nhập",
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               ),
               Padding(
@@ -212,17 +214,22 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-void showSnackBar(BuildContext context, String message) {
-  final snackBar = SnackBar(
-      content: Text(message,
-          style: TextStyle(fontSize: 15), textAlign: TextAlign.center),
-      backgroundColor: Colors.pink);
-  ScaffoldMessenger.of(context).showSnackBar(snackBar);
-}
-
 //DiaLog Giao Diện Đăng Kí
 class RegisterDialog {
   static Future<void> showRegisterDialog(BuildContext context) async {
+    void showSnackBar1(String message) {
+      final snackBar = SnackBar(
+        content: Text(
+          message,
+          style: TextStyle(fontSize: 15),
+          textAlign: TextAlign.center,
+        ),
+        backgroundColor: Colors.pink,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+
     TextEditingController usernameController = TextEditingController();
     TextEditingController phoneNumberController = TextEditingController();
     TextEditingController emailController = TextEditingController();
@@ -313,29 +320,59 @@ class RegisterDialog {
                 onPressed: () async {
                   // Xử lý đăng ký ở đây
                   String username = usernameController.text;
+                  bool isValidPhoneNumber(String phoneNumber) {
+                    return phoneNumber.trim().length == 10 &&
+                        int.tryParse(phoneNumber) != null;
+                  }
+
                   String phoneNumber = phoneNumberController.text;
                   String email = emailController.text;
                   String password = passwordController.text;
                   String confirmPassword = confirmPasswordController.text;
                   bool status = true;
+
+                  // Kiểm tra xem mọi TextField đã được điền đầy đủ thông tin chưa
+                  if (username.isEmpty ||
+                      phoneNumber.isEmpty ||
+                      email.isEmpty ||
+                      password.isEmpty ||
+                      confirmPassword.isEmpty) {
+                    print("Vui lòng điền đầy đủ thông tin");
+                    showSnackBar1( 'Vui lòng điền đầy đủ thông tin');
+                    return;
+                  }
+                  if (!isValidPhoneNumber(phoneNumber)) {
+                    print("Số điện thoại không hợp lệ");
+                    showSnackBar1( 'Số điện thoại không hợp lệ');
+                    return;
+                  }
+
                   // Kiểm tra xem mật khẩu có khớp không
                   if (password.trim() != confirmPassword.trim()) {
                     print("Mật khẩu và mật khẩu nhập lại không khớp");
-                    showSnackBar(
-                        context, 'Mật khẩu và mật khẩu nhập lại không khớp');
+                    showSnackBar1(
+                         'Mật khẩu và mật khẩu nhập lại không khớp');
                     return;
                   }
                   // Gọi hàm đăng ký từ FirebaseAuthService
                   FirebaseAuthService authService = FirebaseAuthService();
+                  // Kiểm tra xem số điện thoại đã sử dụng chưa
+                  bool isPhoneNumberUsed =
+                      await authService.isPhoneNumberUsed(phoneNumber);
+                  if (isPhoneNumberUsed) {
+                    print("Số điện thoại đã được sử dụng");
+                    showSnackBar1( 'Số điện thoại đã được sử dụng');
+                    return;
+                  }
                   User? user = await authService.signUpWithEmailAndPassword(
                       username, phoneNumber, email, password, status);
                   // Kiểm tra xem đăng ký có thành công hay không
                   if (user != null) {
                     print("Đăng ký thành công");
-                    showSnackBar(context, 'Đăng ký thành công');
+                    showSnackBar1( 'Đăng ký thành công');
                   } else {
                     print("Đăng ký thất bại");
-                    showSnackBar(context, 'Đăng ký thất bại');
+                    showSnackBar1('Đăng ký thất bại');
                   }
                   Navigator.of(context).pop();
                 },
@@ -365,6 +402,28 @@ class FirebaseAuthService {
       return (statusSnapshot.value as bool?) ?? false;
     } catch (e) {
       print("Error getting user status: $e");
+      return false;
+    }
+  }
+
+  Future<bool> isPhoneNumberUsed(String phoneNumber) async {
+    try {
+      DatabaseEvent snapshotEvent = await FirebaseDatabase.instance
+          .reference()
+          .child('users')
+          .orderByChild('phoneNumber')
+          .equalTo(phoneNumber)
+          .once();
+
+      if (snapshotEvent.snapshot != null) {
+        // Truy cập đến snapshot từ DatabaseEvent
+        DataSnapshot snapshot = snapshotEvent.snapshot;
+        return snapshot.value != null;
+      }
+
+      return false;
+    } catch (e) {
+      print("Error checking phone number: $e");
       return false;
     }
   }
