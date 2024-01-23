@@ -405,7 +405,7 @@ class FirebaseAuthService {
       return false;
     }
   }
-
+  //Kiểm tra có số điện thoại trên firebase
   Future<bool> isPhoneNumberUsed(String phoneNumber) async {
     try {
       DatabaseEvent snapshotEvent = await FirebaseDatabase.instance
@@ -416,7 +416,6 @@ class FirebaseAuthService {
           .once();
 
       if (snapshotEvent.snapshot != null) {
-        // Truy cập đến snapshot từ DatabaseEvent
         DataSnapshot snapshot = snapshotEvent.snapshot;
         return snapshot.value != null;
       }
@@ -427,7 +426,7 @@ class FirebaseAuthService {
       return false;
     }
   }
-
+  //Đăng nhập xử lí firebase
   Future<User?> signUpWithEmailAndPassword(String username, String phoneNumber,
       String email, String password, bool status) async {
     try {
@@ -440,7 +439,7 @@ class FirebaseAuthService {
       return userCredential.user;
     } catch (e) {
       print("Error during registration: $e");
-      return null; // Return null to indicate registration failure
+      return null;
     }
   }
 
