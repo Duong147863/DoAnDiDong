@@ -439,3 +439,72 @@ class OrderDetails {
     required this.status,
   });
 }
+class Order {
+  final String orderId;
+  final String address;
+  final String name;
+  final String phone;
+  final String productMoney;
+  final List<Product> products;
+  final String status;
+
+  Order({
+    required this.orderId,
+    required this.address,
+    required this.name,
+    required this.phone,
+    required this.productMoney,
+    required this.products,
+    required this.status,
+  });
+
+  factory Order.fromJson(String orderId, Map<dynamic, dynamic> json) {
+    List<Product> products = [];
+
+    if (json['products'] != null) {
+      List<dynamic> producValues = json['products'];
+
+      producValues.forEach((productKey, productValue) {
+        Product product = Product.fromJson(productKey, productValue);
+        products.add(product);
+      } as void Function(dynamic element));
+    }
+
+    return Order(
+      orderId: orderId,
+      address: json['address'] ?? '',
+      name: json['name'] ?? '',
+      phone: json['phone'] ?? '',
+      productMoney: json['productMoney'] ?? '',
+      products: products,
+      status: json['status'] ?? '',
+    );
+  }
+
+  static DatabaseReference getOrderReference() {
+    return FirebaseDatabase.instance.reference().child('orders');
+  }
+
+  static Future<List<Order>> fetchOrders() async {
+    DatabaseReference ordersReference = getOrderReference();
+    DatabaseEvent event = await ordersReference.once();
+    DataSnapshot dataSnapshot = event.snapshot;
+    Map<dynamic, dynamic>? values =
+        dataSnapshot.value as Map<dynamic, dynamic>?;
+
+    List<Order> orders = [];
+    if (values != null) {
+      values.forEach((key, value) {
+        if (value is Map<dynamic, dynamic> && !value.containsKey('products')) {
+          orders.add(Order.fromJson(key, value));
+        }
+      });
+    }
+    return orders;
+  }
+
+  @override
+  String toString() {
+    return 'Order{name: $name, customerId: $orderId, status: $status, total: $productMoney}';
+  }
+}

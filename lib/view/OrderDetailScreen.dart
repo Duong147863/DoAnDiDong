@@ -363,14 +363,14 @@ class ShowAlertDialog extends  StatelessWidget {
   DatabaseReference paymentRef = FirebaseDatabase.instance.ref().child('orders');
 
   void updateStatus() {
-  String newStatus = 'Đã Hủy';
-  paymentRef.child(orderId).update({'status': newStatus,
-  }).then((_) {
-    print('Cập nhật trạng thái thành công');
-  }).catchError((error) {
-    print('Lỗi khi cập nhật trạng thái: $error');
-  });
-}
+    String newStatus = 'Đã Hủy';
+    paymentRef.child(orderId).update({'status': newStatus,
+    }).then((_) {
+      print('Cập nhật trạng thái thành công');
+    }).catchError((error) {
+      print('Lỗi khi cập nhật trạng thái: $error');
+    });
+ }
     return AlertDialog(
       title:Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -401,7 +401,7 @@ class ShowAlertDialog extends  StatelessWidget {
              await initNotifications();
              updateStatus();
              showNotificationOderDelete(orderId);
-            saveNotification(userId, orderId);
+             saveNotification(userId, orderId);
              Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => NavigationScreen(userId: userId,)),
